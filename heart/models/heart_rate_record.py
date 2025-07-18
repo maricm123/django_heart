@@ -19,4 +19,4 @@ class HeartRateRecord(models.Model):
     )
 
     def __str__(self):
-        return self.user + " " + self.device_id
+        return str(self.user) + " " + str(self.device_id)

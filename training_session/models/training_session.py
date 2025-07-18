@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from core.models.behaviours import TimeStampable, DateTimeFramable, IsActive
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -19,13 +19,18 @@ class TrainingSession(
     def __str__(self):
         return self.title + " - " + str(self.start)
 
+    @transaction.atomic
     def end_session(self):
         self.end = timezone.now()
-
         self.duration_in_minutes = self.calculate_duration(self.start, self.end)
         self.calories_burned = self.calculate_calories()
         self.is_active = False
+        self.delete_all_hrr_for_ended_session()
         self.save()
+
+    def delete_all_hrr_for_ended_session(self):
+        # Brišemo sve povezane zapise iz baze u jednom pozivu
+        self.heart_rate_records.all().delete()
 
     @classmethod
     def start_session(cls, **kwargs):
@@ -47,9 +52,7 @@ class TrainingSession(
             return max(round(calories, 2), 0)
 
     def calculate_average_heart_rate(self, list_of_bpms):
-        print(list_of_bpms, "LISTTT")
         average = sum(list_of_bpms) / len(list_of_bpms)
-        print(average)
         return average
 
     def calculate_duration(self, start, end):
