@@ -32,22 +32,17 @@ class TrainingSession(
         return TrainingSession.objects.create(**kwargs)
 
     def calculate_calories(self):
-        print(self.user.id, "USER")
         list_of_bpms = [record.bpm for record in self.heart_rate_records.all()]
         if len(list_of_bpms) != 0:
             average_bpm = self.calculate_average_heart_rate(list_of_bpms)
 
             weight = self.user.weight
-            age = self.user.age
+            age = self.user.get_age_from_birth_date()
 
             if self.user.gender == 'male':
                 calories = ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (0.2017 * age)) / 4.184) * self.duration_in_minutes
-                print("USLO U MALEs")
-                print(calories, "CALORIES")
-            else:  # female
-                print("USLO U FEMALE")
+            else:
                 calories = ((-20.4022 + (0.4472 * average_bpm) - (0.1263 * weight) + (0.074 * age)) / 4.184) * self.duration_in_minutes
-                print(calories, "CALORIES")
 
             return max(round(calories, 2), 0)
 
@@ -59,10 +54,8 @@ class TrainingSession(
 
     def calculate_duration(self, start, end):
         duration = (end - start).total_seconds() / 60
-        print(duration)
         return duration
 
     def save(self, *args, **kwargs):
         # self.calories_burned = self.calculate_calories()
         super().save(*args, **kwargs)
-
