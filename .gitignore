@@ -1,0 +1,72 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+
+# Virtual environment
+venv/
+env/
+.venv/
+.env/
+pip-log.txt
+
+# Django stuff
+*.db
+*.sqlite3
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.migrations/
+local_settings.py
+db.sqlite3
+
+# Static files
+staticfiles/
+static/
+media/
+
+# VSCode
+.vscode/
+
+# PyCharm
+.idea/
+.idea\
+
+# mypy
+.mypy_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+.cache
+
+# Docker
+*.env
+docker-compose.override.yml
+
+# Environments and secrets
+.env
+.env.*
+
+# Node (if using frontend tooling)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Sentry config
+.sentryclirc
+
+# System files
+.DS_Store
+Thumbs.db
+.idea/django_aws.iml

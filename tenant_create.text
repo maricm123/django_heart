@@ -1,0 +1,20 @@
+
+-- python manage.py shell
+
+
+from gym.models.gym_tenant import GymTenant, Domain
+
+tenant = GymTenant(schema_name="public", name="public")
+tenant.save()
+domain = Domain(tenant=tenant, domain="localhost")
+domain.save()
+tenant = GymTenant(schema_name="mygym", name="mygym")
+tenant2 = GymTenant(schema_name="mygym", name="mygym")
+tenant2.save()
+
+domain2 = Domain(tenant=tenant2, domain="mygym.localhost")
+domain2.save()
+
+
+with schema_context('yourgym'):
+    User.objects.create_superuser(email='admin@yourgym.com', password='admin123')
