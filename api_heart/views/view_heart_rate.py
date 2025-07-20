@@ -4,7 +4,10 @@ from rest_framework.views import APIView
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from heart.models.heart_rate_record import HeartRateRecord
+from training_session.models import TrainingSession
 from ..serializers.serializers_heart_rate import HeartRateRecordSerializer
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 class HeartRateView(generics.CreateAPIView):
@@ -46,7 +49,45 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
     queryset = HeartRateRecord.objects.all()
     serializer_class = HeartRateRecordSerializer
 
-    # def perform_create(self, serializer):
-    #     instance = serializer.save()
-    #
-    #     return instance
+    def perform_create(self, serializer):
+        instance = serializer.save()
+
+        training_session = TrainingSession.objects.get(pk=instance.training_session_id)
+        user = User.objects.get(pk=training_session.user_id)
+
+        list_of_bpms = [record.bpm for record in training_session.heart_rate_records.all()]
+        current_calories = self.current_calories_burned(user, list_of_bpms, training_session.start, instance.timestamp)
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "bpm_group",
+            {
+                "type": "send_bpm",  # name of method in Consumer class
+                "current_calories": current_calories,
+                "user_id": user.id,
+            }
+        )
+
+    def current_calories_burned(self, user, list_of_bpms, session_start, current_timestamp):
+        if len(list_of_bpms) != 0:
+            average_bpm = self.calculate_average_heart_rate(list_of_bpms)
+
+            weight = user.weight
+            age = user.get_age_from_birth_date()
+            duration_in_minutes = self.calculate_current_duration_in_minutes(session_start, current_timestamp)
+
+            if user.gender == 'male':
+                calories = ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (0.2017 * age)) / 4.184) * duration_in_minutes
+            else:
+                calories = ((-20.4022 + (0.4472 * average_bpm) - (0.1263 * weight) + (0.074 * age)) / 4.184) * duration_in_minutes
+
+            return max(round(calories, 2), 0)
+
+    def calculate_average_heart_rate(self, list_of_bpms):
+        average = sum(list_of_bpms) / len(list_of_bpms)
+        return average
+
+
+    def calculate_current_duration_in_minutes(self, start, end):
+        duration = (end - start).total_seconds() / 60
+        return duration

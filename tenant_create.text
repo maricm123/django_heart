@@ -16,5 +16,12 @@ domain2 = Domain(tenant=tenant2, domain="mygym.localhost")
 domain2.save()
 
 
-with schema_context('yourgym'):
-    User.objects.create_superuser(email='admin@yourgym.com', password='admin123')
+from django_tenants.utils import schema_context
+
+with schema_context('mygym'):
+    User.objects.create_superuser(email='mare@yourgym.com', password='mare123')
+
+
+
+-- pokretanje aplikacije (da bi radili channels i websocket)
+uvicorn django_heart.asgi:application --reload

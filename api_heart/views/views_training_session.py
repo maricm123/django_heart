@@ -21,7 +21,6 @@ class CreateTrainingSessionView(APIView):
         new_training_session = TrainingSession.objects.get(
             id=serializer.validated_data['id'],
         )
-        print(new_training_session, "NEW TRAINING SESSION")
 
         return Response(TrainingSessionInfoSerializer(new_training_session).data, status=status.HTTP_201_CREATED)
 
