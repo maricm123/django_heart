@@ -17,4 +17,4 @@ class Client(BaseProfile):
     height = models.FloatField(null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.user.name

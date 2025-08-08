@@ -1,8 +1,7 @@
-from django.conf import settings
 from django.urls import path, include
 from .views import view_users, view_heart_rate, views_training_session
 
-app_name = "api_heart_tv"
+app_name = "api_heart"
 
 
 endpoints_urlpatterns = [
