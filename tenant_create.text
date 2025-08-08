@@ -8,19 +8,18 @@ tenant = GymTenant(schema_name="public", name="public")
 tenant.save()
 domain = Domain(tenant=tenant, domain="localhost")
 domain.save()
-tenant = GymTenant(schema_name="mygym", name="mygym")
 tenant2 = GymTenant(schema_name="mygym", name="mygym")
 tenant2.save()
 
 domain2 = Domain(tenant=tenant2, domain="mygym.localhost")
 domain2.save()
 
-
+from django.contrib.auth import get_user_model
+User = get_user_model()
 from django_tenants.utils import schema_context
 
 with schema_context('mygym'):
-    User.objects.create_superuser(email='mare@yourgym.com', password='mare123')
-
+    User.objects.create_superuser(email='admin@gmail.com', password='admin')
 
 
 -- pokretanje aplikacije (da bi radili channels i websocket)

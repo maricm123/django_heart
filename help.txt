@@ -1,0 +1,12 @@
+-- pokretanje aplikacije (da bi radili channels i websocket)
+uvicorn django_heart.asgi:application --reload
+
+
+-- docker pokretanje
+docker compose up
+(nakon toga namestiti da front moze da pogodi channels)
+
+
+-- migracije tenanta
+migracija samo shared_apps ne i tenant modela.
+python manage.py migrate_schemas --shared

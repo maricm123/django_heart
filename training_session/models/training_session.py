@@ -21,8 +21,7 @@ class TrainingSession(
 
     @transaction.atomic
     def end_session(self):
-        self.end = timezone.now()
-        self.duration_in_minutes = self.calculate_duration(self.start, self.end)
+        self.duration_in_minutes = self.calculate_current_duration_in_minutes(self.start)
         self.calories_burned = self.calculate_calories()
         self.is_active = False
         self.delete_all_hrr_for_ended_session()
@@ -38,16 +37,19 @@ class TrainingSession(
 
     def calculate_calories(self):
         list_of_bpms = [record.bpm for record in self.heart_rate_records.all()]
+        print(list_of_bpms, "LIST OF BPMS")
         if len(list_of_bpms) != 0:
             average_bpm = self.calculate_average_heart_rate(list_of_bpms)
 
             weight = self.user.weight
             age = self.user.get_age_from_birth_date()
+            duration_in_minutes = self.calculate_current_duration_in_minutes(self.start)
+            print(duration_in_minutes, "DURATION AT END")
 
             if self.user.gender == 'male':
-                calories = ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (0.2017 * age)) / 4.184) * self.duration_in_minutes
+                calories = ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (0.2017 * age)) / 4.184) * duration_in_minutes
             else:
-                calories = ((-20.4022 + (0.4472 * average_bpm) - (0.1263 * weight) + (0.074 * age)) / 4.184) * self.duration_in_minutes
+                calories = ((-20.4022 + (0.4472 * average_bpm) - (0.1263 * weight) + (0.074 * age)) / 4.184) * duration_in_minutes
 
             return max(round(calories, 2), 0)
 
@@ -55,7 +57,12 @@ class TrainingSession(
         average = sum(list_of_bpms) / len(list_of_bpms)
         return average
 
-    def calculate_duration(self, start, end):
+    # def calculate_duration(self, start, end):
+    #     duration = (end - start).total_seconds() / 60
+    #     return duration
+
+    def calculate_current_duration_in_minutes(self, start):
+        end = timezone.now()
         duration = (end - start).total_seconds() / 60
         return duration
 

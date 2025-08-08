@@ -1,7 +1,8 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
-from django.db import models, transaction
+from django.db import models
 from django.utils import timezone
 from datetime import date
+from django.utils.functional import cached_property
 
 
 class CustomUserManager(UserManager):
@@ -55,14 +56,6 @@ class User(
     last_name = models.CharField(max_length=255, blank=True, null=True)
     is_active = models.BooleanField(default=False)
 
-    gender = models.CharField(
-        max_length=10,
-        choices=[("male", "Male"), ("female", "Female")],
-        null=True,
-        blank=True
-    )
-    weight = models.FloatField(null=True, blank=True)   # KG
-    height = models.FloatField(null=True, blank=True)
     birth_date = models.DateField(null=True, blank=True)
 
     is_superuser = models.BooleanField(default=False)
@@ -70,29 +63,18 @@ class User(
 
     date_joined = models.DateTimeField(default=timezone.now)
 
-    CLIENT = 'client'
-    ADMIN = 'admin'
-
-    ROLE_CHOICES = [
-        (CLIENT, 'Client'),
-        (ADMIN, 'Admin'),
-    ]
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=CLIENT)
-
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = []
 
-    def is_admin(self):
-        return self.role == self.ADMIN
-
-    def is_client(self):
-        return self.role == self.CLIENT
-
     def __str__(self):
         return f"{self.email} -- {self.first_name} -- {self.last_name}"
+
+    @cached_property
+    def name(self):
+        return f"{self.first_name.strip()} {self.last_name.strip()}"
 
     def set_user_active(self):
         self.is_active = True
