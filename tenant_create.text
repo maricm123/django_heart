@@ -19,7 +19,7 @@ User = get_user_model()
 from django_tenants.utils import schema_context
 
 with schema_context('mygym'):
-    User.objects.create_superuser(email='admin@gmail.com', password='admin')
+    User.objects.create_superuser(email='coach@gmail.com', password='coach123')
 
 
 -- pokretanje aplikacije (da bi radili channels i websocket)

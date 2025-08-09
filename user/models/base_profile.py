@@ -25,7 +25,7 @@ class BaseProfile(TimeStampable):
     )
 
     def __str__(self):
-        return f"{self.name} ({self.email})"
+        return f"{self.user.name} ({self.user.email})"
 
     @cached_property
     def as_app_log(self):  # override as_app_log() from AppLogFormatable

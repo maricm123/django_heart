@@ -1,9 +1,10 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils import timezone
 from datetime import date
 from django.utils.functional import cached_property
-
+from django.db.models import OneToOneRel
 
 class CustomUserManager(UserManager):
     def _create_user(self, first_name, last_name, email, password=None, **extra_fields):
@@ -87,3 +88,22 @@ class User(
         return today.year - self.birth_date.year - (
                 (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
         )
+
+    @cached_property
+    def profile(self):
+        """Get the profile object from the user (we allow only one for now)."""
+        from .base_profile import BaseProfile
+
+        profiles = list()
+        for f in User._meta.get_fields():
+            if isinstance(f, OneToOneRel) and issubclass(f.related_model, BaseProfile):
+                try:
+                    profiles.append(getattr(self, f.name))
+                except ObjectDoesNotExist:
+                    pass
+        if len(profiles) == 0:
+            return None  # no profile found
+        elif len(profiles) == 1:
+            return profiles[0]
+        else:  # multiple profiles (forbidden in our logic)
+            raise Exception("Multiple profiles detected!")
