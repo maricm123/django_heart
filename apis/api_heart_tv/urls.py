@@ -1,5 +1,6 @@
 from django.urls import path, include
-from .views import view_users, view_heart_rate, views_training_session
+from .views import view_users, view_heart_rate, views_training_session, views_browsable
+from django.conf import settings
 
 app_name = "api_heart"
 
@@ -28,8 +29,8 @@ endpoints_urlpatterns = [
 
 urlpatterns = [path("", include(endpoints_urlpatterns))]
 
-# if settings.DEBUG:
-#     endpoints_urlpatterns_debug = [
-#         path("", view_browsable.APIRootView.as_view(), name="root"),
-#     ]
-#     urlpatterns += [path("", include(endpoints_urlpatterns_debug))]
+if settings.DEBUG:
+    endpoints_urlpatterns_debug = [
+        path("", views_browsable.APIRootView.as_view(), name="root"),
+    ]
+    urlpatterns += [path("", include(endpoints_urlpatterns_debug))]

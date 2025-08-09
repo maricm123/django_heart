@@ -3,7 +3,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from api_heart_tv.serializers.serializers_training_session import CreateTrainingSessionSerializer, \
+from apis.api_heart_tv.serializers.serializers_training_session import CreateTrainingSessionSerializer, \
     TrainingSessionInfoSerializer, FinishTrainingSessionSerializer
 from training_session.models import TrainingSession
 

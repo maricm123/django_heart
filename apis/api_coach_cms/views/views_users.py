@@ -2,7 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from api_coach_cms.serializers.serializers_users import CoachInfoSerializer
+from apis.api_coach_cms.serializers.serializers_users import CoachInfoSerializer
 
 
 class CurrentCoachInfoView(generics.RetrieveUpdateAPIView):

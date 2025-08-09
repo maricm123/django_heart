@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from api_coach_cms.mixins import ReqContextMixin
+from apis.api_coach_cms.mixins import ReqContextMixin
 from user.models import Coach, Client, GymManager
 
 User = get_user_model()
