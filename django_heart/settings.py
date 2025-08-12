@@ -202,7 +202,7 @@ LOGGING = {
     "disable_existing_loggers": False,
     "filters": {
         "ignore_static": {
-            "()": "core.logging_filters.IgnoreStaticRequestsFilter"
+            "()": "core.utils.IgnoreStaticRequestsFilter"
         },
     },
     "formatters": {
