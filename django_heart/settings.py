@@ -193,3 +193,64 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     # OTHER SETTINGS
 }
+
+PROJECT_NAME = "django_heart"  # currenty used for logging only
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "ignore_static": {
+            "()": "core.logging_filters.IgnoreStaticRequestsFilter"
+        },
+    },
+    "formatters": {
+        "verbose": {
+            "format": "[{asctime}] {levelname} {name} | {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": os.path.join(LOG_DIR, "app.log"),
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console", "file"],
+        "level": "WARNING",
+    },
+    "loggers": {
+        # default for all undefined Python modules (root logger)
+        "": {
+            "level": "WARNING",
+            "handlers": ["console"],
+        },
+        PROJECT_NAME: {
+            "handlers": ["console", "file"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "django.server": {
+            "handlers": ["console", "file"],
+            "level": "INFO",  # ili ERROR ako želiš još manje
+            "propagate": False,
+            "filters": ["ignore_static"]
+        },
+        "django.db.backends": {
+            "level": "WARNING",
+            "handlers": ["console"],
+            "propagate": True,
+        },
+    },
+}
