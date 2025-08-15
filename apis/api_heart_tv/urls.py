@@ -13,7 +13,8 @@ endpoints_urlpatterns = [
     # ),
 
     # Users
-    path('get-all-users', view_users.GetAllUsers.as_view(), name='get-all-users'),
+    path('get-all-users', view_users.GetAllUsersView.as_view(), name='get-all-users'),
+    path('get-all-clients', view_users.GetAllClientsView.as_view(), name='get-all-clients'),
 
     # Heart rate
     path('heart-rate/latest', view_heart_rate.LatestHeartRateView.as_view(), name='heart-rate-latest'),

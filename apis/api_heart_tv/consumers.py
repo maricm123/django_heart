@@ -21,7 +21,7 @@ class BPMConsumer(AsyncWebsocketConsumer):
     async def send_bpm(self, event):
         await self.send(text_data=json.dumps({
             "current_calories": event["current_calories"],
-            "user_id": event["user_id"],
+            "client_id": event["client_id"],
         }))
 
     async def receive(self, text_data):

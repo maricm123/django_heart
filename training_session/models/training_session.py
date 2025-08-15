@@ -67,11 +67,12 @@ class TrainingSession(
             duration_in_minutes = self.calculate_current_duration_in_minutes(self.start)
             print(duration_in_minutes, "DURATION AT END")
 
-            if self.client.user.gender == 'male':
+            if self.client.gender == 'male':
                 calories = ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (0.2017 * age)) / 4.184) * duration_in_minutes
             else:
                 calories = ((-20.4022 + (0.4472 * average_bpm) - (0.1263 * weight) + (0.074 * age)) / 4.184) * duration_in_minutes
 
+            print(max(round(calories, 2), 0), "CALORIES")
             return max(round(calories, 2), 0)
 
     def calculate_average_heart_rate(self, list_of_bpms):

@@ -5,6 +5,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from heart.models.heart_rate_record import HeartRateRecord
 from training_session.models import TrainingSession
+from user.models import Client
 from ..serializers.serializers_heart_rate import HeartRateRecordSerializer
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -53,11 +54,11 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
         instance = serializer.save()
 
         training_session = TrainingSession.objects.get(pk=instance.training_session_id)
-        user = User.objects.get(pk=training_session.user_id)
+        client = Client.objects.get(pk=training_session.client_id)
 
         list_of_bpms = [record.bpm for record in training_session.heart_rate_records.all()]
         print(list_of_bpms)
-        current_calories = self.current_calories_burned(user, list_of_bpms, training_session.start, instance.timestamp)
+        current_calories = self.current_calories_burned(client, list_of_bpms, training_session.start, instance.timestamp)
 
         print(current_calories, "CURRENT CAL")
         channel_layer = get_channel_layer()
@@ -66,7 +67,7 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
             {
                 "type": "send_bpm",  # name of method in Consumer class
                 "current_calories": current_calories,
-                "user_id": user.id,
+                "client_id": client.id,
             }
         )
 
@@ -93,13 +94,13 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
     #         print(max(round(calories, 2), 0))
     #         return max(round(calories, 2), 0)
 
-    def current_calories_burned(self, user, list_of_bpms, session_start, current_timestamp):
+    def current_calories_burned(self, client, list_of_bpms, session_start, current_timestamp):
         if not list_of_bpms:
             return 0
 
         average_bpm = self.calculate_average_heart_rate(list_of_bpms)
-        weight = user.weight
-        age = user.get_age_from_birth_date()
+        weight = client.weight
+        age = client.user.get_age_from_birth_date()
         duration_in_minutes = self.calculate_current_duration_in_minutes(session_start, current_timestamp)
         print(duration_in_minutes, "CURRENT DURATION")
 
@@ -107,7 +108,7 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
         if duration_in_minutes <= 0:
             return 0
 
-        if user.gender == 'male':
+        if client.gender == 'male':
             calories = ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
                         0.2017 * age)) / 4.184) * duration_in_minutes
         else:

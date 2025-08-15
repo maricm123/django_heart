@@ -1,15 +1,19 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+
+from gym.models import GymTenant
 from training_session.models import TrainingSession
 from datetime import datetime
 
 from user.models import User
+from user.models.client import Client
 
 
 class CreateTrainingSessionSerializer(serializers.Serializer):
     title = serializers.CharField()
     start = serializers.DateTimeField(required=True)
-    user_id = serializers.IntegerField(required=True)
+    client_id = serializers.IntegerField(required=True)
+    gym_id = serializers.IntegerField(required=True)
 
     def validate_start(self, value):
         print(value, "Value start")
@@ -17,20 +21,25 @@ class CreateTrainingSessionSerializer(serializers.Serializer):
         # print(start_class, "START CLASS")
         return value
 
-    def validate_user_id(self, value):
-        return get_object_or_404(User, id=value)
+    def validate_client_id(self, value):
+        return get_object_or_404(Client, id=value)
+
+    def validate_gym_id(self, value):
+        return get_object_or_404(GymTenant, id=value)
 
     def validate(self, data):
-        print(data)
+        print(data, "DATAAA")
 
         start = data.get('start')
         title = data.get('title')
-        user_id = data.get('user_id')
+        client_id = data.get('client_id')
+        gym_id = data.get('gym_id')
 
         session = TrainingSession.start_session(
             start=start,
             title=title,
-            user=user_id
+            client=client_id,
+            gym=gym_id
         )
         data['id'] = session.id
         return data

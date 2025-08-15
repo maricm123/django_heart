@@ -1,11 +1,10 @@
 from django.db import models
-from django.contrib.auth import get_user_model
 from training_session.models import TrainingSession
-User = get_user_model()
+from user.models import Client
 
 
 class HeartRateRecord(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
     device_id = models.CharField(max_length=100)
     bpm = models.PositiveIntegerField()
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -19,4 +18,4 @@ class HeartRateRecord(models.Model):
     )
 
     def __str__(self):
-        return str(self.user) + " " + str(self.device_id)
+        return str(self.client) + " " + str(self.device_id)

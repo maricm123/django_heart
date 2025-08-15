@@ -19,6 +19,7 @@ class CurrentCoachInfoView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         try:
+            # test log
             AppLog(logger, LOG_COACH_LOGGED_IN, coach=self.request.user.coach)
             return self.request.user.coach
         except ObjectDoesNotExist:
