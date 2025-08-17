@@ -5,9 +5,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from apis.api_coach_cms.serializers.serializers_users import CoachInfoSerializer, CustomTokenObtainPairSerializer
+from apis.api_coach_cms.serializers.serializers_users import CoachInfoSerializer, CustomTokenObtainPairSerializer, \
+    ClientInfoSerializer
 from core.utils import get_logger, AppLog
 from user.log_templates import LOG_COACH_LOGGED_IN
+from user.models import Coach, Client
 
 logger = get_logger(__name__)
 
@@ -40,3 +42,13 @@ class LoginCoachView(TokenObtainPairView):
         serializer.is_valid(raise_exception=True)
 
         return Response(serializer.validated_data)
+
+
+class GetAllClientsBasedOnCoachView(generics.ListAPIView):
+    # Add permission for coach
+    permission_classes = [IsAuthenticated]
+    serializer_class = ClientInfoSerializer
+
+    def get_queryset(self):
+        # improve this query
+        return Client.objects.filter(coach=self.request.user.coach)

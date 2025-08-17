@@ -5,5 +5,5 @@ from user.models.base_profile import BaseProfile
 class Coach(BaseProfile):
     specialty = models.CharField(max_length=255, blank=True)
 
-    # def __str__(self):
-    #     return self.user.name
+    def __str__(self):
+        return self.user.name

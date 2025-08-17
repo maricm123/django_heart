@@ -9,6 +9,7 @@ endpoints_urlpatterns = [
     # Users
     path('current-coach', views_users.CurrentCoachInfoView.as_view(), name='current-coach'),
     path('login-coach', views_users.LoginCoachView.as_view(), name='login-coach'),
+    path('get-all-clients-based-on-coach', views_users.GetAllClientsBasedOnCoachView.as_view(), name='get-all-clients-based-on-coach'),
 
 ]
 
