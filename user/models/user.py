@@ -107,3 +107,7 @@ class User(
             return profiles[0]
         else:  # multiple profiles (forbidden in our logic)
             raise Exception("Multiple profiles detected!")
+
+    @property
+    def is_coach(self):
+        return hasattr(self, "coach")

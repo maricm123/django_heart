@@ -8,6 +8,7 @@ app_name = "api_coach_cms"
 endpoints_urlpatterns = [
     # Users
     path('current-coach', views_users.CurrentCoachInfoView.as_view(), name='current-coach'),
+    path('login-coach', views_users.LoginCoachView.as_view(), name='login-coach'),
 
 ]
 
