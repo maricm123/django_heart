@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,6 +23,7 @@ SHARED_APPS = [
     "gym",
     "corsheaders",
     "rest_framework",
+    "rest_framework_simplejwt",
     "debug_toolbar",
     "channels",
     "django.contrib.auth",
@@ -168,6 +170,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
+    "http://localhost:5173"
 ]
 
 TENANT_MODEL = "gym.GymTenant"
@@ -184,6 +187,19 @@ STATIC_ROOT = BASE_DIR / "staticfiles"  # BASE_DIR je obično Path(__file__).res
 REST_FRAMEWORK = {
     # YOUR SETTINGS
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        "rest_framework.authentication.SessionAuthentication",
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),  # Adjust as needed
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=20),  # Adjust as needed
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',  # Same as in your token header
+    'AUTH_HEADER_TYPES': ('Bearer',),  # Defines how the token is passed in requests
 }
 
 SPECTACULAR_SETTINGS = {

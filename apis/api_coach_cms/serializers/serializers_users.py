@@ -24,6 +24,8 @@ class CoachInfoSerializer(ReqContextMixin, serializers.ModelSerializer):
 
 
 class ClientInfoSerializer(UserInfoSerializer):
+    user = UserInfoSerializer()
+
     class Meta:
         model = Client
         fields = '__all__'
