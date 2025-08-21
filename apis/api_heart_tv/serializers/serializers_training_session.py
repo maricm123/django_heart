@@ -3,9 +3,6 @@ from rest_framework import serializers
 
 from gym.models import GymTenant
 from training_session.models import TrainingSession
-from datetime import datetime
-
-from user.models import User
 from user.models.client import Client
 
 

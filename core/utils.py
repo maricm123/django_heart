@@ -2,7 +2,7 @@ import json
 import logging
 from logging import Logger
 from django.conf import settings
-from typing import Union, Dict, Sequence, Optional, List, Tuple
+from typing import Dict, Sequence, Optional
 from dataclasses import dataclass
 
 

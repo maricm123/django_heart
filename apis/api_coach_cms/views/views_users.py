@@ -5,11 +5,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from apis.api_coach_cms.serializers.serializers_users import CoachInfoSerializer, CustomTokenObtainPairSerializer, \
-    ClientInfoSerializer
+from apis.api_coach_cms.serializers.serializers_users import (
+    CoachInfoSerializer,
+    CustomTokenObtainPairSerializer,
+    ClientInfoSerializer,
+)
 from core.utils import get_logger, AppLog
 from user.log_templates import LOG_COACH_LOGGED_IN
-from user.models import Coach, Client
+from user.models import Client
 
 logger = get_logger(__name__)
 

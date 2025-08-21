@@ -11,7 +11,12 @@ class HasOneProfileImage(models.Model):
     class Meta:
         abstract = True
 
-    profile_image = models.OneToOneField("core.ProfileImage", on_delete=models.CASCADE, blank=True, null=True)
+    profile_image = models.OneToOneField(
+        "core.ProfileImage",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
+    )
 
 
 class TimeStampable(models.Model):

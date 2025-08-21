@@ -1,7 +1,7 @@
 from rest_framework import generics
 from apis.api_heart_tv.serializers.serializers_users import (
     UserListSerializer,
-ClientListSerializer,
+    ClientListSerializer,
 )
 from user.models.user import User
 from user.models.client import Client

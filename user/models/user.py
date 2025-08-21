@@ -6,8 +6,16 @@ from datetime import date
 from django.utils.functional import cached_property
 from django.db.models import OneToOneRel
 
+
 class CustomUserManager(UserManager):
-    def _create_user(self, first_name, last_name, email, password=None, **extra_fields):
+    def _create_user(
+        self,
+        first_name,
+        last_name,
+        email,
+        password=None,
+        **extra_fields
+    ):
         if not email:
             raise ValueError("You have not provided a valid e-mail address")
 
@@ -86,7 +94,7 @@ class User(
         today = date.today()
         print(today)
         return today.year - self.birth_date.year - (
-                (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
+            (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
         )
 
     @cached_property

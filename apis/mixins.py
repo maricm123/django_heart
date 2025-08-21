@@ -1,7 +1,4 @@
-from django.core.exceptions import MultipleObjectsReturned
-from django.shortcuts import get_object_or_404
 from django.urls.exceptions import NoReverseMatch
-from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
