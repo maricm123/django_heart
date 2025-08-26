@@ -71,4 +71,5 @@ class CreateClientView(generics.CreateAPIView):
             context={'request': request}
         )
         serializer.is_valid(raise_exception=True)
-        return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+        new_client = Client.objects.get(pk=serializer.validated_data["pk"])
+        return Response(ClientInfoSerializer(new_client).data, status=status.HTTP_201_CREATED)

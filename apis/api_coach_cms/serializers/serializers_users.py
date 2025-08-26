@@ -68,6 +68,7 @@ class CreateClientSerializer(serializers.Serializer):
     gender = serializers.CharField(max_length=100, required=True)
     weight = serializers.FloatField(required=True)
     height = serializers.FloatField(required=True)
+    is_active = serializers.BooleanField(default=True)
 
     def validate(self, data):
         coach = self.context["request"].user.coach
@@ -78,9 +79,13 @@ class CreateClientSerializer(serializers.Serializer):
             "first_name": data.pop("first_name"),
             "last_name": data.pop("last_name"),
             "password": data.pop("password"),
+            "birth_date": data.pop("birth_date"),
+            "is_active": data.pop("is_active"),
         }
         client_data = data
 
-        client = Client.create(user_data=user_data, client_data=client_data)
+        client = Client.create(user_data=user_data, client_data=client_data, coach=coach)
 
-        return client
+        data["pk"] = client.pk
+
+        return data
