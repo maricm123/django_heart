@@ -14,7 +14,11 @@ endpoints_urlpatterns = [
         views_users.GetAllClientsBasedOnCoachView.as_view(),
         name='get-all-clients-based-on-coach'
     ),
-
+    path(
+        'create-client',
+        views_users.CreateClientView.as_view(),
+        name='create-client'
+    ),
 ]
 
 urlpatterns = [path("", include(endpoints_urlpatterns))]

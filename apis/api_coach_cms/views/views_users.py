@@ -1,6 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -9,6 +9,7 @@ from apis.api_coach_cms.serializers.serializers_users import (
     CoachInfoSerializer,
     CustomTokenObtainPairSerializer,
     ClientInfoSerializer,
+    CreateClientSerializer,
 )
 from core.utils import get_logger, AppLog
 from user.log_templates import LOG_COACH_LOGGED_IN
@@ -55,3 +56,19 @@ class GetAllClientsBasedOnCoachView(generics.ListAPIView):
     def get_queryset(self):
         # improve this query
         return Client.objects.filter(coach=self.request.user.coach)
+
+
+class CreateClientView(generics.CreateAPIView):
+    """
+    Coach adding new client.
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = CreateClientSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(
+            data=request.data,
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.validated_data, status=status.HTTP_201_CREATED)

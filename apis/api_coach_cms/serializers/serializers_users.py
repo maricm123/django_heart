@@ -56,3 +56,31 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['refresh'] = str(refresh)
         data['access'] = str(access)
         return data
+
+
+class CreateClientSerializer(serializers.Serializer):
+    # fields : coach, gym, user, gender, weight, height
+    email = serializers.EmailField(write_only=True)
+    first_name = serializers.CharField(write_only=True)
+    last_name = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True)
+    birth_date = serializers.DateField(write_only=True)
+    gender = serializers.CharField(max_length=100, required=True)
+    weight = serializers.FloatField(required=True)
+    height = serializers.FloatField(required=True)
+
+    def validate(self, data):
+        coach = self.context["request"].user.coach
+
+        # split data into user + client
+        user_data = {
+            "email": data.pop("email"),
+            "first_name": data.pop("first_name"),
+            "last_name": data.pop("last_name"),
+            "password": data.pop("password"),
+        }
+        client_data = data
+
+        client = Client.create(user_data=user_data, client_data=client_data)
+
+        return client
