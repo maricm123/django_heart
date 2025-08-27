@@ -73,3 +73,12 @@ class CreateClientView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         new_client = Client.objects.get(pk=serializer.validated_data["pk"])
         return Response(ClientInfoSerializer(new_client).data, status=status.HTTP_201_CREATED)
+
+
+class GetUpdateDeleteClientView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ClientInfoSerializer
+    lookup_field = "id"
+
+    def get_object(self):
+        Client.objects.filter(coach=self.request.user.coach)

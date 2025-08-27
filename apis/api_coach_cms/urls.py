@@ -19,6 +19,11 @@ endpoints_urlpatterns = [
         views_users.CreateClientView.as_view(),
         name='create-client'
     ),
+    path(
+        'client-detail/<int:id>',
+        views_users.CreateClientView.as_view(),
+        name='create-client'
+    ),
 ]
 
 urlpatterns = [path("", include(endpoints_urlpatterns))]
