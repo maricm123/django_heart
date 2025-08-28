@@ -94,7 +94,7 @@ class CreateClientSerializer(serializers.Serializer):
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(read_only=True)
+    email = serializers.EmailField(write_only=True)
 
     class Meta:
         model = User

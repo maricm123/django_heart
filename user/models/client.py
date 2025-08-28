@@ -12,7 +12,7 @@ class Client(BaseProfile):
 
     gender = models.CharField(
         max_length=10,
-        choices=[("Male", "Male"), ("Female", "Female")],
+        choices=[("male", "Male"), ("female", "Female")],
         null=True,
         blank=True
     )
