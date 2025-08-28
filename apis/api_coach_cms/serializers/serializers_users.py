@@ -10,6 +10,8 @@ User = get_user_model()
 
 
 class UserInfoSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(read_only=True)
+
     class Meta:
         model = User
         fields = '__all__'
@@ -89,3 +91,33 @@ class CreateClientSerializer(serializers.Serializer):
         data["pk"] = client.pk
 
         return data
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'first_name', 'last_name', 'birth_date',)
+
+
+class ClientDetailUpdateSerializer(serializers.ModelSerializer):
+    user = UserUpdateSerializer()
+
+    class Meta:
+        model = Client
+        fields = ('id', 'user', 'weight', 'height', 'gender')
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', None)
+        if user_data:
+            for attr, value in user_data.items():
+                setattr(instance.user, attr, value)
+            instance.user.save()
+
+        # Update client fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        return instance

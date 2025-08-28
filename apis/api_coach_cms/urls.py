@@ -21,8 +21,8 @@ endpoints_urlpatterns = [
     ),
     path(
         'client-detail/<int:id>',
-        views_users.CreateClientView.as_view(),
-        name='create-client'
+        views_users.GetUpdateDeleteClientView.as_view(),
+        name='client-detail'
     ),
 ]
 

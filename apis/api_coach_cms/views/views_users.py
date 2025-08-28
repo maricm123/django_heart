@@ -10,6 +10,7 @@ from apis.api_coach_cms.serializers.serializers_users import (
     CustomTokenObtainPairSerializer,
     ClientInfoSerializer,
     CreateClientSerializer,
+    ClientDetailUpdateSerializer,
 )
 from core.utils import get_logger, AppLog
 from user.log_templates import LOG_COACH_LOGGED_IN
@@ -77,8 +78,15 @@ class CreateClientView(generics.CreateAPIView):
 
 class GetUpdateDeleteClientView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = ClientInfoSerializer
+    serializer_class = ClientDetailUpdateSerializer
     lookup_field = "id"
 
-    def get_object(self):
-        Client.objects.filter(coach=self.request.user.coach)
+    def get_queryset(self):
+        return Client.objects.filter(coach=self.request.user.coach)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
