@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.urls import path, include
-from .views import views_users, views_browsable
+from .views import views_users, views_browsable, views_training_sessions
 
 app_name = "api_coach_cms"
 
@@ -24,6 +24,9 @@ endpoints_urlpatterns = [
         views_users.GetUpdateDeleteClientView.as_view(),
         name='client-detail'
     ),
+
+    # Training sessions
+    path('active-training-sessions', views_training_sessions.GetActiveTrainingSessionsView.as_view(), name='active-training-sessions'),
 ]
 
 urlpatterns = [path("", include(endpoints_urlpatterns))]
