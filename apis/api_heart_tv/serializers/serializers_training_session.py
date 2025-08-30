@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
+from apis.api_coach_cms.serializers.serializers_users import ClientInfoSerializer
 from gym.models import GymTenant
 from training_session.models import TrainingSession
 from user.models import Coach
@@ -44,6 +45,7 @@ class CreateTrainingSessionSerializer(serializers.Serializer):
 
 class TrainingSessionInfoSerializer(serializers.ModelSerializer):
     start = serializers.DateTimeField()
+    client = ClientInfoSerializer()
 
     class Meta:
         model = TrainingSession
