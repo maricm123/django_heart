@@ -20,7 +20,11 @@ endpoints_urlpatterns = [
     path('heart-rate/latest', view_heart_rate.LatestHeartRateView.as_view(), name='heart-rate-latest'),
     path('heart-rate', view_heart_rate.HeartRateRecordCreateView.as_view(), name='heart-rate-create'),
 
-    path('save-heartbeat', view_heart_rate.HeartRateCreateRecordFromFrontendView.as_view(), name='create-heart-rate'),
+    path(
+        'save-heartbeat',
+        view_heart_rate.HeartRateCreateRecordFromFrontendView.as_view(),
+        name='create-heart-rate'
+    ),
 
     # Sessions
     path('create-session', views_training_session.CreateTrainingSessionView.as_view(), name='create-session'),

@@ -31,7 +31,11 @@ endpoints_urlpatterns = [
     ),
 
     # Training sessions
-    path('active-training-sessions', views_training_sessions.GetActiveTrainingSessionsView.as_view(), name='active-training-sessions'),
+    path(
+        'active-training-sessions',
+        views_training_sessions.GetActiveTrainingSessionsView.as_view(),
+        name='active-training-sessions'
+    ),
 
     # Media
     path('upload-profile-picture', views_media.UploadProfilePictureView.as_view(), name='upload-profile-picture'),
