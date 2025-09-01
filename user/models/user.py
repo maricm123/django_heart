@@ -65,6 +65,8 @@ class User(
     last_name = models.CharField(max_length=255, blank=True, null=True)
     is_active = models.BooleanField(default=False)
 
+    profile_image_url = models.URLField(max_length=500, null=True, blank=True)
+
     birth_date = models.DateField(null=True, blank=True)
 
     is_superuser = models.BooleanField(default=False)

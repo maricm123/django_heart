@@ -10,7 +10,7 @@ User = get_user_model()
 
 class BaseProfile(TimeStampable):
     """
-    Used to extend all profiles (Convive / TeamMember) given them tools
+    Used to extend all profiles (Coach / Client / GymManager) given them tools
     NOTE: only to be used with profiles model, or will create an error.
     """
 

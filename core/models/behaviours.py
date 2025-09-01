@@ -159,3 +159,10 @@ class IsActive(models.Model):
         abstract = True
 
     is_active = models.BooleanField(default=True)
+
+
+class HasProfileImage(models.Model):
+    class Meta:
+        abstract = True
+
+    profile_image = models.ForeignKey("core.ProfileImage", null=True, blank=True, on_delete=models.SET_NULL)
