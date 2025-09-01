@@ -257,3 +257,18 @@ LOGGING = {
         },
     },
 }
+
+
+# AWS
+# DEFAULT_FILE_STORAGE = os.environ.get('DEFAULT_FILE_STORAGE')
+# AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+# AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+# AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
+# AWS_S3_REGION_NAME = os.environ.get("AWS_S3_REGION_NAME")
+
+# AWS S3 NINJA
+AWS_ACCESS_KEY_ID = "AKIAIOSFODNN7EXAMPLE"
+AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+AWS_STORAGE_BUCKET_NAME = "test-bucket"
+AWS_S3_REGION_NAME = "us-east-1"  # može biti bilo šta
+AWS_S3_ENDPOINT_URL = "http://localhost:9000"  # pokazuje na S3 Ninja

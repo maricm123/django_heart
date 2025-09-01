@@ -1,6 +1,11 @@
 from django.conf import settings
 from django.urls import path, include
-from .views import views_users, views_browsable, views_training_sessions
+from .views import (
+    views_users,
+    views_browsable,
+    views_training_sessions,
+    views_media
+)
 
 app_name = "api_coach_cms"
 
@@ -27,6 +32,9 @@ endpoints_urlpatterns = [
 
     # Training sessions
     path('active-training-sessions', views_training_sessions.GetActiveTrainingSessionsView.as_view(), name='active-training-sessions'),
+
+    # Media
+    path('upload-profile-picture', views_media.UploadProfilePictureView.as_view(), name='upload-profile-picture'),
 ]
 
 urlpatterns = [path("", include(endpoints_urlpatterns))]

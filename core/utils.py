@@ -1,9 +1,10 @@
 import json
 import logging
+import boto3
 from logging import Logger
-from django.conf import settings
 from typing import Dict, Sequence, Optional
 from dataclasses import dataclass
+from django.conf import settings
 
 
 ####################################################################################################
@@ -121,3 +122,26 @@ class IgnoreStaticRequestsFilter(logging.Filter):
     def filter(self, record):
         # record.msg je npr. '"GET /static/xyz.css HTTP/1.1" 304 0'
         return not record.getMessage().startswith('"GET /static/')
+
+
+# AWS S3 Utils
+def generate_presigned_url(file_name, file_type):
+    s3_client = boto3.client(
+        's3',
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        region_name=settings.AWS_S3_REGION_NAME
+    )
+
+    presigned_url = s3_client.generate_presigned_url(
+        'put_object',  # operacija upload-a
+        Params={
+            'Bucket': settings.AWS_STORAGE_BUCKET_NAME,
+            'Key': file_name,
+            'ContentType': file_type,
+            'ACL': 'public-read'  # opcionalno, ako želiš da URL bude direktno dostupan
+        },
+        ExpiresIn=300  # važi 5 minuta
+    )
+    print(presigned_url, "PRESIGNED URL")
+    return presigned_url
