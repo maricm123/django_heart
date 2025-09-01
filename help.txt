@@ -23,3 +23,10 @@ ne znam iz kog razloga sam poslednji put morao pokrenuti i ovu gore komandu kao 
 Superuser
 admin@gmail.com
 admin123
+
+
+payload for profile picture
+{
+  "file_name": "avatar.png",
+  "file_type": "image/png"
+}
