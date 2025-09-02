@@ -151,6 +151,12 @@ AUTH_USER_MODEL = 'user.User'
 
 ALLOWED_HOSTS = ['*', "192.168.0.4", "10.0.2.2"]
 
+CORS_ALLOWED_ORIGINS = [
+    "http://192.168.1.50:5173",   # ako pokrećeš Vue dev server
+    "http://192.168.1.50:8080",
+    "http://192.168.0.2:5173", # ako buildaš Android aplikaciju
+]
+
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_ALLOW_ALL = True
 
