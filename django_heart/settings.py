@@ -21,6 +21,7 @@ SHARED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "debug_toolbar",
+    "django_extensions",
     "channels",
     "django.contrib.auth",
     "django.contrib.contenttypes",
