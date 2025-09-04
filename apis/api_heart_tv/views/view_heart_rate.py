@@ -58,7 +58,8 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
 
         list_of_bpms = [record.bpm for record in training_session.heart_rate_records.all()]
         print(list_of_bpms)
-        current_calories = self.current_calories_burned(client, list_of_bpms, training_session.start, instance.timestamp)
+        current_calories = (
+            self.current_calories_burned(client, list_of_bpms, training_session.start, instance.timestamp))
 
         print(current_calories, "CURRENT CAL")
         channel_layer = get_channel_layer()
