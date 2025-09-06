@@ -19,8 +19,20 @@ User = get_user_model()
 from django_tenants.utils import schema_context
 
 with schema_context('mygym'):
-    User.objects.create_superuser(email='coach@gmail.com', password='coach123')
+    User.objects.create_superuser(email='admin@gmail.com', password='admin123')
 
 
 -- pokretanje aplikacije (da bi radili channels i websocket)
 uvicorn django_heart.asgi:application --reload
+
+
+
+mygym schema
+tenant = GymTenant(schema_name="mygym", name="mygym")
+
+
+-- provera tenanta
+>>> from django_tenants.utils import get_tenant_model
+>>> TenantModel = get_tenant_model()
+>>> TenantModel.objects.all()  # vidi da li postoji neki tenant
+<QuerySet [<GymTenant: public>, <GymTenant: mygym>]>

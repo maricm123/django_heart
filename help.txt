@@ -14,7 +14,6 @@ python manage.py migrate_schemas --shared
 ne znam iz kog razloga sam poslednji put morao pokrenuti i ovu gore komandu kao i obicnu migrate.
 
 
-
 --baza
 08.08 trenutno se baza nalazi u pilates_db u django_heart2 bazi
 
