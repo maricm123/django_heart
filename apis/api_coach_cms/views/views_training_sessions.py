@@ -22,4 +22,4 @@ class GetAllTrainingSessionsPerClientView(generics.ListAPIView):
 
     def get_queryset(self):
         client_id = self.kwargs.get('id')
-        return TrainingSession.objects.filter(client__id=client_id)
+        return TrainingSession.objects.filter(client__id=client_id, is_active=False)
