@@ -1,11 +1,13 @@
 from django.db import models, transaction
+from apis.utils_for_calculating_calories import (
+    calculate_current_duration_in_minutes,
+)
 from core.models.behaviours import TimeStampable, DateTimeFramable, IsActive
 from django.contrib.auth import get_user_model
 from gym.models import GymTenant
 from user.models.client import Client
 from user.models.coach import Coach
 from django.utils import timezone
-
 User = get_user_model()
 
 
@@ -41,9 +43,9 @@ class TrainingSession(
         return self.title + " - " + str(self.start)
 
     @transaction.atomic
-    def end_session(self):
+    def end_session(self, calories_at_end):
         self.duration_in_minutes = self.calculate_current_duration_in_minutes(self.start)
-        self.calories_burned = self.calculate_calories()
+        self.calories_burned = calories_at_end
         self.is_active = False
         self.delete_all_hrr_for_ended_session()
         self.save()
@@ -56,33 +58,10 @@ class TrainingSession(
     def start_session(cls, **kwargs):
         return TrainingSession.objects.create(**kwargs)
 
-    def calculate_calories(self):
-        list_of_bpms = [record.bpm for record in self.heart_rate_records.all()]
-        print(list_of_bpms, "LIST OF BPMS")
-        if len(list_of_bpms) != 0:
-            average_bpm = self.calculate_average_heart_rate(list_of_bpms)
-
-            weight = self.client.weight
-            age = self.client.user.get_age_from_birth_date()
-            duration_in_minutes = self.calculate_current_duration_in_minutes(self.start)
-            print(duration_in_minutes, "DURATION AT END")
-
-            if self.client.gender == 'Male':
-                calories = ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (0.2017 * age)) / 4.184) * duration_in_minutes
-            else:
-                calories = ((-20.4022 + (0.4472 * average_bpm) - (0.1263 * weight) + (0.074 * age)) / 4.184) * duration_in_minutes
-
-            print(max(round(calories, 2), 0), "CALORIES")
-            return max(round(calories, 2), 0)
-
-    def calculate_average_heart_rate(self, list_of_bpms):
-        average = sum(list_of_bpms) / len(list_of_bpms)
-        return average
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
 
     def calculate_current_duration_in_minutes(self, start):
         end = timezone.now()
         duration = (end - start).total_seconds() / 60
         return duration
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)

@@ -99,6 +99,10 @@ class User(
             (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
         )
 
+    @property
+    def age(self):
+        return self.get_age_from_birth_date()
+
     @cached_property
     def profile(self):
         """Get the profile object from the user (we allow only one for now)."""
