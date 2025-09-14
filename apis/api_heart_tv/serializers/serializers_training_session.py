@@ -51,7 +51,7 @@ class TrainingSessionInfoSerializer(serializers.ModelSerializer):
 
 
 class FinishTrainingSessionSerializer(serializers.Serializer):
-    calories_at_end = serializers.IntegerField()
+    calories_at_end = serializers.IntegerField(write_only=True)
 
     def update(self, instance, validated_data):
         calories_at_end = validated_data.get('calories_at_end')
