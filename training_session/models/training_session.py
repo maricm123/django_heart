@@ -47,6 +47,7 @@ class TrainingSession(
         self.duration_in_minutes = self.calculate_current_duration_in_minutes(self.start)
         self.calories_burned = calories_at_end
         self.is_active = False
+        self.end = timezone.now()
         self.delete_all_hrr_for_ended_session()
         self.save()
 
