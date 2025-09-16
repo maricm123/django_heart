@@ -164,6 +164,8 @@ CORS_ORIGIN_ALLOW_ALL = True
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
     "http://localhost:5173"
+    "https://heartapp.dev",
+    "https://*.heartapp.dev",
 ]
 
 TENANT_MODEL = "gym.GymTenant"
