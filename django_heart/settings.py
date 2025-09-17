@@ -214,6 +214,9 @@ LOGGING = {
         "ignore_static": {
             "()": "core.utils.IgnoreStaticRequestsFilter"
         },
+        "ignore_uvicorn_static": {
+            "()": "core.utils.IgnoreStaticUvicornRequestsFilter"
+        }
     },
     "formatters": {
         "verbose": {
@@ -258,9 +261,16 @@ LOGGING = {
             "filters": ["ignore_static"]
         },
         "django.db.backends": {
-            "level": "WARNING",
+            "level": "INFO",
             "handlers": ["console"],
             "propagate": True,
+            "filters": ["ignore_static", "ignore_uvicorn_static"]
+        },
+        "uvicorn.access": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": False,
+            "filters": ["ignore_static", "ignore_uvicorn_static"],
         },
     },
 }

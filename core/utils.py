@@ -124,6 +124,13 @@ class IgnoreStaticRequestsFilter(logging.Filter):
         return not record.getMessage().startswith('"GET /static/')
 
 
+class IgnoreStaticUvicornRequestsFilter(logging.Filter):
+    def filter(self, record):
+        msg = record.getMessage()
+        # odbacuje sve logove za /static/ fajlove
+        return not (msg.startswith("127.0.0.1") and "/static/" in msg)
+
+
 # AWS S3 Utils
 def generate_presigned_url(file_name, file_type):
     s3_client = boto3.client(
