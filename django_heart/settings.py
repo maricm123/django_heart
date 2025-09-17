@@ -258,7 +258,7 @@ LOGGING = {
             "handlers": ["console", "file"],
             "level": "INFO",  # ili ERROR ako želiš još manje
             "propagate": False,
-            "filters": ["ignore_static"]
+            "filters": ["ignore_static", "ignore_uvicorn_static"],
         },
         "django.db.backends": {
             "level": "INFO",
