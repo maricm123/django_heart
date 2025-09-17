@@ -150,7 +150,7 @@ CHANNEL_LAYERS = {
 
 AUTH_USER_MODEL = 'user.User'
 
-ALLOWED_HOSTS = ['*', "192.168.0.4", "10.0.2.2", 'heartapp.dev', 'www.heartapp.dev', '13.48.248.110']
+ALLOWED_HOSTS = ['*', "192.168.0.4", "10.0.2.2", 'heartapp.dev', 'www.heartapp.dev', '13.48.248.110', 'mygym.heartapp.dev']
 
 CORS_ALLOWED_ORIGINS = [
     "http://192.168.1.50:5173",   # ako pokrećeš Vue dev server
@@ -163,7 +163,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
-    "http://localhost:5173"
+    "http://localhost:5173",    
     "https://heartapp.dev",
     "https://*.heartapp.dev",
 ]
