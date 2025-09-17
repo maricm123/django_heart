@@ -238,12 +238,12 @@ LOGGING = {
     },
     "root": {
         "handlers": ["console", "file"],
-        "level": "INFO",
+        "level": "DEBUG",
     },
     "loggers": {
         # default for all undefined Python modules (root logger)
         "": {
-            "level": "WARNING",
+            "level": "DEBUG",
             "handlers": ["console"],
         },
         PROJECT_NAME: {
@@ -253,12 +253,12 @@ LOGGING = {
         },
         "django.server": {
             "handlers": ["console", "file"],
-            "level": "INFO",  # ili ERROR ako želiš još manje
+            "level": "DEBUG",  # ili ERROR ako želiš još manje
             "propagate": False,
             "filters": ["ignore_static"]
         },
         "django.db.backends": {
-            "level": "WARNING",
+            "level": "DEBUG",
             "handlers": ["console"],
             "propagate": True,
         },
