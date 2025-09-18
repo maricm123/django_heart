@@ -130,15 +130,8 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 ASGI_APPLICATION = 'django_heart.asgi.application'  # promeni u naziv svog projekta
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [("127.0.0.1", 6380)],
-#         },
-#     },
-# }
-# Docker setting
+
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -148,14 +141,23 @@ CHANNEL_LAYERS = {
     },
 }
 
+
 AUTH_USER_MODEL = 'user.User'
 
-ALLOWED_HOSTS = ['*', "192.168.0.4", "10.0.2.2", 'heartapp.dev', 'www.heartapp.dev', '13.48.248.110', 'mygym.heartapp.dev']
+ALLOWED_HOSTS = [
+    '*',
+    "192.168.0.4"
+    "10.0.2.2",
+    'heartapp.dev',
+    'www.heartapp.dev',
+    '13.48.248.110',
+    'mygym.heartapp.dev',
+]
 
 CORS_ALLOWED_ORIGINS = [
     "http://192.168.1.50:5173",   # ako pokrećeš Vue dev server
     "http://192.168.1.50:8080",
-    "http://192.168.0.2:5173", # ako buildaš Android aplikaciju
+    "http://192.168.0.2:5173",  # ako buildaš Android aplikaciju
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
