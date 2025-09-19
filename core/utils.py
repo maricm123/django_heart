@@ -125,10 +125,14 @@ class IgnoreStaticRequestsFilter(logging.Filter):
 
 
 class IgnoreStaticUvicornRequestsFilter(logging.Filter):
-    def filter(self, record):
+    def filter(self, record: logging.LogRecord) -> bool:
         msg = record.getMessage()
-        # odbacuje sve logove za /static/ fajlove
-        return not (msg.startswith("127.0.0.1") and "/static/" in msg)
+
+        if "GET /static/" in msg or "GET /media/" in msg:
+            return False
+        if "POST /static/" in msg or "POST /media/" in msg:
+            return False
+        return True
 
 
 # AWS S3 Utils
