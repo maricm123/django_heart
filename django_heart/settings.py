@@ -234,11 +234,13 @@ LOGGING = {
         "console": {
             "class": "logging.StreamHandler",
             "formatter": "verbose",
+            "filters": ["ignore_static", "ignore_uvicorn_static"],
         },
         "file": {
             "class": "logging.FileHandler",
             "filename": os.path.join(LOG_DIR, "app.log"),
             "formatter": "verbose",
+            "filters": ["ignore_static", "ignore_uvicorn_static"],
         },
     },
     "root": {
@@ -260,19 +262,19 @@ LOGGING = {
             "handlers": ["console", "file"],
             "level": "INFO",  # ili ERROR ako želiš još manje
             "propagate": False,
-            "filters": ["ignore_static", "ignore_uvicorn_static"],
+            # "filters": ["ignore_static", "ignore_uvicorn_static"],
         },
         "django.db.backends": {
             "level": "INFO",
             "handlers": ["console"],
             "propagate": True,
-            "filters": ["ignore_static", "ignore_uvicorn_static"]
+            # "filters": ["ignore_static", "ignore_uvicorn_static"]
         },
         "uvicorn.access": {
             "handlers": ["console", "file"],
             "level": "INFO",
             "propagate": False,
-            "filters": ["ignore_static", "ignore_uvicorn_static"],
+            # "filters": ["ignore_static", "ignore_uvicorn_static"],
         },
     },
 }
