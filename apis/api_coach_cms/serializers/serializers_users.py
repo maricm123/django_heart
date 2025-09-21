@@ -23,6 +23,20 @@ class CoachInfoSerializer(ReqContextMixin, serializers.ModelSerializer):
         model = Coach
         fields = ('user', 'specialty',)
 
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', None)
+        if user_data:
+            for attr, value in user_data.items():
+                setattr(instance.user, attr, value)
+            instance.user.save()
+
+        # Update client fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        return instance
+
 
 class ClientInfoSerializer(UserInfoSerializer):
     user = UserInfoSerializer()
