@@ -15,3 +15,9 @@ class GetAllTrainingSessionsPerClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrainingSession
         fields = '__all__'
+
+
+class GetAllTrainingSessionsPerCoachSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TrainingSession
+        fields = '__all__'

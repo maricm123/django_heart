@@ -41,6 +41,11 @@ endpoints_urlpatterns = [
         views_training_sessions.GetAllTrainingSessionsPerClientView.as_view(),
         name='get-training-sessions-per-client'
     ),
+    path(
+        'get-training-sessions-per-coach',
+        views_training_sessions.GetAllTrainingSessionsPerCoachView.as_view(),
+        name='get-training-sessions-per-coach'
+    ),
 
     # Media
     path(

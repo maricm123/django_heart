@@ -2,7 +2,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from apis.api_coach_cms.serializers.serializers_training_sessions import (
     GetActiveTrainingSessionsSerializer,
-GetAllTrainingSessionsPerClientSerializer,
+    GetAllTrainingSessionsPerClientSerializer, GetAllTrainingSessionsPerCoachSerializer,
 )
 from training_session.models import TrainingSession
 
@@ -23,3 +23,11 @@ class GetAllTrainingSessionsPerClientView(generics.ListAPIView):
     def get_queryset(self):
         client_id = self.kwargs.get('id')
         return TrainingSession.objects.filter(client__id=client_id, is_active=False).order_by('-start')
+
+
+class GetAllTrainingSessionsPerCoachView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = GetAllTrainingSessionsPerCoachSerializer
+
+    def get_queryset(self):
+        return TrainingSession.objects.filter(coach=self.request.user.coach, is_active=False).order_by('-start')
