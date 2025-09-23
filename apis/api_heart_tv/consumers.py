@@ -64,7 +64,9 @@ class BPMConsumer(AsyncWebsocketConsumer):
             await self.close(code=4002)
 
     async def disconnect(self, close_code):
-        await self.channel_layer.group_discard("bpm_group", self.channel_name)
+        print(f"WS disconnected, code: {close_code}")
+        await self.channel_layer.group_discard(self.group_name, self.channel_name)
+        # await self.channel_layer.group_discard("bpm_group", self.channel_name)
 
     async def receive(self, text_data):
         pass  # nije potrebno slati sa fronta ništa
