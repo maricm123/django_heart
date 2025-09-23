@@ -3,4 +3,5 @@ from . import consumers
 
 websocket_urlpatterns = [
     re_path(r'ws/bpm/$', consumers.BPMConsumer.as_asgi()),
+    # re_path(r'ws/bpm/(?P<tenant_id>\d+)/$', consumers.BPMConsumer.as_asgi()),
 ]

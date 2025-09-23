@@ -66,10 +66,19 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             raise AuthenticationFailed("Not coach.")
 
         access = refresh.access_token
+
+        tenant_id = getattr(self.user.coach.gym, 'id', None)  # prilagodi kako ti čuvaš tenant
+        print(tenant_id)
+        if tenant_id:
+            refresh['tenant_id'] = tenant_id
+            access['tenant_id'] = tenant_id
+
         # we ll se do we need role in response, maybe we have that through access token
         # data['role'] = self.user.role
         data['refresh'] = str(refresh)
         data['access'] = str(access)
+        data['tenant_id'] = tenant_id
+
         return data
 
 

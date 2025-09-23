@@ -72,7 +72,7 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
         print(current_calories, "CURRENT CAL")
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            "bpm_group",
+            f"bpm_group_tenant_{self.request.user.coach.gym.id}",
             {
                 "type": "send_bpm",  # name of method in Consumer class
                 "current_calories": current_calories,
