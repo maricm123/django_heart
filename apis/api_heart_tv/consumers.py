@@ -34,7 +34,6 @@ class BPMConsumer(AsyncWebsocketConsumer):
 
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-            print(payload, "PAYLOAD")
             self.user_id = payload.get("user_id")
 
             tenant_id = payload.get("tenant_id")
@@ -46,9 +45,6 @@ class BPMConsumer(AsyncWebsocketConsumer):
                     return User.objects.select_related("coach__gym").get(id=self.user_id)
 
             self.user = await sync_to_async(load_user)()
-            import time
-            start = time.time()
-            print("load_user took", time.time() - start)
 
             if not self.user.coach:
                 await self.close(code=4003)
@@ -106,7 +102,6 @@ class BPMConsumer(AsyncWebsocketConsumer):
         """
         try:
             tenant = await sync_to_async(GymTenant.objects.get)(id=tenant_id)
-            print(tenant.schema_name, "SCHEMA NAME")
             return tenant.schema_name  # ili field koji čuva ime schema
         except GymTenant.DoesNotExist:
             raise ValueError(f"Tenant sa id {tenant_id} ne postoji")
