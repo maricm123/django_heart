@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from urllib.parse import parse_qs
 from django.conf import settings
 from django.db import connection
-
+from django_tenants.utils import tenant_context
 from gym.models import GymTenant
 
 User = get_user_model()
@@ -17,6 +17,11 @@ class BPMConsumer(AsyncWebsocketConsumer):
     # async def connect(self):
     #     await self.channel_layer.group_add("bpm_group", self.channel_name)
     #     await self.accept()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.group_name = None
+        self.user = None
 
     async def connect(self):
         # 1. Uhvati query string i token
@@ -34,16 +39,23 @@ class BPMConsumer(AsyncWebsocketConsumer):
             print(payload, "PAYLOAD")
             self.user_id = payload.get("user_id")
             tenant_id = payload.get("tenant_id")
-            schema_name = await self.get_schema_from_tenant_id(tenant_id)  # tvoja funkcija
-            await self.set_current_schema(schema_name)  # zavisi kako radiš multi-tenant
-            self.user = await User.objects.aget(id=self.user_id)
+            # schema_name = await self.get_schema_from_tenant_id(tenant_id)  # tvoja funkcija
+            # await self.set_current_schema(schema_name)  # zavisi kako radiš multi-tenant
+            # self.user = await User.objects.aget(id=self.user_id)
+            tenant = await sync_to_async(GymTenant.objects.get)(id=tenant_id)
 
-            # 3. Učitaj user-a (opciono)
-            self.user = await self.get_user(self.user_id)
+            def load_user():
+                from django_tenants.utils import tenant_context
+                with tenant_context(tenant):
+                    return User.objects.select_related("coach__gym").get(id=self.user_id)
 
-            # 4. Tenant-based grupa
+            self.user = await sync_to_async(load_user)()
+
+            if not self.user.coach:
+                await self.close(code=4003)
+                return
+
             self.group_name = f"bpm_group_tenant_{self.user.coach.gym.id}"
-
             await self.channel_layer.group_add(self.group_name, self.channel_name)
             await self.accept()
 
@@ -95,11 +107,13 @@ class BPMConsumer(AsyncWebsocketConsumer):
         """
         try:
             tenant = await sync_to_async(GymTenant.objects.get)(id=tenant_id)
+            print(tenant.schema_name, "SCHEMA NAME")
             return tenant.schema_name  # ili field koji čuva ime schema
         except GymTenant.DoesNotExist:
             raise ValueError(f"Tenant sa id {tenant_id} ne postoji")
 
     @database_sync_to_async
     def set_current_schema(self, schema_name: str):
+        print(schema_name, "SCHEMA NAME SETTED")
         with connection.cursor() as cursor:
             cursor.execute(f'SET search_path TO "{schema_name}"')
