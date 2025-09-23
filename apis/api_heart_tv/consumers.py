@@ -24,7 +24,6 @@ class BPMConsumer(AsyncWebsocketConsumer):
         self.user = None
 
     async def connect(self):
-        # 1. Uhvati query string i token
         query_string = self.scope["query_string"].decode()
         params = parse_qs(query_string)
         token = params.get("token", [None])[0]
@@ -34,14 +33,10 @@ class BPMConsumer(AsyncWebsocketConsumer):
             return
 
         try:
-            # 2. Decode JWT
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-            print(payload, "PAYLOAD")
             self.user_id = payload.get("user_id")
+
             tenant_id = payload.get("tenant_id")
-            # schema_name = await self.get_schema_from_tenant_id(tenant_id)  # tvoja funkcija
-            # await self.set_current_schema(schema_name)  # zavisi kako radiš multi-tenant
-            # self.user = await User.objects.aget(id=self.user_id)
             tenant = await sync_to_async(GymTenant.objects.get)(id=tenant_id)
 
             def load_user():
@@ -60,9 +55,9 @@ class BPMConsumer(AsyncWebsocketConsumer):
             await self.accept()
 
         except jwt.ExpiredSignatureError:
-            await self.close(code=4001)  # token expired
+            await self.close(code=4001)
         except jwt.InvalidTokenError:
-            await self.close(code=4002)  # invalid token
+            await self.close(code=4002)
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard("bpm_group", self.channel_name)
@@ -114,6 +109,5 @@ class BPMConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def set_current_schema(self, schema_name: str):
-        print(schema_name, "SCHEMA NAME SETTED")
         with connection.cursor() as cursor:
             cursor.execute(f'SET search_path TO "{schema_name}"')

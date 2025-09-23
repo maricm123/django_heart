@@ -29,3 +29,8 @@ payload for profile picture
   "file_name": "avatar.png",
   "file_type": "image/png"
 }
+
+
+setovanje current sceheme u kodu
+# schema_name = await self.get_schema_from_tenant_id(tenant_id)  # tvoja funkcija
+# await self.set_current_schema(schema_name)  # zavisi kako radiš multi-tenant
