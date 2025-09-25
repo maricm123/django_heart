@@ -15,53 +15,53 @@ User = get_user_model()
 
 
 class BPMConsumer(AsyncWebsocketConsumer):
-    # async def connect(self):
-    #     await self.channel_layer.group_add("bpm_group", self.channel_name)
-    #     await self.accept()
+    async def connect(self):
+        await self.channel_layer.group_add("bpm_group", self.channel_name)
+        await self.accept()
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.group_name = None
         self.user = None
 
-    async def connect(self):
-        print(time.time(), "start connect")
-        query_string = self.scope["query_string"].decode()
-        params = parse_qs(query_string)
-        token = params.get("token", [None])[0]
-
-        if not token:
-            await self.close()
-            return
-
-        try:
-            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-            print(time.time(), "after jwt")
-            self.user_id = payload.get("user_id")
-
-            tenant_id = payload.get("tenant_id")
-            tenant = await sync_to_async(GymTenant.objects.get)(id=tenant_id)
-
-            def load_user():
-                from django_tenants.utils import tenant_context
-                with tenant_context(tenant):
-                    return User.objects.select_related("coach__gym").get(id=self.user_id)
-
-            self.user = await sync_to_async(load_user)()
-            print(time.time(), "after user")
-            if not self.user.coach:
-                await self.close(code=4003)
-                return
-
-            self.group_name = f"bpm_group_tenant_{self.user.coach.gym.id}"
-            await self.channel_layer.group_add(self.group_name, self.channel_name)
-            print(time.time(), "before accept")
-            await self.accept()
-
-        except jwt.ExpiredSignatureError:
-            await self.close(code=4001)
-        except jwt.InvalidTokenError:
-            await self.close(code=4002)
+    # async def connect(self):
+    #     print(time.time(), "start connect")
+    #     query_string = self.scope["query_string"].decode()
+    #     params = parse_qs(query_string)
+    #     token = params.get("token", [None])[0]
+    #
+    #     if not token:
+    #         await self.close()
+    #         return
+    #
+    #     try:
+    #         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+    #         print(time.time(), "after jwt")
+    #         self.user_id = payload.get("user_id")
+    #
+    #         tenant_id = payload.get("tenant_id")
+    #         tenant = await sync_to_async(GymTenant.objects.get)(id=tenant_id)
+    #
+    #         def load_user():
+    #             from django_tenants.utils import tenant_context
+    #             with tenant_context(tenant):
+    #                 return User.objects.select_related("coach__gym").get(id=self.user_id)
+    #
+    #         self.user = await sync_to_async(load_user)()
+    #         print(time.time(), "after user")
+    #         if not self.user.coach:
+    #             await self.close(code=4003)
+    #             return
+    #
+    #         self.group_name = f"bpm_group_tenant_{self.user.coach.gym.id}"
+    #         await self.channel_layer.group_add(self.group_name, self.channel_name)
+    #         print(time.time(), "before accept")
+    #         await self.accept()
+    #
+    #     except jwt.ExpiredSignatureError:
+    #         await self.close(code=4001)
+    #     except jwt.InvalidTokenError:
+    #         await self.close(code=4002)
 
     async def disconnect(self, close_code):
         print(f"WS disconnected, code: {close_code}")
