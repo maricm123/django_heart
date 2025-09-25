@@ -21,7 +21,7 @@ class BPMConsumer(AsyncWebsocketConsumer):
         self.user = None
 
     async def connect(self):
-        self.group_name = "bpm_group"
+        # self.group_name = "bpm_group"
         await self.channel_layer.group_add("bpm_group", self.channel_name)
         await self.accept()
 
