@@ -15,14 +15,15 @@ User = get_user_model()
 
 
 class BPMConsumer(AsyncWebsocketConsumer):
-    async def connect(self):
-        await self.channel_layer.group_add("bpm_group", self.channel_name)
-        await self.accept()
-
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.group_name = None
         self.user = None
+
+    async def connect(self):
+        self.group_name = "bpm_group"
+        await self.channel_layer.group_add("bpm_group", self.channel_name)
+        await self.accept()
 
     # async def connect(self):
     #     print(time.time(), "start connect")
