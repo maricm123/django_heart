@@ -77,5 +77,6 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
                 "type": "send_bpm",  # name of method in Consumer class
                 "current_calories": current_calories,
                 "client_id": client.id,
+                "bpm": instance.bpm
             }
         )
