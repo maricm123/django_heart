@@ -174,4 +174,10 @@ class GymConsumer(AsyncWebsocketConsumer):
 
     async def gym_data(self, event):
         """Handler za slanje podataka u grupu"""
-        await self.send(text_data=json.dumps(event["data"]))
+        # await self.send(text_data=json.dumps(event["data"]))
+        await self.send(text_data=json.dumps({
+            "current_calories": event["current_calories"],
+            "client_id": event["client_id"],
+            "bpm": event["bpm"],
+            "coach_id": event["coach_id"],
+        }))
