@@ -118,3 +118,60 @@ class BPMConsumer(AsyncWebsocketConsumer):
     def set_current_schema(self, schema_name: str):
         with connection.cursor() as cursor:
             cursor.execute(f'SET search_path TO "{schema_name}"')
+
+
+class GymConsumer(AsyncWebsocketConsumer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.group_name = None
+        self.user = None
+
+    async def connect(self):
+        query_string = self.scope["query_string"].decode()
+        params = parse_qs(query_string)
+        token = params.get("token", [None])[0]
+
+        if not token:
+            await self.close()
+            return
+
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+            self.user_id = payload.get("user_id")
+
+            tenant_id = payload.get("tenant_id")
+            tenant = await sync_to_async(GymTenant.objects.get)(id=tenant_id)
+
+            def load_user():
+                from django_tenants.utils import tenant_context
+                with tenant_context(tenant):
+                    return User.objects.select_related("coach__gym").get(id=self.user_id)
+
+            self.user = await sync_to_async(load_user)()
+            if not self.user.coach:
+                await self.close(code=4003)
+                return
+
+            self.group_name = f"gym_{self.user.coach.gym.id}"
+            print(self.group_name, "GROUP NAME")
+            await self.channel_layer.group_add(self.group_name, self.channel_name)
+            await self.accept()
+
+        except jwt.ExpiredSignatureError:
+            await self.close(code=4001)
+        except jwt.InvalidTokenError:
+            await self.close(code=4002)
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(
+            self.group_name,
+            self.channel_name
+        )
+
+    async def receive(self, text_data):
+        # Ovde LiveTV ne šalje ništa, samo sluša
+        pass
+
+    async def gym_data(self, event):
+        """Handler za slanje podataka u grupu"""
+        await self.send(text_data=json.dumps(event["data"]))

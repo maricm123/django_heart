@@ -80,3 +80,16 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
                 "bpm": instance.bpm
             }
         )
+
+        # Also send to the gym-wide group
+        async_to_sync(channel_layer.group_send)(
+            f"gym_{self.user.coach.gym.id}",
+            {
+                "type": "gym_data",
+                # "data": {
+                "coach_id": self.user.coach.id,
+                "client_id": client.id,
+                "bpm": instance.bpm,
+                "calories": current_calories,
+            }
+        )
