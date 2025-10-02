@@ -40,6 +40,8 @@ class TrainingSession(
     duration_in_minutes = models.FloatField(null=True, blank=True, help_text="Duration in minutes")
 
     def __str__(self):
+        if self.coach:
+            return self.title + " - " + str(self.start) + " - " + str(self.coach.user.name)
         return self.title + " - " + str(self.start)
 
     @transaction.atomic
