@@ -34,3 +34,20 @@ payload for profile picture
 setovanje current sceheme u kodu
 # schema_name = await self.get_schema_from_tenant_id(tenant_id)  # tvoja funkcija
 # await self.set_current_schema(schema_name)  # zavisi kako radiš multi-tenant
+
+
+
+
+
+
+
+
+
+from django.core.cache import cache
+
+
+class GetCacheTest(APIView):
+    def get(self, request):
+        training_sessions = self.get_training_session()
+        serializer = GetActiveTrainingSessionsSerializer(training_sessions)
+        return Response(serializer.data, status=status.HTTP_200_OK)

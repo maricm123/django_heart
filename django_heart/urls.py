@@ -4,6 +4,8 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 from django.conf import settings
 
 
+app_name = 'django_heart'
+
 urlpatterns = [
     # OpenAPI schema
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
@@ -16,6 +18,7 @@ urlpatterns = [
     path("api_heart/", include("apis.api_heart_tv.urls", namespace="api_heart")),
     path("api_coach/", include("apis.api_coach_cms.urls", namespace="api_coach_cms")),
 ]
+
 
 if settings.DEBUG:
     import debug_toolbar

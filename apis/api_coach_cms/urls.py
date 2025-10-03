@@ -53,6 +53,7 @@ endpoints_urlpatterns = [
         views_media.UploadProfilePictureView.as_view(),
         name='upload-profile-picture'
     ),
+
 ]
 
 urlpatterns = [path("", include(endpoints_urlpatterns))]
