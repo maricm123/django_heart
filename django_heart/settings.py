@@ -1,4 +1,5 @@
 import os
+import socket
 from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
@@ -62,11 +63,16 @@ MIDDLEWARE = [
 if DEBUG:
     MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
 
-INTERNAL_IPS = [
-    "127.0.0.1",
-    "localhost",
-    "13.48.248.110",
+
+hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+INTERNAL_IPS = ["127.0.0.1", "localhost"] + [
+    ip[: ip.rfind(".")] + ".1" for ip in ips
 ]
+# INTERNAL_IPS = [
+#     "127.0.0.1",
+#     "localhost",
+#     "13.48.248.110",
+# ]
 
 ####################################################################################################
 # Debug toolbar
