@@ -47,9 +47,9 @@ INSTALLED_APPS = SHARED_APPS + [app for app in TENANT_APPS if app not in SHARED_
 
 MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    # "django_tenants.middleware.main.TenantMainMiddleware",
+    "django_tenants.middleware.main.TenantMainMiddleware",
     # Custom middleware to cache tenant
-    "django_heart.middleware.CachedTenantMiddleware",
+    # "django_heart.middleware.CachedTenantMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
