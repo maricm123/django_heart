@@ -64,6 +64,9 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
 
         list_of_bpms = [record.bpm for record in training_session.heart_rate_records.all()]
         print(list_of_bpms)
+
+        print()
+
         current_calories = (
             calculate_current_burned_calories(
                 list_of_bpms,
@@ -92,7 +95,7 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
                 "type": "gym_data",
                 # "data": {
                 "coach_id": self.request.user.coach.id,
-                "client_id": client.id,
+                "client_id": instance.client_name,
                 "bpm": instance.bpm,
                 "current_calories": current_calories,
             }
