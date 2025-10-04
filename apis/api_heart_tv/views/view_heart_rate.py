@@ -95,7 +95,8 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
                 "type": "gym_data",
                 # "data": {
                 "coach_id": self.request.user.coach.id,
-                "client_id": instance.client_name,
+                "client_id": client.id,
+                "client_name": client.user.name,
                 "bpm": instance.bpm,
                 "current_calories": current_calories,
             }
