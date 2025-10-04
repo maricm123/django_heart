@@ -180,4 +180,5 @@ class GymConsumer(AsyncWebsocketConsumer):
             "client_id": event["client_id"],
             "bpm": event["bpm"],
             "coach_id": event["coach_id"],
+            "client_name": event["client_name"],
         }))
