@@ -8,6 +8,7 @@ class HeartRateRecordSerializer(serializers.ModelSerializer):
         queryset=TrainingSession.objects.select_related('gym', 'coach__user', 'client')
     )
     client_name = serializers.CharField(source="client.user.name", read_only=True)
+    coach_name = serializers.CharField(source="training_session.coach.user.name", read_only=True)
 
     class Meta:
         model = HeartRateRecord
