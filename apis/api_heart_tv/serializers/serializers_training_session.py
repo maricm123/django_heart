@@ -1,6 +1,5 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-
 from apis.api_coach_cms.serializers.serializers_users import ClientInfoSerializer
 from training_session.models import TrainingSession
 from user.models import Coach

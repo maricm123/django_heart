@@ -5,8 +5,6 @@ def calculate_current_burned_calories(list_of_bpms, client, training_session, se
         print("No bpms given")
         return 0
 
-    print(seconds)
-
     average_bpm = calculate_average_heart_rate(list_of_bpms)
     weight = client.weight
     age = client.user.get_age_from_birth_date()

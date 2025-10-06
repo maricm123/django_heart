@@ -1,7 +1,4 @@
 from django.db import models, transaction
-# from apis.utils_for_calculating_calories import (
-#     calculate_current_duration_in_minutes,
-# )
 from core.models.behaviours import TimeStampable, DateTimeFramable, IsActive
 from django.contrib.auth import get_user_model
 from gym.models import GymTenant
