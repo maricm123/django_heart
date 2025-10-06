@@ -36,7 +36,13 @@ class TrainingSession(
         related_name="sessions"
     )
 
-    calories_burned = models.FloatField(null=True, blank=True, help_text="Automatic calculated")
+    calories_burned = models.DecimalField(
+        null=True,
+        blank=True,
+        help_text="Automatic calculated",
+        decimal_places=2,
+        max_digits=8
+    )
     duration = models.PositiveIntegerField(null=True, blank=True, help_text="Duration in seconds")
 
     def __str__(self):

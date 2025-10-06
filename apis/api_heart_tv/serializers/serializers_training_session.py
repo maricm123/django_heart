@@ -51,7 +51,7 @@ class TrainingSessionInfoSerializer(serializers.ModelSerializer):
 
 
 class FinishTrainingSessionSerializer(serializers.Serializer):
-    calories_at_end = serializers.IntegerField(write_only=True)
+    calories_at_end = serializers.DecimalField(write_only=True, max_digits=8, decimal_places=2)
     seconds = serializers.IntegerField(write_only=True)
 
     def update(self, instance, validated_data):
