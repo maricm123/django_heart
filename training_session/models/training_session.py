@@ -1,7 +1,7 @@
 from django.db import models, transaction
-from apis.utils_for_calculating_calories import (
-    calculate_current_duration_in_minutes,
-)
+# from apis.utils_for_calculating_calories import (
+#     calculate_current_duration_in_minutes,
+# )
 from core.models.behaviours import TimeStampable, DateTimeFramable, IsActive
 from django.contrib.auth import get_user_model
 from gym.models import GymTenant
@@ -37,7 +37,7 @@ class TrainingSession(
     )
 
     calories_burned = models.FloatField(null=True, blank=True, help_text="Automatic calculated")
-    duration_in_minutes = models.FloatField(null=True, blank=True, help_text="Duration in minutes")
+    duration = models.PositiveIntegerField(null=True, blank=True, help_text="Duration in seconds")
 
     def __str__(self):
         if self.coach:
@@ -45,8 +45,9 @@ class TrainingSession(
         return self.title + " - " + str(self.start)
 
     @transaction.atomic
-    def end_session(self, calories_at_end):
-        self.duration_in_minutes = self.calculate_current_duration_in_minutes(self.start)
+    def end_session(self, calories_at_end, duration=1):
+        # self.duration_in_minutes = self.calculate_current_duration_in_minutes(self.start)
+        self.duration = duration
         self.calories_burned = calories_at_end
         self.is_active = False
         self.end = timezone.now()
