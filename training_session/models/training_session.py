@@ -45,8 +45,7 @@ class TrainingSession(
         return self.title + " - " + str(self.start)
 
     @transaction.atomic
-    def end_session(self, calories_at_end, duration=1):
-        # self.duration_in_minutes = self.calculate_current_duration_in_minutes(self.start)
+    def end_session(self, calories_at_end, duration):
         self.duration = duration
         self.calories_burned = calories_at_end
         self.is_active = False

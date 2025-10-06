@@ -52,9 +52,11 @@ class TrainingSessionInfoSerializer(serializers.ModelSerializer):
 
 class FinishTrainingSessionSerializer(serializers.Serializer):
     calories_at_end = serializers.IntegerField(write_only=True)
+    seconds = serializers.IntegerField(write_only=True)
 
     def update(self, instance, validated_data):
         calories_at_end = validated_data.get('calories_at_end')
+        seconds = validated_data.get('seconds')
         if instance.end is None:
-            instance.end_session(calories_at_end)
+            instance.end_session(calories_at_end, seconds)
             return instance
