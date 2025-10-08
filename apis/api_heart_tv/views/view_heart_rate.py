@@ -98,6 +98,7 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
                 "client_name": client.user.name,
                 "bpm": instance.bpm,
                 "current_calories": current_calories,
+                "seconds": seconds
             }
         )
 
