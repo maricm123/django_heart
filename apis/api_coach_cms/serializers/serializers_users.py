@@ -4,6 +4,7 @@ from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from apis.api_coach_cms.mixins import ReqContextMixin
 from user.models import Coach, Client, GymManager
+from phonenumber_field.serializerfields import PhoneNumberField
 
 User = get_user_model()
 
@@ -95,6 +96,7 @@ class CreateClientSerializer(serializers.Serializer):
     gender = serializers.CharField(max_length=100, required=True)
     weight = serializers.FloatField(required=True)
     height = serializers.FloatField(required=True)
+    phone_number = PhoneNumberField(required=False, allow_null=True)
 
     def validate(self, data):
         coach = self.context["request"].user.coach
@@ -106,8 +108,8 @@ class CreateClientSerializer(serializers.Serializer):
             "last_name": data.pop("last_name"),
             "password": data.pop("password"),
             "birth_date": data.pop("birth_date"),
-            # "is_active": data.pop("is_active"),
-            "profile_picture_url": data.pop("profile_picture_url"),
+            "phone_number": data.pop("phone_number"),
+            # "profile_picture_url": data.pop("profile_picture_url"),
         }
         client_data = data
 
