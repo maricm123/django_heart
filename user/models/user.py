@@ -5,6 +5,7 @@ from django.utils import timezone
 from datetime import date
 from django.utils.functional import cached_property
 from django.db.models import OneToOneRel
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class CustomUserManager(UserManager):
@@ -68,6 +69,13 @@ class User(
     profile_image_url = models.URLField(max_length=500, null=True, blank=True)
 
     birth_date = models.DateField(null=True, blank=True)
+
+    phone_number = PhoneNumberField(
+        blank=True,
+        null=True,
+        unique=True,  # optional, if you want unique numbers
+        # region="US"  # optional, default region for parsing local numbers
+    )
 
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)

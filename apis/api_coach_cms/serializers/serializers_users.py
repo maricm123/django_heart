@@ -87,10 +87,10 @@ class CreateClientSerializer(serializers.Serializer):
     email = serializers.EmailField(write_only=True)
     first_name = serializers.CharField(write_only=True)
     last_name = serializers.CharField(write_only=True)
-    password = serializers.CharField(write_only=True)
+    # password = serializers.CharField(write_only=True)
     birth_date = serializers.DateField(write_only=True)
     is_active = serializers.BooleanField(default=True)
-    profile_picture_url = serializers.URLField()
+    # profile_picture_url = serializers.URLField()
     # Client fields
     gender = serializers.CharField(max_length=100, required=True)
     weight = serializers.FloatField(required=True)
@@ -106,7 +106,7 @@ class CreateClientSerializer(serializers.Serializer):
             "last_name": data.pop("last_name"),
             "password": data.pop("password"),
             "birth_date": data.pop("birth_date"),
-            "is_active": data.pop("is_active"),
+            # "is_active": data.pop("is_active"),
             "profile_picture_url": data.pop("profile_picture_url"),
         }
         client_data = data
