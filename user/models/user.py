@@ -44,6 +44,17 @@ class CustomUserManager(UserManager):
         extra_fields.setdefault('is_superuser', False)
         return self._create_user(first_name, last_name, email, password, **extra_fields)
 
+    def create_client_user(
+            self,
+            first_name=None,
+            last_name=None,
+            email=None,
+            **extra_fields
+    ):
+        extra_fields.setdefault('is_staff', False)
+        extra_fields.setdefault('is_superuser', False)
+        return self._create_user(first_name, last_name, email, **extra_fields)
+
     def create_superuser(
             self,
             first_name="Superuser",

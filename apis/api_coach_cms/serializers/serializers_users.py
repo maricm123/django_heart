@@ -88,7 +88,6 @@ class CreateClientSerializer(serializers.Serializer):
     email = serializers.EmailField(write_only=True)
     first_name = serializers.CharField(write_only=True)
     last_name = serializers.CharField(write_only=True)
-    # password = serializers.CharField(write_only=True)
     birth_date = serializers.DateField(write_only=True)
     is_active = serializers.BooleanField(default=True)
     # profile_picture_url = serializers.URLField()

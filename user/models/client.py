@@ -27,7 +27,7 @@ class Client(BaseProfile):
         """Atomic create of user + client"""
         with transaction.atomic():
             try:
-                user = User.objects.create_user(**user_data)
+                user = User.objects.create_client_user(**user_data)
                 client = cls.objects.create(user=user, coach=coach, gym=coach.gym, **client_data)
             except IntegrityError as e:
                 # Clean rollback is automatic
