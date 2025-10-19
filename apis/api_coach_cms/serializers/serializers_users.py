@@ -127,10 +127,11 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 class ClientDetailUpdateSerializer(serializers.ModelSerializer):
     user = UserUpdateSerializer()
+    sessions_this_month = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Client
-        fields = ('id', 'user', 'weight', 'height', 'gender')
+        fields = ('id', 'user', 'weight', 'height', 'gender', 'sessions_this_month')
 
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', None)
@@ -145,3 +146,6 @@ class ClientDetailUpdateSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+    def get_sessions_this_month(self, obj):
+        return obj.sessions_this_month.count()

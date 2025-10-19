@@ -1,4 +1,5 @@
 from django.db import models, transaction, IntegrityError
+from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 from user.models.base_profile import BaseProfile
 from user.models.coach import Coach
@@ -33,3 +34,13 @@ class Client(BaseProfile):
                 # Clean rollback is automatic
                 raise ValidationError({"detail": "Client with this user already exists."}, e)
         return client
+
+    @property
+    def sessions_this_month(self):
+        now = timezone.now()
+        start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        return self.sessions.filter(
+            start__gte=start_of_month,
+            start__lte=now
+        )
