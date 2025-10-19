@@ -53,7 +53,20 @@ class CustomUserManager(UserManager):
     ):
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
-        return self._create_user(first_name, last_name, email, **extra_fields)
+        if not email:
+            raise ValueError("You have not provided a valid e-mail address")
+
+        email = self.normalize_email(email)
+        user = self.model(
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            is_active=True,
+            **extra_fields
+        )
+        user.save(using=self._db)
+
+        return user
 
     def create_superuser(
             self,
