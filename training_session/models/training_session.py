@@ -42,6 +42,12 @@ class TrainingSession(
     )
     duration = models.PositiveIntegerField(null=True, blank=True, help_text="Duration in seconds")
 
+    average_bpm = models.PositiveIntegerField(null=True, blank=True)
+
+    max_bpm = models.PositiveIntegerField(null=True, blank=True)
+
+    min_bpm = models.PositiveIntegerField(null=True, blank=True)
+
     def __str__(self):
         if self.coach:
             return self.title + " - " + str(self.start) + " - " + str(self.coach.user.name)
