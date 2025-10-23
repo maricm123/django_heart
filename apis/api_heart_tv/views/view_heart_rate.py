@@ -1,4 +1,5 @@
 from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from channels.layers import get_channel_layer
@@ -27,28 +28,8 @@ class LatestHeartRateView(APIView):
         return Response(serializer.data)
 
 
-class HeartRateRecordCreateView(generics.CreateAPIView):
-    queryset = HeartRateRecord.objects.all()
-    serializer_class = HeartRateRecordSerializer
-
-    def perform_create(self, serializer):
-        instance = serializer.save()
-
-        # Emituj poruku websocket-om
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-
-            "bpm_group",
-            {
-                "type": "send_bpm",
-                "device_id": instance.device_id,
-                "bpm": instance.bpm,
-                "timestamp": instance.timestamp.isoformat()
-            }
-        )
-
-
 class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = HeartRateRecord.objects.all()
     serializer_class = HeartRateRecordSerializer
 
@@ -108,6 +89,5 @@ def get_training_session(session_id):
     training_session = cache.get(key)
     if not training_session:
         training_session = TrainingSession.objects.select_related('gym', 'coach__user', 'client').get(pk=session_id)
-        print(training_session, "NEMA TRA SESSIONA")
         cache.set(key, training_session, timeout=60 * 60)  # 1h or until workout ends
     return training_session

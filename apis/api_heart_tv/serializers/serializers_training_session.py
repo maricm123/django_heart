@@ -25,8 +25,7 @@ class CreateTrainingSessionSerializer(serializers.Serializer):
         title = data.get('title')
         client_id = data.get('client_id')
 
-        user = self.context['request'].user
-        coach = Coach.objects.get(user=user)
+        coach = self.context['request'].user.coach
 
         session = TrainingSession.start_session(
             start=start,
