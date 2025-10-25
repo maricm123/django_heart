@@ -42,11 +42,32 @@ class TrainingSession(
     )
     duration = models.PositiveIntegerField(null=True, blank=True, help_text="Duration in seconds")
 
-    average_bpm = models.PositiveIntegerField(null=True, blank=True)
-
-    max_bpm = models.PositiveIntegerField(null=True, blank=True)
-
-    min_bpm = models.PositiveIntegerField(null=True, blank=True)
+    # Derived summary metrics (cached result for fast UI reads)
+    summary_metrics = models.JSONField(default=dict, blank=True)
+    """
+    {
+      "id": 11,
+      "start_time": "2025-02-01T10:00:00Z",
+      "summary_metrics": {
+        "avg_hr": 142,
+        "max_hr": 189,
+        "duration_seconds": 2900,
+        "calories": 395,
+        "hr_zones": {
+          "z1_minutes": 5,
+          "z2_minutes": 12,
+          "z3_minutes": 18,
+          "z4_minutes": 9,
+          "z5_minutes": 3
+        }
+      },
+      "chart_points": [
+        { "timestamp": "2025-02-01T10:00:00Z", "bpm": 120 },
+        { "timestamp": "2025-02-01T10:00:10Z", "bpm": 128 },
+        { "timestamp": "2025-02-01T10:00:20Z", "bpm": 131 }
+      ]
+    }
+    """
 
     def __str__(self):
         if self.coach:
