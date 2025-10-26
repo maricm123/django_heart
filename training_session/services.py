@@ -10,13 +10,14 @@ def process_training_session_metrics(session, bucket_seconds=10, ema_alpha=0.3):
     """
     samples_qs = session.heart_rate_records.order_by('timestamp').values_list('timestamp', 'bpm')
     samples = list(samples_qs)
+    print(samples, "SAMPLES")
 
     if not samples:
         session.metrics = {"summary": {}, "points": []}
         session.save()
         return session  # return the updated session
 
-    max_hr = get_client_max_hr(session.client, samples)
+    max_hr = get_client_max_heart_rate(session.client, samples)
 
     start_ts = session.start or samples[0][0]
     end_ts = session.end or samples[-1][0]
@@ -107,7 +108,7 @@ def process_training_session_metrics(session, bucket_seconds=10, ema_alpha=0.3):
     }
 
     # store final metrics
-    session.metrics = {
+    session.summary_metrics = {
         "summary": summary,
         "points": points,
         "points_per_minute": int(60 / bucket_seconds)
@@ -122,19 +123,29 @@ def process_training_session_metrics(session, bucket_seconds=10, ema_alpha=0.3):
 
 def get_client_max_heart_rate(client, samples):
     """
-    Return client max heart rate. If client already have stored hr return that instead get from
-    currently session. If currently session max hr is under for example 150 then return classic
-    age - 20 formula
+    Return client's max heart rate.
+
+    Logic:
+    - If client has no stored max HR -> use 220 - age
+    - Compare stored HR with current session HR
+    - If current session HR is higher -> update client's stored HR
+    - Return the final max HR value
     """
-    print(samples, "SAMPLES U GET CLIENT MAX HR")
-    find_max_from_hr_samples(samples)
+    heart_rates_from_current_session = [bpm for (_, bpm) in samples]
+    max_heart_rate_from_current_session = max(heart_rates_from_current_session)
+
+    # 1) Determine baseline client max HR
     if client.max_heart_rate is None:
-        client_max_heart_rate = 220 - client.user.age()
+        print(client.user.age)
+        client_max_heart_rate = 220 - client.user.age
     else:
         client_max_heart_rate = client.max_heart_rate
 
+    # 2) If the current session's max is higher, update the client
+    if max_heart_rate_from_current_session > client_max_heart_rate:
+        client_max_heart_rate = max_heart_rate_from_current_session
+        client.max_heart_rate = client_max_heart_rate
+        client.save(update_fields=["max_heart_rate"])
+
+    print(client_max_heart_rate, "CLIENT MAX HEART RATE")
     return client_max_heart_rate
-
-
-def find_max_from_hr_samples(samples):
-    print("USLO U FINDCLIENT MAX HR")
