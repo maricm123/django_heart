@@ -10,7 +10,6 @@ def process_training_session_metrics(session, bucket_seconds=10, ema_alpha=0.3):
     """
     samples_qs = session.heart_rate_records.order_by('timestamp').values_list('timestamp', 'bpm')
     samples = list(samples_qs)
-    print(samples, "SAMPLES")
 
     if not samples:
         session.metrics = {"summary": {}, "points": []}
@@ -136,7 +135,6 @@ def get_client_max_heart_rate(client, samples):
 
     # 1) Determine baseline client max HR
     if client.max_heart_rate is None:
-        print(client.user.age)
         client_max_heart_rate = 220 - client.user.age
     else:
         client_max_heart_rate = client.max_heart_rate

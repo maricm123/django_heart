@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from apis.api_coach_cms.serializers.serializers_training_sessions import (
     GetActiveTrainingSessionsSerializer,
     GetAllTrainingSessionsPerClientSerializer, GetAllTrainingSessionsPerCoachSerializer,
+    GetUpdateDeleteTrainingSessionSerializer,
 )
 from training_session.models import TrainingSession
 
@@ -31,3 +32,12 @@ class GetAllTrainingSessionsPerCoachView(generics.ListAPIView):
 
     def get_queryset(self):
         return TrainingSession.objects.filter(coach=self.request.user.coach, is_active=False).order_by('-start')
+
+
+class GetUpdateDeleteTrainingSessionView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = GetUpdateDeleteTrainingSessionSerializer
+    lookup_field = 'id'
+
+    def get_queryset(self):
+        return TrainingSession.objects.filter(id=self.kwargs['id'], is_active=False).select_related('coach', 'client')
