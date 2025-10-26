@@ -20,6 +20,8 @@ class Client(BaseProfile):
     weight = models.FloatField(null=True, blank=True)  # KG
     height = models.FloatField(null=True, blank=True)
 
+    max_heart_rate = models.PositiveIntegerField(null=True, blank=True)
+
     def __str__(self):
         return self.user.name
 

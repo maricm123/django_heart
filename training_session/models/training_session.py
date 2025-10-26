@@ -2,6 +2,7 @@ from django.db import models, transaction
 from core.models.behaviours import TimeStampable, DateTimeFramable, IsActive
 from django.contrib.auth import get_user_model
 from gym.models import GymTenant
+from training_session.services import process_training_session_metrics
 from user.models.client import Client
 from user.models.coach import Coach
 from django.utils import timezone
@@ -80,7 +81,12 @@ class TrainingSession(
         self.calories_burned = calories_at_end
         self.is_active = False
         self.end = timezone.now()
-        self.delete_all_hrr_for_ended_session()
+
+        # self.delete_all_hrr_for_ended_session()
+
+        # compute and store metrics (will delete raw samples on success)
+        process_training_session_metrics(self, bucket_seconds=10)
+
         self.save()
 
     def delete_all_hrr_for_ended_session(self):
