@@ -131,7 +131,7 @@ class ClientDetailUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Client
-        fields = ('id', 'user', 'weight', 'height', 'gender', 'sessions_this_month')
+        fields = ('id', 'user', 'weight', 'height', 'gender', 'sessions_this_month', 'max_heart_rate')
 
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', None)
