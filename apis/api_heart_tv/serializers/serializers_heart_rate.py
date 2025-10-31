@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from heart.models.heart_rate_record import HeartRateRecord
 from training_session.models import TrainingSession
+from user.models import Client
 
 
 class HeartRateRecordSerializer(serializers.ModelSerializer):
@@ -10,6 +11,10 @@ class HeartRateRecordSerializer(serializers.ModelSerializer):
     # client_name = serializers.CharField(source="client.user.name", read_only=True)
     # coach_name = serializers.CharField(source="training_session.coach.user.name", read_only=True)
     seconds = serializers.IntegerField(required=True, write_only=True)
+    client = serializers.PrimaryKeyRelatedField(
+        queryset=Client.objects.select_related('user'),
+        required=True
+    )
 
     class Meta:
         model = HeartRateRecord

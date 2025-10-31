@@ -1,6 +1,6 @@
 
 
-def calculate_current_burned_calories(list_of_bpms, client, training_session, seconds):
+def calculate_current_burned_calories(list_of_bpms, client, seconds):
     if not list_of_bpms:
         print("No bpms given")
         return 0
