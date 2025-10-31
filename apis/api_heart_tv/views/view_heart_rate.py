@@ -39,17 +39,14 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
     def perform_create(self, serializer):
         instance = serializer.save()
 
-        print(instance, "INSTANCE")
-
         seconds = getattr(instance, '_seconds', None)
-        print(seconds)
 
         # training_session = TrainingSession.objects.get(pk=instance.training_session_id)
-        training_session = get_training_session_from_cache(training_session_id=instance.training_session_id)
-        # client = instance.client
-        # client = get_client_from_cache(instance.client.id)
+        # training_session = get_training_session_from_cache(training_session_id=instance.training_session_id)
+        # client = training_session.client
+
+        training_session = instance.training_session
         client = training_session.client
-        print(client, "CLIENT FROM TR SESSION")
 
         list_of_bpms = [record.bpm for record in training_session.heart_rate_records.all()]
         print(list_of_bpms)
