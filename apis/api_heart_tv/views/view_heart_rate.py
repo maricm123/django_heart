@@ -6,7 +6,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from heart.models.heart_rate_record import HeartRateRecord
 from training_session.models import TrainingSession
-from training_session.services import get_training_session_with_cache
+from training_session.services import get_training_session_from_cache
 from ..serializers.serializers_heart_rate import HeartRateRecordSerializer
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
@@ -45,9 +45,9 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
         print(seconds)
 
         # training_session = TrainingSession.objects.get(pk=instance.training_session_id)
-        training_session = get_training_session_with_cache(training_session_id=instance.training_session_id)
+        training_session = get_training_session_from_cache(training_session_id=instance.training_session_id)
         # client = instance.client
-        # client = get_cached_client(instance.client.id)
+        # client = get_client_from_cache(instance.client.id)
         client = training_session.client
         print(client, "CLIENT FROM TR SESSION")
 
@@ -87,25 +87,3 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
                 "seconds": seconds
             }
         )
-
-#
-# def get_cached_training_session(session_id):
-#     key = f"training_session:{session_id}"
-#     training_session = cache.get(key)
-#     if not training_session:
-#         training_session = TrainingSession.objects.select_related('gym', 'coach__user', 'client').get(pk=session_id)
-#         cache.set(key, training_session, timeout=60 * 60)  # 1h or until workout ends
-#     return training_session
-
-def get_cached_client(client_id):
-    key = f"client:{client_id}"
-    client = cache.get(key)
-
-    if not client:
-        client = (
-            Client.objects
-            .select_related("user", "gym")  # preload linked user and gym
-            .get(pk=client_id)
-        )
-        cache.set(key, client, timeout=60 * 60)  # cache for 1 hour
-    return client

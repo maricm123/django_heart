@@ -24,4 +24,3 @@ def delete_cached_client(client_id: int):
     """Remove client from cache."""
     key = get_client_cache_key(client_id)
     cache.delete(key)
-

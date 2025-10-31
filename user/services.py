@@ -5,7 +5,7 @@ from client.caches.client_cache import (
 )
 
 
-def get_client(client_id: int) -> Client:
+def get_client_with_cache(client_id: int) -> Client:
     """
     Returns a Client instance.
     First checks the cache, otherwise fetches from DB and caches it.
