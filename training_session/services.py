@@ -1,5 +1,6 @@
 import math
 from datetime import timedelta
+from training_session.caches import get_cached_training_session, set_cached_training_session
 
 
 def process_training_session_metrics(session, bucket_seconds=10, ema_alpha=0.3):
@@ -147,3 +148,19 @@ def get_client_max_heart_rate(client, samples):
 
     print(client_max_heart_rate, "CLIENT MAX HEART RATE")
     return client_max_heart_rate
+
+
+def get_training_session_with_cache(training_session_id: int):
+    """Get training session, cached or fallback from DB"""
+    from training_session.models import TrainingSession
+    training_session = get_cached_training_session(training_session_id)
+    if training_session:
+        return training_session
+
+    training_session = (
+        TrainingSession.objects
+        .select_related('gym', 'coach__user', 'client')
+        .get(pk=training_session_id)
+    )
+    set_cached_training_session(training_session_id, training_session)
+    return training_session
