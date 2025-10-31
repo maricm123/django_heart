@@ -10,6 +10,7 @@ from ..serializers.serializers_heart_rate import HeartRateRecordSerializer
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from ...utils_for_calculating_calories import calculate_current_burned_calories
+from user.models import Client
 
 User = get_user_model()
 
@@ -42,8 +43,9 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
         print(seconds)
 
         # training_session = TrainingSession.objects.get(pk=instance.training_session_id)
-        training_session = get_training_session(session_id=instance.training_session_id)
-        client = instance.client
+        training_session = get_cached_training_session(session_id=instance.training_session_id)
+        # client = instance.client
+        client = get_cached_client(instance.client.id)
 
         list_of_bpms = [record.bpm for record in training_session.heart_rate_records.all()]
         print(list_of_bpms)
@@ -83,10 +85,23 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
         )
 
 
-def get_training_session(session_id):
+def get_cached_training_session(session_id):
     key = f"training_session:{session_id}"
     training_session = cache.get(key)
     if not training_session:
         training_session = TrainingSession.objects.select_related('gym', 'coach__user', 'client').get(pk=session_id)
         cache.set(key, training_session, timeout=60 * 60)  # 1h or until workout ends
     return training_session
+
+def get_cached_client(client_id):
+    key = f"client:{client_id}"
+    client = cache.get(key)
+
+    if not client:
+        client = (
+            Client.objects
+            .select_related("user", "gym")  # preload linked user and gym
+            .get(pk=client_id)
+        )
+        cache.set(key, client, timeout=60 * 60)  # cache for 1 hour
+    return client
