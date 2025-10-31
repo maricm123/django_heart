@@ -1,8 +1,6 @@
 from rest_framework import serializers
 from heart.models.heart_rate_record import HeartRateRecord
-from training_session.models import TrainingSession
 from training_session.services import get_training_session_from_cache
-from user.models import Client
 
 
 class HeartRateRecordSerializer(serializers.ModelSerializer):
