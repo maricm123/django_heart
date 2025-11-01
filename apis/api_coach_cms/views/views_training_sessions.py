@@ -40,4 +40,5 @@ class GetUpdateDeleteTrainingSessionView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
 
     def get_queryset(self):
-        return TrainingSession.objects.filter(id=self.kwargs['id'], is_active=False).select_related('coach', 'client')
+        return TrainingSession.objects.filter(
+            id=self.kwargs['id'], is_active=False).select_related('coach', 'client')

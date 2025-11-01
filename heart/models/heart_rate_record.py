@@ -10,7 +10,10 @@ class HeartRateRecord(models.Model):
     # device = models.ForeignKey(Device, on_delete=models.SET_NULL, null=True)
     bpm = models.PositiveIntegerField()
     timestamp = models.DateTimeField(auto_now_add=True)  # timestamp from server
-    session_timestamp = models.DateTimeField(blank=True, null=True)  # actual beat time (or equal to timestamp by default)
+    session_timestamp = models.DateTimeField(
+        blank=True,
+        null=True
+    )  # actual beat time (or equal to timestamp by default)
 
     training_session = models.ForeignKey(
         TrainingSession,

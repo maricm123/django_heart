@@ -7,7 +7,6 @@ from django.contrib.auth import get_user_model
 from urllib.parse import parse_qs
 from django.conf import settings
 from django.db import connection
-from django_tenants.utils import tenant_context
 from gym.models import GymTenant
 import time
 
@@ -80,16 +79,13 @@ class BPMConsumer(AsyncWebsocketConsumer):
         }))
 
     async def receive(self, text_data):
-        # ne koristiš trenutno, ali možeš ovde parsirati primljene poruke
         pass
 
     def calculate_calories_from_bpm(self, bpm, user):
-        # 👇 Primer formule - prilagodi prema polu, visini, težini...
         weight = user.weight or 70  # kg
         age = user.age or 30  # godine
         gender = user.gender  # npr. "M" ili "F"
 
-        # Primer kalkulacije (iz literature, prilagodi!)
         if gender == "M":
             calories = (age * 0.2017 - weight * 0.09036 + bpm * 0.6309 - 55.0969) * 1 / 4.184
         else:

@@ -2,7 +2,6 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from apis.api_coach_cms.serializers.serializers_users import ClientInfoSerializer
 from training_session.models import TrainingSession
-from user.models import Coach
 from user.models.client import Client
 
 
@@ -12,9 +11,6 @@ class CreateTrainingSessionSerializer(serializers.Serializer):
     client_id = serializers.IntegerField(required=True)
 
     def validate_start(self, value):
-        print(value, "Value start")
-        # start_class = datetime.fromisoformat(value)
-        # print(start_class, "START CLASS")
         return value
 
     def validate_client_id(self, value):

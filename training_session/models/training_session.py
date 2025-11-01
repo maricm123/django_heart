@@ -6,6 +6,7 @@ from training_session.services import process_training_session_metrics
 from user.models.client import Client
 from user.models.coach import Coach
 from django.utils import timezone
+
 User = get_user_model()
 
 

@@ -115,7 +115,6 @@ def process_training_session_metrics(session, bucket_seconds=10, ema_alpha=0.3):
     }
     session.save()
 
-    # delete raw samples
     session.heart_rate_records.all().delete()
 
     return session
@@ -146,7 +145,6 @@ def get_client_max_heart_rate(client, samples):
         client.max_heart_rate = client_max_heart_rate
         client.save(update_fields=["max_heart_rate"])
 
-    print(client_max_heart_rate, "CLIENT MAX HEART RATE")
     return client_max_heart_rate
 
 

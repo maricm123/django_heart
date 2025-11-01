@@ -21,8 +21,11 @@ endpoints_urlpatterns = [
 
     # Sessions
     path('create-session', views_training_session.CreateTrainingSessionView.as_view(), name='create-session'),
-    path('finish-session/<int:id>', views_training_session.FinishTrainingSessionView.as_view(), name='finish-session'),
-
+    path(
+        'finish-session/<int:id>',
+        views_training_session.FinishTrainingSessionView.as_view(),
+        name='finish-session'
+    ),
 ]
 
 urlpatterns = [path("", include(endpoints_urlpatterns))]
