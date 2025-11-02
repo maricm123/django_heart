@@ -160,5 +160,6 @@ def get_training_session_from_cache(training_session_id: int):
         .select_related('gym', 'coach__user', 'client', 'client__user')
         .get(pk=training_session_id)
     )
+
     set_cached_training_session(training_session_id, training_session)
     return training_session

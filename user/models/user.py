@@ -131,7 +131,7 @@ class User(
             (today.month, today.day) < (self.birth_date.month, self.birth_date.day)
         )
 
-    @property
+    @cached_property
     def age(self):
         return self.get_age_from_birth_date()
 

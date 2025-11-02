@@ -7,7 +7,7 @@ def calculate_current_burned_calories(list_of_bpms, client, seconds):
 
     average_bpm = calculate_average_heart_rate(list_of_bpms)
     weight = client.weight
-    age = client.user.get_age_from_birth_date()
+    age = client.user.age
 
     duration_in_minutes = seconds / 60
 
