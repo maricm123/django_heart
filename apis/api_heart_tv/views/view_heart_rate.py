@@ -36,10 +36,6 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
 
         seconds = getattr(instance, '_seconds', None)
 
-        # training_session = TrainingSession.objects.get(pk=instance.training_session_id)
-        # training_session = get_training_session_from_cache(training_session_id=instance.training_session_id)
-        # client = training_session.client
-
         training_session = instance.training_session
         client = training_session.client
 
