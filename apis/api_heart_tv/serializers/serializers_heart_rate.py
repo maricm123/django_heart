@@ -4,17 +4,7 @@ from training_session.services import get_training_session_from_cache
 
 
 class HeartRateRecordSerializer(serializers.ModelSerializer):
-    # training_session = serializers.PrimaryKeyRelatedField(
-    #     queryset=TrainingSession.objects.select_related('gym', 'coach__user', 'client'),
-    #     required=True
-    # )
-    # client_name = serializers.CharField(source="client.user.name", read_only=True)
-    # coach_name = serializers.CharField(source="training_session.coach.user.name", read_only=True)
     seconds = serializers.IntegerField(required=True, write_only=True)
-    # client = serializers.PrimaryKeyRelatedField(
-    #     queryset=Client.objects.select_related('user'),
-    #     required=True
-    # )
     training_session_id = serializers.IntegerField(required=True)
 
     class Meta:
