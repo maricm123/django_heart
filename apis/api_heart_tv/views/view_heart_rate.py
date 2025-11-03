@@ -84,6 +84,7 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
             }
         )
 
+    #  THIS REDUCED TO 3 QUERIES, BUT TEST IF EVERYTHING IS OK!!!!
     # def perform_create(self, serializer):
     #     from django.core.cache import cache
     #     instance = serializer.save()
