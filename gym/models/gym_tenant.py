@@ -4,6 +4,8 @@ from core.models.behaviours import TimeStampable
 
 
 class GymTenant(TenantMixin, TimeStampable):
+    auto_create_schema = True
+
     name = models.CharField(max_length=255)
 
 

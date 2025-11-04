@@ -79,7 +79,14 @@ INTERNAL_IPS = ["127.0.0.1", "localhost"] + [
 # https://django-debug-toolbar.readthedocs.io/en/stable/installation.html#internal-ips
 ####################################################################################################
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 ROOT_URLCONF = "django_heart.urls"
 
@@ -202,7 +209,6 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 TENANT_MODEL = "gym.GymTenant"
-
 TENANT_DOMAIN_MODEL = "gym.Domain"
 
 PUBLIC_SCHEMA_URLCONF = "django_heart.urls"
