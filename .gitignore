@@ -12,6 +12,7 @@ build/
 venv/
 env/
 .venv/
+.venv-new/
 .env/
 .env.docker
 pip-log.txt
