@@ -1,0 +1,9 @@
+
+
+to start tests
+
+pytest -v
+
+to start specific file
+
+>pytest -v subscription/tests.py
