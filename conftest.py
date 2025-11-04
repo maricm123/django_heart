@@ -1,9 +1,19 @@
 import pytest
+import factory
 from django_tenants.utils import (
     get_tenant_model,
     get_tenant_domain_model,
     tenant_context,
 )
+
+from gym.models import GymTenant
+
+
+# class GymFactory(factory.django.DjangoModelFactory):
+#     class Meta:
+#         model = GymTenant
+#
+#     name = factory.Sequence(lambda n: f"Gym {n}")
 
 
 @pytest.fixture(scope="function")
@@ -40,6 +50,18 @@ def _activate_tenant_schema(tenant):
     """
     with tenant_context(tenant):
         yield
+
+
+from django_tenants.utils import schema_context
+
+
+
+
+
+# @pytest.fixture(scope="function")
+# def gym_public():
+#     with schema_context("public"):
+#         return GymFactory()
 
 
 # With this debug tables

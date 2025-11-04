@@ -2,8 +2,25 @@ import factory
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from phonenumber_field.phonenumber import PhoneNumber
+# from conftest import gym_public
+from gym.models import GymTenant
+from user.models.coach import Coach
+from user.models.client import Client
 
 User = get_user_model()
+
+
+class GymFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = GymTenant
+
+    name = factory.Sequence(lambda n: f"Gym {n}")
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        from django_tenants.utils import schema_context
+        with schema_context("public"):
+            return super()._create(model_class, *args, **kwargs)
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -30,3 +47,25 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
         django_get_or_create = ("email",)
+
+
+class CoachFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Coach  # adjust to your real model
+
+    user = factory.SubFactory(UserFactory)
+    gym = factory.SubFactory(GymFactory)
+    specialty = None
+
+
+class ClientFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Client
+
+    user = factory.SubFactory(UserFactory)
+    coach = factory.SubFactory(CoachFactory)
+    # Optional fields
+    gender = None
+    weight = None
+    height = None
+    max_heart_rate = None
