@@ -1,6 +1,6 @@
 import pytest
 from django.contrib.auth import get_user_model
-from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ValidationError
 from user.factories import CoachFactory
 from user.models.client import Client
 
@@ -39,6 +39,7 @@ class TestClient:
     ####################################################################################################
     def test_create_success(self, tenant):
         coach = CoachFactory(gym=tenant)
+        print(coach.user, "COACH USER")
         user_data = {
             "email": "mika@example.com",
             "first_name": "Mika",
@@ -52,27 +53,27 @@ class TestClient:
         }
 
         client = Client.create(user_data=user_data, client_data=client_data, coach=coach)
-        print(User.objects.all())
+        print(User.objects.all(), "USERSSSS")
 
         assert client.pk is not None
         assert client.user.email == "mika@example.com"
         assert client.coach == coach
         assert client.gym == coach.gym  # created via coach.gym in your method
         assert client.gender == "Male"
-        # assert User.objects.count() == 1
+        # It is 2 because of coach factory
+        assert User.objects.count() == 2
         assert Client.objects.count() == 1
 
     def test_duplicate_user_email_rolls_back_and_raises_validation_error(self, tenant):
         coach = CoachFactory(gym=tenant)
 
-        # Pre-existing user with same email will trigger IntegrityError inside .create(...)
         existing_email = "dup@example.com"
         User.objects.create_client_user(
             email=existing_email, first_name="Ana", last_name="Petrovic"
         )
 
         user_data = {
-            "email": existing_email,  # duplicate
+            "email": existing_email,
             "first_name": "Nikola",
             "last_name": "Jovanovic",
         }
@@ -81,7 +82,6 @@ class TestClient:
         with pytest.raises(ValidationError) as exc:
             Client.create(user_data=user_data, client_data=client_data, coach=coach)
 
-        # Your create() wraps IntegrityError -> ValidationError({"detail": ...})
         assert "detail" in exc.value.message_dict
 
         # Atomic rollback: no new client should have been created

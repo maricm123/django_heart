@@ -32,7 +32,7 @@ class Client(BaseProfile):
             try:
                 user = User.objects.create_client_user(**user_data)
                 client = cls.objects.create(user=user, coach=coach, gym=coach.gym, **client_data)
-            except IntegrityError as e:
+            except (IntegrityError, ValidationError) as e:
                 # Clean rollback is automatic
                 raise ValidationError({"detail": "Client with this user already exists."}, e)
         return client
