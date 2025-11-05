@@ -2,12 +2,13 @@
 
 def calculate_current_burned_calories(list_of_bpms, client, seconds):
     if not list_of_bpms:
-        print("No bpms given")
         return 0
 
     average_bpm = calculate_average_heart_rate(list_of_bpms)
     weight = client.weight
     age = client.user.age
+    gender = client.gender
+    print(gender, "GENDER")
 
     duration_in_minutes = seconds / 60
 
@@ -15,12 +16,7 @@ def calculate_current_burned_calories(list_of_bpms, client, seconds):
     if duration_in_minutes <= 0:
         return 0
 
-    if client.gender == 'male':
-        calories = ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
-                    0.2017 * age)) / 4.184) * duration_in_minutes
-    else:
-        calories = ((-20.4022 + (0.4472 * average_bpm) - (0.1263 * weight) + (
-                    0.074 * age)) / 4.184) * duration_in_minutes
+    calories = formula_for_calculating_calories(gender, average_bpm, weight, age, duration_in_minutes)
 
     # Minimalna vrednost po minuti (npr. 0.8 kcal/min)
     min_calories = duration_in_minutes * 0.8
@@ -30,5 +26,26 @@ def calculate_current_burned_calories(list_of_bpms, client, seconds):
 
 
 def calculate_average_heart_rate(list_of_bpms):
-    average = sum(list_of_bpms) / len(list_of_bpms)
-    return average
+    return sum(list_of_bpms) / len(list_of_bpms)
+
+
+# def calculate_calories_for_male(average_bpm, weight, age, duration_in_minutes):
+#     return ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
+#                     0.2017 * age)) / 4.184) * duration_in_minutes
+#
+#
+# def calculate_calories_for_female(average_bpm, weight, age, duration_in_minutes):
+#     return ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
+#                     0.2017 * age)) / 4.184) * duration_in_minutes
+
+
+def formula_for_calculating_calories(gender, average_bpm, weight, age, duration_in_minutes):
+    if gender =='Male':
+        calories = ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
+                0.2017 * age)) / 4.184) * duration_in_minutes
+        return round(calories, 2)
+    elif gender == 'Female':
+        return ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
+                0.2017 * age)) / 4.184) * duration_in_minutes
+    else:
+        raise  Exception
