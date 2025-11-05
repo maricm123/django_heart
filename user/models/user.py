@@ -55,16 +55,25 @@ class CustomUserManager(UserManager):
         extra_fields.setdefault('is_superuser', False)
         if not email:
             raise ValueError("You have not provided a valid e-mail address")
-
+        print("ASDASDAS")
         email = self.normalize_email(email)
-        user = self.model(
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            is_active=True,
-            **extra_fields
-        )
-        user.save(using=self._db)
+        print("EMAIL")
+        try:
+            user = self.model(
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                is_active=True,
+                **extra_fields
+            )
+            print("Before save:", user)
+            user.save(using=self._db)
+            print("After save")
+        except Exception as e:
+            import traceback
+            print("ERROR OCCURRED:")
+            traceback.print_exc()
+            raise
 
         return user
 
@@ -97,7 +106,6 @@ class User(
     phone_number = PhoneNumberField(
         blank=True,
         null=True,
-        unique=True,  # optional, if you want unique numbers
         # region="US"  # optional, default region for parsing local numbers
     )
 

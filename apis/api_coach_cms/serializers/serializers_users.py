@@ -96,6 +96,14 @@ class CreateClientSerializer(serializers.Serializer):
     height = serializers.FloatField(required=True)
     phone_number = PhoneNumberField(required=False, allow_null=True)
 
+    def validate_gender(self, value):
+        allowed_genders = ["Male", "Female"]
+        if value not in allowed_genders:
+            raise serializers.ValidationError(
+                f"Gender must be one of {', '.join(allowed_genders)}."
+            )
+        return value
+
     def validate(self, data):
         coach = self.context["request"].user.coach
 
