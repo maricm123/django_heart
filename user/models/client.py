@@ -27,7 +27,6 @@ class Client(BaseProfile):
 
     @classmethod
     def create(cls, user_data: dict, client_data: dict, coach):
-        """Atomic create of user + client"""
         with transaction.atomic():
             try:
                 user = User.objects.create_client_user(**user_data)

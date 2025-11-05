@@ -1,7 +1,7 @@
 import pytest
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from user.factories import CoachFactory
+from user.tests.factories import CoachFactory
 from user.models.client import Client
 
 User = get_user_model()
@@ -39,7 +39,6 @@ class TestClient:
     ####################################################################################################
     def test_create_success(self, tenant):
         coach = CoachFactory(gym=tenant)
-        print(coach.user, "COACH USER")
         user_data = {
             "email": "mika@example.com",
             "first_name": "Mika",
@@ -53,12 +52,11 @@ class TestClient:
         }
 
         client = Client.create(user_data=user_data, client_data=client_data, coach=coach)
-        print(User.objects.all(), "USERSSSS")
 
         assert client.pk is not None
         assert client.user.email == "mika@example.com"
         assert client.coach == coach
-        assert client.gym == coach.gym  # created via coach.gym in your method
+        assert client.gym == coach.gym
         assert client.gender == "Male"
         # It is 2 because of coach factory
         assert User.objects.count() == 2

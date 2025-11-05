@@ -5,10 +5,9 @@ from rest_framework.views import APIView
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from heart.models.heart_rate_record import HeartRateRecord
-from training_session.services import get_training_session_from_cache
 from ..serializers.serializers_heart_rate import HeartRateRecordSerializer
 from django.contrib.auth import get_user_model
-from ...utils_for_calculating_calories import calculate_current_burned_calories
+from heart.utils_for_calculating_calories import calculate_current_burned_calories
 
 User = get_user_model()
 
