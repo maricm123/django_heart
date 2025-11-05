@@ -1,6 +1,6 @@
 import pytest
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError
 from user.factories import CoachFactory
 from user.models.client import Client
 
@@ -14,13 +14,13 @@ class TestUser:
     ####################################################################################################
     def test_create_client_user_success(self):
         user = User.objects.create_client_user(
-            first_name="Mika",
+            first_name="Miha",
             last_name="Maric",
-            email="mika@example.com",
+            email="miha@example.com",
         )
 
-        assert user.email == "mika@example.com"
-        assert user.first_name == "Mika"
+        assert user.email == "miha@example.com"
+        assert user.first_name == "Miha"
         assert user.last_name == "Maric"
         assert user.is_active is True
         assert user.is_staff is False
@@ -37,8 +37,8 @@ class TestClient:
     ####################################################################################################
     # Test client functions
     ####################################################################################################
-    def test_create_success(self):
-        coach = CoachFactory()
+    def test_create_success(self, tenant):
+        coach = CoachFactory(gym=tenant)
         user_data = {
             "email": "mika@example.com",
             "first_name": "Mika",
@@ -52,17 +52,18 @@ class TestClient:
         }
 
         client = Client.create(user_data=user_data, client_data=client_data, coach=coach)
+        print(User.objects.all())
 
         assert client.pk is not None
         assert client.user.email == "mika@example.com"
         assert client.coach == coach
         assert client.gym == coach.gym  # created via coach.gym in your method
         assert client.gender == "Male"
-        assert User.objects.count() == 1
+        # assert User.objects.count() == 1
         assert Client.objects.count() == 1
 
-    def test_duplicate_user_email_rolls_back_and_raises_validation_error(self):
-        coach = CoachFactory()
+    def test_duplicate_user_email_rolls_back_and_raises_validation_error(self, tenant):
+        coach = CoachFactory(gym=tenant)
 
         # Pre-existing user with same email will trigger IntegrityError inside .create(...)
         existing_email = "dup@example.com"

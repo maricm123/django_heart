@@ -1,6 +1,6 @@
 from django.db import models, transaction, IntegrityError
 from django.utils import timezone
-from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ValidationError
 from user.models.base_profile import BaseProfile
 from user.models.coach import Coach
 from django.contrib.auth import get_user_model

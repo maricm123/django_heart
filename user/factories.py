@@ -54,8 +54,9 @@ class CoachFactory(factory.django.DjangoModelFactory):
         model = Coach  # adjust to your real model
 
     user = factory.SubFactory(UserFactory)
-    gym = factory.SubFactory(GymFactory)
-    specialty = None
+    # Pass it from tests: CoachFactory(gym=tenant)
+    gym = None
+    specialty = "Fitness"
 
 
 class ClientFactory(factory.django.DjangoModelFactory):
