@@ -66,7 +66,6 @@ class CustomUserManager(UserManager):
                 is_active=True,
                 **extra_fields
             )
-            print("Before save:", user)
             user.save(using=self._db)
             print("After save")
         except Exception as e:

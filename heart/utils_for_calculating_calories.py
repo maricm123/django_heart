@@ -8,7 +8,6 @@ def calculate_current_burned_calories(list_of_bpms, client, seconds):
     weight = client.weight
     age = client.user.age
     gender = client.gender
-    print(gender, "GENDER")
 
     duration_in_minutes = seconds / 60
 
@@ -29,23 +28,11 @@ def calculate_average_heart_rate(list_of_bpms):
     return sum(list_of_bpms) / len(list_of_bpms)
 
 
-# def calculate_calories_for_male(average_bpm, weight, age, duration_in_minutes):
-#     return ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
-#                     0.2017 * age)) / 4.184) * duration_in_minutes
-#
-#
-# def calculate_calories_for_female(average_bpm, weight, age, duration_in_minutes):
-#     return ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
-#                     0.2017 * age)) / 4.184) * duration_in_minutes
-
-
 def formula_for_calculating_calories(gender, average_bpm, weight, age, duration_in_minutes):
-    if gender =='Male':
+    if gender == 'Male':
         calories = ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
                 0.2017 * age)) / 4.184) * duration_in_minutes
         return round(calories, 2)
     elif gender == 'Female':
         return ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
                 0.2017 * age)) / 4.184) * duration_in_minutes
-    else:
-        raise  Exception
