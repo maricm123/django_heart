@@ -100,8 +100,3 @@ class TrainingSession(
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-
-    def calculate_current_duration_in_minutes(self, start):
-        end = timezone.now()
-        duration = (end - start).total_seconds() / 60
-        return duration

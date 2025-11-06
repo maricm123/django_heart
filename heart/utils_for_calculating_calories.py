@@ -1,5 +1,3 @@
-
-
 def calculate_current_burned_calories(list_of_bpms, client, seconds):
     if not list_of_bpms:
         return 0
@@ -34,5 +32,6 @@ def formula_for_calculating_calories(gender, average_bpm, weight, age, duration_
                 0.2017 * age)) / 4.184) * duration_in_minutes
         return round(calories, 2)
     elif gender == 'Female':
-        return ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
+        calories = ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
                 0.2017 * age)) / 4.184) * duration_in_minutes
+        return calories
