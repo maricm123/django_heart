@@ -1,6 +1,11 @@
+import logging
 import math
 from datetime import timedelta
 from training_session.caches import get_cached_training_session, set_cached_training_session
+from django.db import  transaction
+from django.utils import timezone
+
+logger = logging.getLogger(__name__)
 
 
 def process_training_session_metrics(session, bucket_seconds=10, ema_alpha=0.3):
@@ -163,3 +168,34 @@ def get_training_session_from_cache(training_session_id: int):
 
     set_cached_training_session(training_session_id, training_session)
     return training_session
+
+
+@transaction.atomic
+def end_training_session(session, calories_at_end, duration, bucket_seconds=10):
+    """
+    Ends a training session and computes metrics.
+    """
+    now = timezone.now()
+
+    # Update base fields
+    session.duration = duration
+    session.calories_burned = calories_at_end
+    session.is_active = False
+    session.end = now
+    session.save(update_fields=["duration", "calories_burned", "is_active", "end"])
+
+    # Metrics handled separately
+    safely_process_metrics(session, bucket_seconds)
+
+    return session
+
+
+def safely_process_metrics(session, bucket_seconds=10):
+    """
+    Wrapper around metric processing to handle and log exceptions.
+    """
+    try:
+        process_training_session_metrics(session, bucket_seconds=bucket_seconds)
+    except Exception as e:
+        logger.exception(f"Failed to process metrics for session {session.pk}: {e}")
+        raise

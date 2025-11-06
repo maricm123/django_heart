@@ -76,24 +76,6 @@ class TrainingSession(
             return self.title + " - " + str(self.start) + " - " + str(self.coach.user.name)
         return self.title + " - " + str(self.start)
 
-    @transaction.atomic
-    def end_session(self, calories_at_end, duration):
-        self.duration = duration
-        self.calories_burned = calories_at_end
-        self.is_active = False
-        self.end = timezone.now()
-
-        # self.delete_all_hrr_for_ended_session()
-
-        # compute and store metrics (will delete raw samples on success)
-        process_training_session_metrics(self, bucket_seconds=10)
-
-        self.save()
-
-    def delete_all_hrr_for_ended_session(self):
-        # Brišemo sve povezane zapise iz baze u jednom pozivu
-        self.heart_rate_records.all().delete()
-
     @classmethod
     def start_session(cls, **kwargs):
         return TrainingSession.objects.create(**kwargs)
