@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from heart.models.heart_rate_record import HeartRateRecord
+from training_session.selectors import get_training_session_from_cache
 from ..serializers.serializers_heart_rate import HeartRateRecordSerializer
 from django.contrib.auth import get_user_model
 from heart.utils_for_calculating_calories import calculate_current_burned_calories
@@ -36,7 +37,7 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
 
         seconds = getattr(instance, '_seconds', None)
 
-        # cached_training_session = get_training_session_from_cache(instance.training_session_id)
+        cached_training_session = get_training_session_from_cache(instance.training_session_id)
 
         # print(cached_training_session)
         # here we are fetching db so we need to get rid of that with cache

@@ -26,12 +26,30 @@ def calculate_average_heart_rate(list_of_bpms):
     return sum(list_of_bpms) / len(list_of_bpms)
 
 
+# def formula_for_calculating_calories(gender, average_bpm, weight, age, duration_in_minutes):
+#     if gender == 'Male':
+#         calories = ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
+#                 0.2017 * age)) / 4.184) * duration_in_minutes
+#         return round(calories, 2)
+#     elif gender == 'Female':
+#         calories = ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
+#                 0.2017 * age)) / 4.184) * duration_in_minutes
+#         return calories
+
+from decimal import Decimal, ROUND_HALF_UP
+
+
 def formula_for_calculating_calories(gender, average_bpm, weight, age, duration_in_minutes):
+    average_bpm = Decimal(str(average_bpm or 0))
+    weight = Decimal(str(weight or 0))
+    age = Decimal(str(age or 0))
+    duration_in_minutes = Decimal(str(duration_in_minutes or 0))
+
     if gender == 'Male':
-        calories = ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
-                0.2017 * age)) / 4.184) * duration_in_minutes
-        return round(calories, 2)
-    elif gender == 'Female':
-        calories = ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
-                0.2017 * age)) / 4.184) * duration_in_minutes
-        return calories
+        calories = ((Decimal('-55.0969') + (Decimal('0.6309') * average_bpm) +
+                     (Decimal('0.1988') * weight) + (Decimal('0.2017') * age)) / Decimal('4.184')) * duration_in_minutes
+    else:
+        calories = ((Decimal('-20.4022') + (Decimal('0.4472') * average_bpm) -
+                     (Decimal('0.1263') * weight) + (Decimal('0.074') * age)) / Decimal('4.184')) * duration_in_minutes
+
+    return calories.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)

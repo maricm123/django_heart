@@ -1,11 +1,9 @@
-from django.db import models, transaction
+from django.db import models
 from core.models.behaviours import TimeStampable, DateTimeFramable, IsActive
 from django.contrib.auth import get_user_model
 from gym.models import GymTenant
-from training_session.services import process_training_session_metrics
 from user.models.client import Client
 from user.models.coach import Coach
-from django.utils import timezone
 
 User = get_user_model()
 

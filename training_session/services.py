@@ -153,23 +153,6 @@ def get_client_max_heart_rate(client, samples):
     return client_max_heart_rate
 
 
-def get_training_session_from_cache(training_session_id: int):
-    """Get training session, cached or fallback from DB"""
-    from training_session.models import TrainingSession
-    training_session = get_cached_training_session(training_session_id)
-    if training_session:
-        return training_session
-
-    training_session = (
-        TrainingSession.objects
-        .select_related('gym', 'coach__user', 'client', 'client__user')
-        .get(pk=training_session_id)
-    )
-
-    set_cached_training_session(training_session_id, training_session)
-    return training_session
-
-
 @transaction.atomic
 def end_training_session(training_session, calories_at_end, duration, bucket_seconds=10):
     """
@@ -191,9 +174,6 @@ def end_training_session(training_session, calories_at_end, duration, bucket_sec
 
 
 def safely_process_metrics(session, bucket_seconds=10):
-    """
-    Wrapper around metric processing to handle and log exceptions.
-    """
     try:
         process_training_session_metrics(session, bucket_seconds=bucket_seconds)
     except Exception as e:
