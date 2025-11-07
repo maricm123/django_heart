@@ -1,20 +1,16 @@
-from client.models import Client
-from client.caches.client_cache import (
-    get_cached_client,
-    set_cached_client,
-)
+from user.models import Client
+from django.db import transaction, IntegrityError
+from django.core.exceptions import ValidationError
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
-def get_client_with_cache(client_id: int) -> Client:
-    """
-    Returns a Client instance.
-    First checks the cache, otherwise fetches from DB and caches it.
-    """
-    client = get_cached_client(client_id)
-    if client:
-        return client
-
-    # Lazy import pattern not needed unless circular import exists
-    client = Client.objects.select_related("user", "gym").get(pk=client_id)
-    set_cached_client(client_id, client)
+@transaction.atomic()
+def client_create(user_data: dict, client_data: dict, coach):
+    try:
+        user = User.objects.create_client_user(**user_data)
+        client = Client.objects.create(user=user, coach=coach, gym=coach.gym, **client_data)
+    except (IntegrityError, ValidationError) as e:
+        raise ValidationError({"detail": "Client with this user already exists."}, e)
     return client

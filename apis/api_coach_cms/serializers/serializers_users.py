@@ -6,6 +6,8 @@ from apis.api_coach_cms.mixins import ReqContextMixin
 from user.models import Coach, Client, GymManager
 from phonenumber_field.serializerfields import PhoneNumberField
 
+from user.services import client_create
+
 User = get_user_model()
 
 
@@ -118,7 +120,7 @@ class CreateClientSerializer(serializers.Serializer):
         }
         client_data = data
 
-        client = Client.create(user_data=user_data, client_data=client_data, coach=coach)
+        client = client_create(user_data=user_data, client_data=client_data, coach=coach)
 
         data["pk"] = client.pk
 
@@ -135,11 +137,10 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 class ClientDetailUpdateSerializer(serializers.ModelSerializer):
     user = UserUpdateSerializer()
-    sessions_this_month = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Client
-        fields = ('id', 'user', 'weight', 'height', 'gender', 'sessions_this_month', 'max_heart_rate')
+        fields = ('id', 'user', 'weight', 'height', 'gender', 'max_heart_rate')
 
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', None)
@@ -154,6 +155,3 @@ class ClientDetailUpdateSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
-
-    def get_sessions_this_month(self, obj):
-        return obj.sessions_this_month.count()

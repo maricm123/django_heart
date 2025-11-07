@@ -55,9 +55,7 @@ class CustomUserManager(UserManager):
         extra_fields.setdefault('is_superuser', False)
         if not email:
             raise ValueError("You have not provided a valid e-mail address")
-        print("ASDASDAS")
         email = self.normalize_email(email)
-        print("EMAIL")
         try:
             user = self.model(
                 email=email,
@@ -67,10 +65,8 @@ class CustomUserManager(UserManager):
                 **extra_fields
             )
             user.save(using=self._db)
-            print("After save")
         except Exception as e:
             import traceback
-            print("ERROR OCCURRED:")
             traceback.print_exc()
             raise
 

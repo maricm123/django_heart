@@ -1,6 +1,5 @@
 import factory
 from decimal import Decimal
-
 from training_session.models import TrainingSession
 from user.tests.factories import CoachFactory, ClientFactory
 
