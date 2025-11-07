@@ -171,23 +171,23 @@ def get_training_session_from_cache(training_session_id: int):
 
 
 @transaction.atomic
-def end_training_session(session, calories_at_end, duration, bucket_seconds=10):
+def end_training_session(training_session, calories_at_end, duration, bucket_seconds=10):
     """
     Ends a training session and computes metrics.
     """
     now = timezone.now()
 
     # Update base fields
-    session.duration = duration
-    session.calories_burned = calories_at_end
-    session.is_active = False
-    session.end = now
-    session.save(update_fields=["duration", "calories_burned", "is_active", "end"])
+    training_session.duration = duration
+    training_session.calories_burned = calories_at_end
+    training_session.is_active = False
+    training_session.end = now
+    training_session.save(update_fields=["duration", "calories_burned", "is_active", "end"])
 
     # Metrics handled separately
-    safely_process_metrics(session, bucket_seconds)
+    safely_process_metrics(training_session, bucket_seconds)
 
-    return session
+    return training_session
 
 
 def safely_process_metrics(session, bucket_seconds=10):

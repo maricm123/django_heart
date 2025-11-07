@@ -2,7 +2,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from apis.api_coach_cms.serializers.serializers_users import ClientInfoSerializer
 from training_session.models import TrainingSession
+from training_session.services import end_training_session
 from user.models.client import Client
+from django.utils import timezone
 
 
 class CreateTrainingSessionSerializer(serializers.Serializer):
@@ -11,6 +13,8 @@ class CreateTrainingSessionSerializer(serializers.Serializer):
     client_id = serializers.IntegerField(required=True)
 
     def validate_start(self, value):
+        if value < timezone.now():
+            raise serializers.ValidationError("Start time cannot be in the past.")
         return value
 
     def validate_client_id(self, value):
@@ -23,7 +27,7 @@ class CreateTrainingSessionSerializer(serializers.Serializer):
 
         coach = self.context['request'].user.coach
 
-        session = TrainingSession.start_session(
+        session = TrainingSession.start_training_session(
             start=start,
             title=title,
             client=client_id,
@@ -48,9 +52,10 @@ class FinishTrainingSessionSerializer(serializers.Serializer):
     calories_at_end = serializers.DecimalField(write_only=True, max_digits=8, decimal_places=2)
     seconds = serializers.IntegerField(write_only=True)
 
-    def update(self, instance, validated_data):
+    def update(self, training_session_instance, validated_data):
         calories_at_end = validated_data.get('calories_at_end')
         seconds = validated_data.get('seconds')
-        if instance.end is None:
-            instance.end_session(calories_at_end, seconds)
-            return instance
+        if training_session_instance.end is None:
+            end_training_session(training_session_instance, calories_at_end, seconds)
+            # instance.end_training_session(calories_at_end, seconds)
+            return training_session_instance
