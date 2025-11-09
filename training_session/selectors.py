@@ -19,5 +19,7 @@ def get_training_session_from_cache(training_session_id: int):
     return training_session
 
 
-def training_session_per_client_list(client_id):
-    return TrainingSession.objects.filter(client=client_id)
+def training_session_per_client_list_data(client_id):
+    return (TrainingSession.objects.filter(client=client_id, is_active=False)
+            .select_related('coach__user', 'client__user')
+            .order_by('-start'))

@@ -10,7 +10,7 @@ from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from training_session.selectors import training_session_per_client_list
+from training_session.selectors import training_session_per_client_list_data
 
 
 class GetActiveTrainingSessionsView(generics.ListAPIView):
@@ -34,24 +34,24 @@ class GetActiveTrainingSessionsView(generics.ListAPIView):
 #         return TrainingSession.objects.filter(client__id=client_id, is_active=False).order_by('-start')
 class GetAllTrainingSessionsPerClientView(APIView):
     class OutputSerializer(serializers.Serializer):
-        name = serializers.CharField()
+        id = serializers.IntegerField()
+        title = serializers.CharField()
         start = serializers.DateTimeField()
         end = serializers.DateTimeField()
-        calories_burned = serializers.FloatField()
+        calories_burned = serializers.DecimalField(max_digits=5, decimal_places=1)
+        client = serializers.CharField()
+        coach = serializers.CharField()
+        duration = serializers.IntegerField()
+        summary_metrics = serializers.JSONField()
+
     permission_classes = [IsAuthenticated]
-    # serializer_class = GetAllTrainingSessionsPerClientSerializer
-    # lookup_field = 'id'
 
     def get(self, request, id):
-        training_session_per_client = training_session_per_client_list(client_id=id)
+        training_session_per_client = training_session_per_client_list_data(client_id=id)
 
         data = self.OutputSerializer(training_session_per_client, many=True).data
 
         return Response(data)
-
-    # def get_queryset(self):
-    #     client_id = self.kwargs.get('id')
-    #     return TrainingSession.objects.filter(client__id=client_id, is_active=False).order_by('-start')
 
 
 class GetAllTrainingSessionsPerCoachView(generics.ListAPIView):
