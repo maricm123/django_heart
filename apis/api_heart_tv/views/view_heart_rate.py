@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+
+from django_heart.middleware import CachedTenantMiddleware
 from heart.models.heart_rate_record import HeartRateRecord
 from training_session.selectors import get_training_session_from_cache
 from ..serializers.serializers_heart_rate import HeartRateRecordSerializer
@@ -42,12 +44,13 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
         # print(cached_training_session)
         # here we are fetching db so we need to get rid of that with cache
         training_session = instance.training_session
-        client = training_session.client
+        client = instance.client
 
         # training_session = cached_training_session
         # client = training_session.client
 
         list_of_bpms = [record.bpm for record in training_session.heart_rate_records.all()]
+        # list_of_bpms = [123]
         print(list_of_bpms)
 
         current_calories = (
@@ -61,7 +64,8 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            f"bpm_group_tenant_{self.request.user.coach.gym.id}",
+            # Using tenant from request because of middleware
+            f"bpm_group_tenant_{self.request.tenant.id}",
             {
                 "type": "send_bpm",  # name of method in Consumer class
                 "current_calories": current_calories,
@@ -72,7 +76,8 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
 
         # Also send to the gym-wide group
         async_to_sync(channel_layer.group_send)(
-            f"gym_{self.request.user.coach.gym.id}",
+            # Using tenant from request because of middleware
+            f"gym_{self.request.tenant.id}",
             {
                 "type": "gym_data",
                 "coach_id": self.request.user.coach.id,
