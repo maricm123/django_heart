@@ -2,7 +2,6 @@ import factory
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from phonenumber_field.phonenumber import PhoneNumber
-# from conftest import gym_public
 from gym.models import GymTenant
 from user.models.coach import Coach
 from user.models.client import Client
@@ -51,7 +50,7 @@ class UserFactory(factory.django.DjangoModelFactory):
 
 class CoachFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = Coach  # adjust to your real model
+        model = Coach
 
     user = factory.SubFactory(UserFactory)
     # Pass it from tests: CoachFactory(gym=tenant)

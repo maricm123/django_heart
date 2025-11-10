@@ -77,6 +77,3 @@ class TrainingSession(
     @classmethod
     def start_training_session(cls, **kwargs):
         return TrainingSession.objects.create(**kwargs)
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)

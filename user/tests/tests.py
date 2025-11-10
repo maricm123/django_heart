@@ -1,6 +1,7 @@
 import pytest
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from user.services import client_create
 from user.tests.factories import CoachFactory
 from user.models.client import Client
 
@@ -51,7 +52,7 @@ class TestClient:
             "max_heart_rate": 190,
         }
 
-        client = Client.create(user_data=user_data, client_data=client_data, coach=coach)
+        client = client_create(user_data=user_data, client_data=client_data, coach=coach)
 
         assert client.pk is not None
         assert client.user.email == "mika@example.com"
@@ -78,7 +79,7 @@ class TestClient:
         client_data = {"gender": "Female"}
 
         with pytest.raises(ValidationError) as exc:
-            Client.create(user_data=user_data, client_data=client_data, coach=coach)
+            client_create(user_data=user_data, client_data=client_data, coach=coach)
 
         assert "detail" in exc.value.message_dict
 

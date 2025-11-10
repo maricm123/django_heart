@@ -31,9 +31,9 @@ def tenant(db):
 
     # If your Tenant model doesn't have auto_create_schema=True,
     # you MUST explicitly create & sync the schema:
-    if getattr(tenant, "auto_create_schema", False) is not True:
-        # sync_schema=True runs migrations for TENANT_APPS in this schema
-        tenant.create_schema(check_if_exists=True, sync_schema=True)
+    # if getattr(tenant, "auto_create_schema", False) is not True:
+    # sync_schema=True runs migrations for TENANT_APPS in this schema
+    tenant.create_schema(check_if_exists=True, sync_schema=True)
 
     Domain.objects.create(
         domain="test.localhost",
