@@ -1,7 +1,6 @@
 import logging
 import math
 from datetime import timedelta
-from training_session.caches import get_cached_training_session, set_cached_training_session
 from django.db import  transaction
 from django.utils import timezone
 
