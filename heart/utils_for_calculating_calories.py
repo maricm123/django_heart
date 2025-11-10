@@ -1,3 +1,6 @@
+from decimal import Decimal, ROUND_HALF_UP
+
+
 def calculate_current_burned_calories(list_of_bpms, client, seconds):
     if not list_of_bpms:
         return 0
@@ -36,7 +39,6 @@ def calculate_average_heart_rate(list_of_bpms):
 #                 0.2017 * age)) / 4.184) * duration_in_minutes
 #         return calories
 
-from decimal import Decimal, ROUND_HALF_UP
 
 
 def formula_for_calculating_calories(gender, average_bpm, weight, age, duration_in_minutes):

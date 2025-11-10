@@ -39,15 +39,9 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
 
         seconds = getattr(instance, '_seconds', None)
 
-        cached_training_session = get_training_session_from_cache(instance.training_session_id)
-
-        # print(cached_training_session)
         # here we are fetching db so we need to get rid of that with cache
         training_session = instance.training_session
         client = instance.client
-
-        # training_session = cached_training_session
-        # client = training_session.client
 
         list_of_bpms = [record.bpm for record in training_session.heart_rate_records.all()]
         # list_of_bpms = [123]
@@ -80,7 +74,7 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
             f"gym_{self.request.tenant.id}",
             {
                 "type": "gym_data",
-                "coach_id": self.request.user.coach.id,
+                "coach_id": instance.training_session.coach.id,
                 "client_id": client.id,
                 "client_name": client.user.name,
                 "bpm": instance.bpm,
