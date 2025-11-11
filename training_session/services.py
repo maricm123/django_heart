@@ -158,6 +158,7 @@ def end_training_session(training_session, calories_at_end, duration, bucket_sec
     Ends a training session and computes metrics.
     """
     now = timezone.now()
+    print(now, "END TIME")
 
     # Update base fields
     training_session.duration = duration

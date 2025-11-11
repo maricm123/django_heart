@@ -47,13 +47,16 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
         # list_of_bpms = [123]
         print(list_of_bpms)
 
-        current_calories = (
-            calculate_current_burned_calories(
-                list_of_bpms,
-                client,
-                seconds,
-            )
-        )
+        # current_calories = (
+        #     calculate_current_burned_calories(
+        #         list_of_bpms,
+        #         client,
+        #         seconds,
+        #     )
+        # )
+        print(client, "CLIENT")
+        print(seconds, "SECONDS")
+        current_calories = float(calculate_current_burned_calories(list_of_bpms, client, seconds))
         print(current_calories, "CURRENT CAL")
 
         channel_layer = get_channel_layer()
