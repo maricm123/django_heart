@@ -39,30 +39,18 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
 
         seconds = getattr(instance, '_seconds', None)
 
-        # here we are fetching db so we need to get rid of that with cache
         training_session = instance.training_session
         client = instance.client
 
+        # Here we can maybe do something with cache
         list_of_bpms = [record.bpm for record in training_session.heart_rate_records.all()]
-        # list_of_bpms = [123]
-        print(list_of_bpms)
 
-        # current_calories = (
-        #     calculate_current_burned_calories(
-        #         list_of_bpms,
-        #         client,
-        #         seconds,
-        #     )
-        # )
-        print(client, "CLIENT")
-        print(seconds, "SECONDS")
         current_calories = float(calculate_current_burned_calories(list_of_bpms, client, seconds))
-        print(current_calories, "CURRENT CAL")
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             # Using tenant from request because of middleware
-            f"bpm_group_tenant_{self.request.tenant.id}",
+            f"coach_preview_{self.request.tenant.id}",
             {
                 "type": "send_bpm",  # name of method in Consumer class
                 "current_calories": current_calories,
@@ -85,63 +73,3 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
                 "seconds": seconds
             }
         )
-
-    #  THIS REDUCED TO 3 QUERIES, BUT TEST IF EVERYTHING IS OK!!!!
-    # def perform_create(self, serializer):
-    #     from django.core.cache import cache
-    #     instance = serializer.save()
-    #     seconds = getattr(instance, '_seconds', None)
-    #
-    #     # Get cached training session info
-    #     cached_ts = get_training_session_from_cache(instance.training_session_id)
-    #     if not cached_ts:
-    #         # fallback if cache missed
-    #         cached_ts = {
-    #             "training_session_id": instance.training_session_id,
-    #             "client_id": instance.client_id,
-    #         }
-    #
-    #     training_session = cached_ts
-    #     # client_id = cached_ts["client_id"]
-    #
-    #     # Instead of hitting DB for heart_rate_records, track recent BPMs in cache
-    #     bpm_list_key = f"bpm_list:{training_session.id}"
-    #     cache_data = cache.get(bpm_list_key, [])
-    #     cache_data.append(instance.bpm)
-    #     if len(cache_data) > 60:  # e.g. keep last 60 seconds
-    #         cache_data = cache_data[-60:]
-    #     cache.set(bpm_list_key, cache_data, timeout=60 * 60)
-    #
-    #     # Use the cached list for calorie calculation
-    #     list_of_bpms = cache_data
-    #     current_calories = calculate_current_burned_calories(
-    #         list_of_bpms,
-    #         instance.client,  # we can still use instance.client_id if needed
-    #         seconds,
-    #     )
-    #
-    #     channel_layer = get_channel_layer()
-    #     gym_id = cached_ts.coach.gym_id  # use gym_id field (no lazy load)
-    #
-    #     async_to_sync(channel_layer.group_send)(
-    #         f"bpm_group_tenant_{gym_id}",
-    #         {
-    #             "type": "send_bpm",
-    #             "current_calories": current_calories,
-    #             "client_id": training_session.client.id,
-    #             "bpm": instance.bpm
-    #         }
-    #     )
-    #
-    #     async_to_sync(channel_layer.group_send)(
-    #         f"gym_{gym_id}",
-    #         {
-    #             "type": "gym_data",
-    #             "coach_id": cached_ts.coach_id,
-    #             "client_id":  training_session.client.id,
-    #             "client_name": getattr(instance.client.user, 'name', ''),  # careful if user not prefetched
-    #             "bpm": instance.bpm,
-    #             "current_calories": current_calories,
-    #             "seconds": seconds
-    #         }
-    #     )

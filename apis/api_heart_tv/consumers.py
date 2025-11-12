@@ -13,7 +13,7 @@ import time
 User = get_user_model()
 
 
-class BPMConsumer(AsyncWebsocketConsumer):
+class CoachPreviewConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
         self.group_name = None
@@ -53,7 +53,7 @@ class BPMConsumer(AsyncWebsocketConsumer):
                 await self.close(code=4003)
                 return
 
-            self.group_name = f"bpm_group_tenant_{self.user.coach.gym.id}"
+            self.group_name = f"coach_preview_{self.user.coach.gym.id}"
             await self.channel_layer.group_add(self.group_name, self.channel_name)
             print(time.time(), "before accept")
             await self.accept()
