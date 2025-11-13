@@ -4,20 +4,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-
-from django_heart.middleware import CachedTenantMiddleware
 from heart.models.heart_rate_record import HeartRateRecord
-from training_session.selectors import get_training_session_from_cache
 from ..serializers.serializers_heart_rate import HeartRateRecordSerializer
 from django.contrib.auth import get_user_model
 from heart.utils_for_calculating_calories import calculate_current_burned_calories
 
 User = get_user_model()
-
-
-class HeartRateView(generics.CreateAPIView):
-    queryset = HeartRateRecord.objects.all()
-    serializer_class = HeartRateRecordSerializer
 
 
 class LatestHeartRateView(APIView):
