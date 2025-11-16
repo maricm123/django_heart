@@ -220,20 +220,17 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"  # BASE_DIR je obično Path(__file__).resolve().parent.parent
 
 REST_FRAMEWORK = {
-    # YOUR SETTINGS
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         "rest_framework.authentication.SessionAuthentication",
     ),
-    "EXCEPTION_HANDLER": "django_heart.apis.exception_handlers.custom_exception_handler",
-
+    "EXCEPTION_HANDLER": "apis.exception_handlers.custom_exception_handler",
 }
 
-
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),  # Adjust as needed
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=20),  # Adjust as needed
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=20),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',  # Same as in your token header

@@ -4,6 +4,8 @@ from datetime import timedelta
 from django.db import  transaction
 from django.utils import timezone
 
+from training_session.exceptions import TrainingSessionMetricsProcessingError
+
 logger = logging.getLogger(__name__)
 
 
@@ -160,14 +162,12 @@ def end_training_session(training_session, calories_at_end, duration, bucket_sec
     now = timezone.now()
     print(now, "END TIME")
 
-    # Update base fields
     training_session.duration = duration
     training_session.calories_burned = calories_at_end
     training_session.is_active = False
     training_session.end = now
     training_session.save(update_fields=["duration", "calories_burned", "is_active", "end"])
 
-    # Metrics handled separately
     safely_process_metrics(training_session, bucket_seconds)
 
     return training_session
@@ -177,5 +177,10 @@ def safely_process_metrics(session, bucket_seconds=10):
     try:
         process_training_session_metrics(session, bucket_seconds=bucket_seconds)
     except Exception as e:
-        logger.exception(f"Failed to process metrics for session {session.pk}: {e}")
-        raise
+        logger.exception(
+            "Failed to process metrics for session %s", session.pk
+        )
+
+        raise TrainingSessionMetricsProcessingError(
+            extra={"session_id": session.pk, "error": str(e)}
+        )
