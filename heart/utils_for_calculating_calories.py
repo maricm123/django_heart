@@ -40,7 +40,6 @@ def calculate_average_heart_rate(list_of_bpms):
 #         return calories
 
 
-
 def formula_for_calculating_calories(gender, average_bpm, weight, age, duration_in_minutes):
     average_bpm = Decimal(str(average_bpm or 0))
     weight = Decimal(str(weight or 0))

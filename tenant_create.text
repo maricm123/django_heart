@@ -19,7 +19,7 @@ User = get_user_model()
 from django_tenants.utils import schema_context
 
 with schema_context('mygym'):
-    User.objects.create_superuser(email='admin@gmail.com', password='admin123', is_active=True)
+    User.objects.create_superuser(email='gmail.com', password='', is_active=True)
 
 
 -- pokretanje aplikacije (da bi radili channels i websocket)
@@ -40,6 +40,8 @@ tenant = GymTenant(schema_name="mygym", name="mygym")
 
 
 FOR PRODUCTION
+
+from gym.models.gym_tenant import GymTenant, Domain
 
 tenant = GymTenant(schema_name="public", name="public")
 tenant.save()

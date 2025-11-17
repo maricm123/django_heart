@@ -60,5 +60,4 @@ class FinishTrainingSessionSerializer(serializers.Serializer):
         seconds = validated_data.get('seconds')
         if training_session_instance.end is None:
             end_training_session(training_session_instance, calories_at_end, seconds)
-            # instance.end_training_session(calories_at_end, seconds)
             return training_session_instance
