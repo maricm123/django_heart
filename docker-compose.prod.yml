@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   web:
     image: maricm123/heartapp:latest
@@ -12,7 +10,7 @@ services:
       --graceful-timeout 0
       --keep-alive 120
     env_file:
-      - .env.prod
+      - .env
     depends_on:
       - db
       - redis
