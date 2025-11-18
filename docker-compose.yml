@@ -3,12 +3,13 @@ services:
     build:
       context: .
       dockerfile: docker/web/Dockerfile
-    command: gunicorn django_heart.asgi:application \
-      -k uvicorn.workers.UvicornWorker \
-      --bind 0.0.0.0:8000 \
-      --workers 4 \
-      --timeout 0 \
-      --graceful-timeout 0 \
+    command: >
+      gunicorn django_heart.asgi:application
+      -k uvicorn.workers.UvicornWorker
+      --bind 0.0.0.0:8000
+      --workers 4
+      --timeout 0
+      --graceful-timeout 0
       --keep-alive 120
     volumes:
       - .:/usr/src/app
