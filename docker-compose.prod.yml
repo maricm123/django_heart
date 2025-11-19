@@ -10,7 +10,7 @@ services:
 #      --graceful-timeout 0
 #      --keep-alive 120
     command: >
-      uvicorn project.asgi:application
+      uvicorn django_heart.asgi:application
       --host 0.0.0.0
       --port 8000
       --workers 2
