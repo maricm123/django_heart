@@ -1,14 +1,21 @@
 services:
   web:
     image: maricm123/heartapp:latest
+#    command: >
+#      gunicorn django_heart.asgi:application
+#      -k uvicorn.workers.UvicornWorker
+#      --bind 0.0.0.0:8000
+#      --workers 2
+#      --timeout 0
+#      --graceful-timeout 0
+#      --keep-alive 120
     command: >
-      gunicorn django_heart.asgi:application
-      -k uvicorn.workers.UvicornWorker
-      --bind 0.0.0.0:8000
+      uvicorn project.asgi:application
+      --host 0.0.0.0
+      --port 8000
       --workers 2
-      --timeout 0
-      --graceful-timeout 0
-      --keep-alive 120
+      --ws-ping-interval 20
+      --ws-ping-timeout 30
     env_file:
       - .env
     depends_on:
