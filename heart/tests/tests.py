@@ -1,12 +1,7 @@
-from decimal import Decimal
-
 import pytest
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
-
 from heart.utils_for_calculating_calories import calculate_average_heart_rate, formula_for_calculating_calories
 from user.tests.factories import CoachFactory
-from user.models.client import Client
 
 User = get_user_model()
 
