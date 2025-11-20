@@ -1,4 +1,6 @@
 import json
+from datetime import date
+from django.utils import timezone
 import jwt
 from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
@@ -160,24 +162,27 @@ class GymConsumer(AsyncWebsocketConsumer):
             def load_sessions():
                 from django_tenants.utils import tenant_context
                 with tenant_context(tenant):
-                    return list(TrainingSession.objects.filter(is_active=True))
+                    now = timezone.now()
+                    twenty_four_hours_ago = now - timezone.timedelta(hours=24)
+                    sessions = list(TrainingSession.objects.filter(is_active=True, start__gte=twenty_four_hours_ago, start__lte=now))
+                    return sessions
+            sessions = await sync_to_async(load_sessions)()
+            print(sessions, "SESSIONS")
 
-            self.sessionss = await sync_to_async(load_sessions)()
-
-            for session in self.sessionss:
+            for session in sessions:
                 # Load all heart rate records for this session
-                def load_records(session):
-                    from django_tenants.utils import tenant_context
-                    with tenant_context(tenant):
-                        # prefetch client and user to avoid lazy queries
-                        return list(session.heart_rate_records.select_related('client__user').all())
-
-                records = await sync_to_async(load_records)(session)
-                for record in records:
-                    print(record.client.user.name, "CLIENTTT")
+                # def load_records(session):
+                #     from django_tenants.utils import tenant_context
+                #     with tenant_context(tenant):
+                #         # prefetch client and user to avoid lazy queries
+                #         return list(session.heart_rate_records.select_related('client__user').all())
+                #
+                # records = await sync_to_async(load_records)(session)
+                # for record in records:
+                    print(session.client.name, "CLIENTTT")
                     print(session.start, "STARTTTT")
                     await self.gym_data({
-                        "client_name": record.client.user.name,
+                        "client_name": session.client.name,
                         "started_at": session.start.isoformat(),
                     })
 
