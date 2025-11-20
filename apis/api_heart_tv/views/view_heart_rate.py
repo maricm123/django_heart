@@ -51,17 +51,56 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
             }
         )
 
-        # Also send to the gym-wide group
+        # # Also send to the gym-wide group
+        # async_to_sync(channel_layer.group_send)(
+        #     # Using tenant from request because of middleware
+        #     f"gym_{self.request.tenant.id}",
+        #     {
+        #         "type": "gym_data",
+        #         "coach_id": instance.training_session.coach.id,
+        #         "client_id": client.id,
+        #         "client_name": client.user.name,
+        #         "bpm": instance.bpm,
+        #         "current_calories": current_calories,
+        #         "seconds": seconds
+        #     }
+        # )
+
+        # Send to gym-wide group (first BPM, include started_at once)
+        # Use cache to check if we've already sent started_at
+        cache_key = f"gym_sent_started_at_{training_session.id}_{client.id}"
+        from django.core.cache import cache
+
+        started_at = training_session.start
+        iso_started_at = training_session.start.isoformat()
+        cache_key = f"gym_sent_metadata_{training_session.id}_{client.id}"
+        if not cache.get(cache_key):
+            print("NOT CACHE")
+            print(client.user.name)
+            print(started_at, "STARTED ATTTTTT")
+            print(iso_started_at, "ISOOOOOOOO")
+            async_to_sync(channel_layer.group_send)(
+                f"gym_{self.request.tenant.id}",
+                {
+                    "type": "gym_data",
+                    "client_id": client.id,
+                    "client_name": client.user.name,
+                    "coach_id": training_session.coach.id,
+                    "started_at": training_session.start.isoformat(),
+                    "bpm": instance.bpm,
+                    "current_calories": current_calories
+                }
+            )
+            cache.set(cache_key, True, timeout=3600)
+
+        # For subsequent heart rates, you can send BPM + calories only
         async_to_sync(channel_layer.group_send)(
-            # Using tenant from request because of middleware
             f"gym_{self.request.tenant.id}",
             {
                 "type": "gym_data",
-                "coach_id": instance.training_session.coach.id,
+                "coach_id": training_session.coach.id,
                 "client_id": client.id,
-                "client_name": client.user.name,
                 "bpm": instance.bpm,
-                "current_calories": current_calories,
-                "seconds": seconds
+                "current_calories": current_calories
             }
         )

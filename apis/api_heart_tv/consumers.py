@@ -10,6 +10,8 @@ from django.db import connection
 from gym.models import GymTenant
 import time
 
+from training_session.models import TrainingSession
+
 User = get_user_model()
 
 
@@ -153,6 +155,32 @@ class GymConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_add(self.group_name, self.channel_name)
             await self.accept()
 
+            # Send initial state for all active clients
+            # Load all active sessions
+            def load_sessions():
+                from django_tenants.utils import tenant_context
+                with tenant_context(tenant):
+                    return list(TrainingSession.objects.filter(is_active=True))
+
+            self.sessionss = await sync_to_async(load_sessions)()
+
+            for session in self.sessionss:
+                # Load all heart rate records for this session
+                def load_records(session):
+                    from django_tenants.utils import tenant_context
+                    with tenant_context(tenant):
+                        # prefetch client and user to avoid lazy queries
+                        return list(session.heart_rate_records.select_related('client__user').all())
+
+                records = await sync_to_async(load_records)(session)
+                for record in records:
+                    print(record.client.user.name, "CLIENTTT")
+                    print(session.start, "STARTTTT")
+                    await self.gym_data({
+                        "client_name": record.client.user.name,
+                        "started_at": session.start.isoformat(),
+                    })
+
         except jwt.ExpiredSignatureError:
             await self.close(code=4001)
         except jwt.InvalidTokenError:
@@ -170,11 +198,20 @@ class GymConsumer(AsyncWebsocketConsumer):
 
     async def gym_data(self, event):
         """Handler za slanje podataka u grupu"""
+        # await self.send(text_data=json.dumps({
+        #     "current_calories": event["current_calories"],
+        #     "client_id": event["client_id"],
+        #     "bpm": event["bpm"],
+        #     "coach_id": event.get("coach_id"),
+        #     "client_name": event.get("client_name"),
+        #     "started_at": event.get("started_at")
+        #     # "seconds": event["seconds"]
+        # }))
         await self.send(text_data=json.dumps({
-            "current_calories": event["current_calories"],
-            "client_id": event["client_id"],
-            "bpm": event["bpm"],
-            "coach_id": event["coach_id"],
-            "client_name": event["client_name"],
-            "seconds": event["seconds"]
+            "current_calories": event.get("current_calories"),
+            "client_id": event.get("client_id"),
+            "bpm": event.get("bpm"),
+            "coach_id": event.get("coach_id"),
+            "client_name": event.get("client_name"),
+            "started_at": event.get("started_at")
         }))
