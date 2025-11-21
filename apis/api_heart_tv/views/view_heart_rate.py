@@ -55,9 +55,6 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
         # Send to gym-wide group (first BPM, include started_at once)
         # This is sent only when both WS are connected
         # Use cache to check if we've already sent started_at
-        cache_key = f"gym_sent_started_at_{training_session.id}_{client.id}"
-        from django.core.cache import cache
-
         cache_key = f"gym_sent_metadata_{training_session.id}_{client.id}"
         if not cache.get(cache_key):
             async_to_sync(channel_layer.group_send)(
