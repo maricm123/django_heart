@@ -157,34 +157,40 @@ class GymConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_add(self.group_name, self.channel_name)
             await self.accept()
 
-            # Send initial state for all active clients
-            # Load all active sessions
+            """
+            We are used to send seconds through websockets, but that is not good practice.
+            So now in LiveTV we are using time when Training session is started and based on that 
+            calculating time spent in training session.
+            Down below is function when we first start session on CoachPreview, than after that we open LiveTV tab
+            it pull all the active training session and their start data.
+            If CoachPreview and LiveTV are opened in same time, we dont need this.
+            """
             def load_sessions():
                 from django_tenants.utils import tenant_context
                 with tenant_context(tenant):
                     now = timezone.now()
                     twenty_four_hours_ago = now - timezone.timedelta(hours=24)
-                    sessions = list(TrainingSession.objects.filter(is_active=True, start__gte=twenty_four_hours_ago, start__lte=now))
-                    return sessions
+
+                    qs = TrainingSession.objects.filter(
+                        is_active=True,
+                        start__gte=twenty_four_hours_ago,
+                        start__lte=now,
+                    ).select_related("client")
+
+                    return [
+                        {
+                            "event": "initial",
+                            "client_name": s.client.name,
+                            "client_id": s.client.id,
+                            "started_at": s.start.isoformat(),
+                        }
+                        for s in qs
+                    ]
+
             sessions = await sync_to_async(load_sessions)()
-            print(sessions, "SESSIONS")
 
             for session in sessions:
-                # Load all heart rate records for this session
-                # def load_records(session):
-                #     from django_tenants.utils import tenant_context
-                #     with tenant_context(tenant):
-                #         # prefetch client and user to avoid lazy queries
-                #         return list(session.heart_rate_records.select_related('client__user').all())
-                #
-                # records = await sync_to_async(load_records)(session)
-                # for record in records:
-                    print(session.client.name, "CLIENTTT")
-                    print(session.start, "STARTTTT")
-                    await self.gym_data({
-                        "client_name": session.client.name,
-                        "started_at": session.start.isoformat(),
-                    })
+                await self.gym_data(session)
 
         except jwt.ExpiredSignatureError:
             await self.close(code=4001)
@@ -213,6 +219,7 @@ class GymConsumer(AsyncWebsocketConsumer):
         #     # "seconds": event["seconds"]
         # }))
         await self.send(text_data=json.dumps({
+            "event": event.get("event"),
             "current_calories": event.get("current_calories"),
             "client_id": event.get("client_id"),
             "bpm": event.get("bpm"),
