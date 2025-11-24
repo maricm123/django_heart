@@ -48,13 +48,8 @@ endpoints_urlpatterns = [
     ),
     path(
         'get-training-session-detail/<int:id>',
-        views_training_sessions.GetUpdateTrainingSessionView.as_view(),
+        views_training_sessions.GetUpdateDeleteTrainingSessionView.as_view(),
         name='get-training-session-detail'
-    ),
-    path(
-        'delete-training-session-detail/<int:id>',
-        views_training_sessions.DeleteTrainingSessionView.as_view(),
-        name='delete-training-session-detail'
     ),
 
     # Media

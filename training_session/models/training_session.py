@@ -1,27 +1,17 @@
 from django.db import models
-from core.models.behaviours import TimeStampable, DateTimeFramable, IsActive, DeletedAt
+from core.models.behaviours import TimeStampable, DateTimeFramable, IsActive
 from django.contrib.auth import get_user_model
 from gym.models import GymTenant
-from training_session.exceptions import CannotDeleteActiveTrainingSessionError
 from user.models.client import Client
 from user.models.coach import Coach
-from django.utils import timezone
 
 User = get_user_model()
-
-
-class ActiveManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(
-            deleted_at__isnull=True
-        )
 
 
 class TrainingSession(
     TimeStampable,
     DateTimeFramable,
-    IsActive,
-    DeletedAt
+    IsActive
 ):
     title = models.CharField(max_length=255, null=False, blank=False)
 
@@ -79,9 +69,6 @@ class TrainingSession(
     }
     """
 
-    objects = ActiveManager()
-    all_objects = models.Manager()
-
     def __str__(self):
         if self.coach:
             return self.title + " - " + str(self.start) + " - " + str(self.coach.user.name)
@@ -90,9 +77,3 @@ class TrainingSession(
     @classmethod
     def start_training_session(cls, **kwargs):
         return TrainingSession.objects.create(**kwargs)
-
-    def delete(self, using=None, keep_parents=False):
-        if self.is_active:
-            raise CannotDeleteActiveTrainingSessionError
-        self.deleted_at = timezone.now()
-        self.save(update_fields=["deleted_at"])
