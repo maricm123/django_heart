@@ -166,3 +166,10 @@ class HasProfileImage(models.Model):
         abstract = True
 
     profile_image = models.ForeignKey("core.ProfileImage", null=True, blank=True, on_delete=models.SET_NULL)
+
+
+class DeletedAt(models.Model):
+    class Meta:
+        abstract = True
+
+    deleted_at = models.DateTimeField(null=True, blank=True)

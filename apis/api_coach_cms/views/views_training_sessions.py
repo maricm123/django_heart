@@ -1,9 +1,9 @@
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from apis.api_coach_cms.serializers.serializers_training_sessions import (
     GetActiveTrainingSessionsSerializer,
     GetAllTrainingSessionsPerClientSerializer, GetAllTrainingSessionsPerCoachSerializer,
-    GetUpdateDeleteTrainingSessionSerializer,
+    GetUpdateTrainingSessionSerializer,
 )
 from training_session.models import TrainingSession
 from rest_framework import serializers
@@ -62,11 +62,31 @@ class GetAllTrainingSessionsPerCoachView(generics.ListAPIView):
         return TrainingSession.objects.filter(coach=self.request.user.coach, is_active=False).order_by('-start')
 
 
-class GetUpdateDeleteTrainingSessionView(generics.RetrieveUpdateDestroyAPIView):
+class GetUpdateTrainingSessionView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = GetUpdateDeleteTrainingSessionSerializer
+    serializer_class = GetUpdateTrainingSessionSerializer
     lookup_field = 'id'
 
     def get_queryset(self):
         return TrainingSession.objects.filter(
             id=self.kwargs['id'], is_active=False).select_related('coach', 'client')
+
+
+class DeleteTrainingSessionView(generics.DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
+    queryset = TrainingSession.objects.all()
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        # Soft delete here
+        instance.delete()
+        return Response(status=204)
+
+
+class UpdateTrainingSessionView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
+
+    def update(self, request, *args, **kwargs):
+        pass

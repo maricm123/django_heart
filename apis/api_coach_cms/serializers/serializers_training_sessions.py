@@ -23,7 +23,7 @@ class GetAllTrainingSessionsPerCoachSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class GetUpdateDeleteTrainingSessionSerializer(serializers.ModelSerializer):
+class GetUpdateTrainingSessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrainingSession
         fields = '__all__'
