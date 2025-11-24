@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from training_session.selectors import training_session_per_client_list_data
+from training_session.services import training_session_update
 
 
 class GetActiveTrainingSessionsView(generics.ListAPIView):
@@ -85,8 +86,34 @@ class DeleteTrainingSessionView(generics.DestroyAPIView):
 
 
 class UpdateTrainingSessionView(generics.UpdateAPIView):
+    class TrainingSessionOutputSerializer(serializers.Serializer):
+        title = serializers.CharField()
+
+    class UpdateTrainingSessionInputSerializer(serializers.ModelSerializer):
+        model = TrainingSession
+        fields = "__all__"
+
     permission_classes = [IsAuthenticated]
     lookup_field = 'id'
+    queryset = TrainingSession.objects.all()
 
-    def update(self, request, *args, **kwargs):
-        pass
+    input_serializer_class = UpdateTrainingSessionInputSerializer
+    output_serializer_class = TrainingSessionOutputSerializer
+
+    def patch(self, request, *args, **kwargs):
+        training_session = self.get_object()
+
+        serializer = self.input_serializer_class(
+            data=request.data,
+            partial=True  # this is the key for PATCH
+        )
+        serializer.is_valid(raise_exception=True)
+
+        updated = training_session_update(
+            training_session=training_session,
+            data=serializer.validated_data
+        )
+
+        return Response(
+            self.output_serializer_class(updated).data
+        )

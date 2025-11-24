@@ -5,6 +5,7 @@ from django.db import  transaction
 from django.utils import timezone
 
 from training_session.exceptions import TrainingSessionMetricsProcessingError
+from training_session.models import TrainingSession
 
 logger = logging.getLogger(__name__)
 
@@ -184,3 +185,10 @@ def safely_process_metrics(session, bucket_seconds=10):
         raise TrainingSessionMetricsProcessingError(
             extra={"session_id": session.pk, "error": str(e)}
         )
+
+
+def training_session_update(*, training_session: TrainingSession, data: dict) -> TrainingSession:
+    for key, value in data.items():
+            setattr(training_session, key, value)
+        training_session.save()
+        return training_session
