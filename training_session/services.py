@@ -189,6 +189,6 @@ def safely_process_metrics(session, bucket_seconds=10):
 
 def training_session_update(*, training_session: TrainingSession, data: dict) -> TrainingSession:
     for key, value in data.items():
-            setattr(training_session, key, value)
-        training_session.save()
-        return training_session
+        setattr(training_session, key, value)
+    training_session.save()
+    return training_session

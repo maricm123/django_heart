@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from apis.api_coach_cms.serializers.serializers_training_sessions import (
     GetActiveTrainingSessionsSerializer,
     GetAllTrainingSessionsPerClientSerializer, GetAllTrainingSessionsPerCoachSerializer,
-    GetUpdateTrainingSessionSerializer,
+    GetTrainingSessionSerializer,
 )
 from training_session.models import TrainingSession
 from rest_framework import serializers
@@ -63,9 +63,9 @@ class GetAllTrainingSessionsPerCoachView(generics.ListAPIView):
         return TrainingSession.objects.filter(coach=self.request.user.coach, is_active=False).order_by('-start')
 
 
-class GetUpdateTrainingSessionView(generics.RetrieveUpdateDestroyAPIView):
+class GetTrainingSessionView(generics.RetrieveDestroyAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = GetUpdateTrainingSessionSerializer
+    serializer_class = GetTrainingSessionSerializer
     lookup_field = 'id'
 
     def get_queryset(self):
@@ -85,13 +85,14 @@ class DeleteTrainingSessionView(generics.DestroyAPIView):
         return Response(status=204)
 
 
-class UpdateTrainingSessionView(generics.UpdateAPIView):
+class UpdateTrainingSessionView(generics.GenericAPIView):
     class TrainingSessionOutputSerializer(serializers.Serializer):
         title = serializers.CharField()
 
     class UpdateTrainingSessionInputSerializer(serializers.ModelSerializer):
-        model = TrainingSession
-        fields = "__all__"
+        class Meta:
+            model = TrainingSession
+            fields = ['title', ]
 
     permission_classes = [IsAuthenticated]
     lookup_field = 'id'
@@ -100,12 +101,17 @@ class UpdateTrainingSessionView(generics.UpdateAPIView):
     input_serializer_class = UpdateTrainingSessionInputSerializer
     output_serializer_class = TrainingSessionOutputSerializer
 
+    def get_serializer_class(self):
+        if self.request.method in ["GET"]:
+            return self.output_serializer_class
+        return self.input_serializer_class
+
     def patch(self, request, *args, **kwargs):
         training_session = self.get_object()
 
         serializer = self.input_serializer_class(
             data=request.data,
-            partial=True  # this is the key for PATCH
+            partial=True
         )
         serializer.is_valid(raise_exception=True)
 
