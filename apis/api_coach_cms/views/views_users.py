@@ -83,7 +83,7 @@ class CreateClientView(generics.CreateAPIView):
         return Response(ClientInfoSerializer(new_client).data, status=status.HTTP_201_CREATED)
 
 
-class GetUpdateDeleteClientView(generics.RetrieveUpdateDestroyAPIView):
+class GetUpdateClientView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ClientDetailUpdateSerializer
     lookup_field = "id"
@@ -97,3 +97,15 @@ class GetUpdateDeleteClientView(generics.RetrieveUpdateDestroyAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
+
+
+class DeleteClientView(generics.DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
+    queryset = Client.objects.all()
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        # Soft delete here
+        instance.delete()
+        return Response(status=204)

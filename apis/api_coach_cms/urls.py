@@ -26,9 +26,14 @@ endpoints_urlpatterns = [
     ),
     path(
         'client-detail/<int:id>',
-        views_users.GetUpdateDeleteClientView.as_view(),
+        views_users.GetUpdateClientView.as_view(),
         name='client-detail'
     ),
+    path(
+        'client-delete/<int:id>',
+        views_users.DeleteClientView.as_view(),
+        name='client-delete'
+    )
 
     # Training sessions
     path(
