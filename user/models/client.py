@@ -1,12 +1,25 @@
 from django.db import models
+
+from core.models.behaviours import DeletedAt
 from user.models.base_profile import BaseProfile
 from user.models.coach import Coach
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 User = get_user_model()
 
 
-class Client(BaseProfile):
+class ActiveManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            deleted_at__isnull=True
+        )
+
+
+class Client(
+    BaseProfile,
+    DeletedAt
+):
     coach = models.ForeignKey(Coach, on_delete=models.CASCADE)
 
     gender = models.CharField(
@@ -33,5 +46,12 @@ class Client(BaseProfile):
 
     max_heart_rate = models.PositiveIntegerField(null=True, blank=True)
 
+    objects = ActiveManager()
+    all_objects = models.Manager()
+
     def __str__(self):
         return self.user.name
+
+    def delete(self, using=None, keep_parents=False):
+        self.deleted_at = timezone.now()
+        self.save(update_fields=["deleted_at"])
