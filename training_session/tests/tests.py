@@ -1,49 +1,48 @@
-import pytest
-from django.contrib.auth import get_user_model
+from training_session.exceptions import CannotDeleteActiveTrainingSessionError
 from training_session.selectors import training_session_per_client_list_data
-from training_session.services import end_training_session
 from training_session.tests.factories import TrainingSessionFactory
-from user.tests.factories import ClientFactory, UserFactory, CoachFactory
+import pytest
 from django.utils import timezone
-User = get_user_model()
 
 
 @pytest.mark.django_db
 class TestTrainingSession:
-    ####################################################################################################
-    # Test functions for calories
-    ####################################################################################################
-    # def test_end_training_session_updates_fields(training_session):
-    #     result = end_training_session(training_session, 300.5, 1800)
-    #     assert not result.is_active
-    pass
 
-    def test_selector_training_session_per_client_test(self, tenant):
-        coach = CoachFactory(gym=tenant)
-        client = ClientFactory(coach=coach, gym=tenant)
-        client2 = ClientFactory(coach=coach, gym=tenant)
-        training_session = TrainingSessionFactory(
-            client=client,
-            gym=tenant,
-            coach=coach,
-            start=timezone.now(),
-            is_active=False
-        )
-        training_session2 = TrainingSessionFactory(
-            client=client,
-            gym=tenant,
-            coach=coach,
-            start=timezone.now(),
-            is_active=True
-        )
-        training_session3 = TrainingSessionFactory(
-            client=client2,
-            gym=tenant,
-            coach=coach,
-            start=timezone.now(),
-            is_active=False
+    def test_selector_training_session_per_client_test(self, session_env):
+        tenant = session_env["tenant"]
+        coach = session_env["coach"]
+        client = session_env["client"]
+        client2 = session_env["client2"]
+
+        s1 = TrainingSessionFactory(client=client, gym=tenant, coach=coach, is_active=False, start=timezone.now())
+        s2 = TrainingSessionFactory(client=client, gym=tenant, coach=coach, is_active=True, start=timezone.now())
+        s3 = TrainingSessionFactory(client=client2, gym=tenant, coach=coach, is_active=False, start=timezone.now())
+
+        result = training_session_per_client_list_data(client.id)
+        assert len(result) == 1
+
+    def test_delete_training_session_function(self, session_env):
+        tenant = session_env["tenant"]
+        coach = session_env["coach"]
+        client = session_env["client"]
+
+        session = TrainingSessionFactory(
+            client=client, gym=tenant, coach=coach, is_active=False, deleted_at=None, start=timezone.now()
         )
 
-        training_session_list = training_session_per_client_list_data(client.id)
-        print(training_session_list)
-        assert len(training_session_list) == 1
+        session.delete()
+
+        assert session.deleted_at is not None
+
+    def test_raise_error_when_delete_active_training_session(self, session_env):
+        tenant = session_env["tenant"]
+        coach = session_env["coach"]
+        client2 = session_env["client2"]
+
+        session = TrainingSessionFactory(
+            client=client2, gym=tenant, coach=coach, is_active=True, deleted_at=None, start=timezone.now()
+        )
+
+        with pytest.raises(CannotDeleteActiveTrainingSessionError):
+            session.delete()
+

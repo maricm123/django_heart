@@ -5,6 +5,8 @@ from django_tenants.utils import (
     tenant_context,
 )
 
+from user.tests.factories import CoachFactory, ClientFactory
+
 
 @pytest.fixture(scope="function")
 def tenant(db):
@@ -40,3 +42,17 @@ def _activate_tenant_schema(tenant):
     """
     with tenant_context(tenant):
         yield
+
+
+@pytest.fixture
+def session_env(tenant):
+    coach = CoachFactory(gym=tenant)
+    client = ClientFactory(coach=coach, gym=tenant)
+    client2 = ClientFactory(coach=coach, gym=tenant)
+
+    return {
+        "tenant": tenant,
+        "coach": coach,
+        "client": client,
+        "client2": client2,
+    }

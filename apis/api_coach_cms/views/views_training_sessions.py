@@ -106,7 +106,7 @@ class UpdateTrainingSessionView(generics.GenericAPIView):
             return self.output_serializer_class
         return self.input_serializer_class
 
-    def patch(self, request, *args, **kwargs):
+    def patch(self, request):
         training_session = self.get_object()
 
         serializer = self.input_serializer_class(
