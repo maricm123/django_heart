@@ -33,7 +33,7 @@ endpoints_urlpatterns = [
         'client-delete/<int:id>',
         views_users.DeleteClientView.as_view(),
         name='client-delete'
-    )
+    ),
 
     # Training sessions
     path(

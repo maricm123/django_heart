@@ -55,3 +55,7 @@ class Client(
     def delete(self, using=None, keep_parents=False):
         self.deleted_at = timezone.now()
         self.save(update_fields=["deleted_at"])
+
+        if self.user:
+            self.user.is_active = False
+            self.user.save(update_fields=["is_active"])
