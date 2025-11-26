@@ -14,9 +14,27 @@ class TestTrainingSession:
         client = session_env["client"]
         client2 = session_env["client2"]
 
-        s1 = TrainingSessionFactory(client=client, gym=tenant, coach=coach, is_active=False, start=timezone.now())
-        s2 = TrainingSessionFactory(client=client, gym=tenant, coach=coach, is_active=True, start=timezone.now())
-        s3 = TrainingSessionFactory(client=client2, gym=tenant, coach=coach, is_active=False, start=timezone.now())
+        s1 = TrainingSessionFactory(
+            client=client,
+            gym=tenant,
+            coach=coach,
+            is_active=False,
+            start=timezone.now()
+        )
+        s1 = TrainingSessionFactory(
+            client=client,
+            gym=tenant,
+            coach=coach,
+            is_active=True,
+            start=timezone.now()
+        )
+        s1 = TrainingSessionFactory(
+            client=client2,
+            gym=tenant,
+            coach=coach,
+            is_active=False,
+            start=timezone.now()
+        )
 
         result = training_session_per_client_list_data(client.id)
         assert len(result) == 1
@@ -45,4 +63,3 @@ class TestTrainingSession:
 
         with pytest.raises(CannotDeleteActiveTrainingSessionError):
             session.delete()
-

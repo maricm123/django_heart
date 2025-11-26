@@ -1,8 +1,8 @@
-from rest_framework import generics, status
+from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from apis.api_coach_cms.serializers.serializers_training_sessions import (
     GetActiveTrainingSessionsSerializer,
-    GetAllTrainingSessionsPerClientSerializer, GetAllTrainingSessionsPerCoachSerializer,
+    GetAllTrainingSessionsPerCoachSerializer,
     GetTrainingSessionSerializer,
 )
 from training_session.models import TrainingSession

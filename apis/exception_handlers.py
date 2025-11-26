@@ -42,8 +42,8 @@ def _format_errors(detail: Any, default_code: str = "error") -> List[Dict[str, A
 
             # non-field errors
             key_is_non_field = field in (
-                api_settings.NON_FIELD_ERRORS_KEY,  # "non_field_errors"
-                "__all__",  # Django default
+                api_settings.NON_FIELD_ERRORS_KEY,
+                "__all__",
             )
             field_name = None if key_is_non_field else field
 

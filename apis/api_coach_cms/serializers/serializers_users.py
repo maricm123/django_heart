@@ -5,7 +5,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from apis.api_coach_cms.mixins import ReqContextMixin
 from user.models import Coach, Client, GymManager
 from phonenumber_field.serializerfields import PhoneNumberField
-
 from user.services import client_create
 
 User = get_user_model()
@@ -70,7 +69,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         access = refresh.access_token
 
-        tenant_id = getattr(self.user.coach.gym, 'id', None)  # prilagodi kako ti čuvaš tenant
+        tenant_id = getattr(self.user.coach.gym, 'id', None)
         print(tenant_id)
         if tenant_id:
             refresh['tenant_id'] = tenant_id
