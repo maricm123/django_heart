@@ -1,6 +1,7 @@
 from django.db import models
 
 from core.models.behaviours import DeletedAt
+from user.exceptions import CannotDeleteClientWhileInActiveTrainingSession
 from user.models.base_profile import BaseProfile
 from user.models.coach import Coach
 from django.contrib.auth import get_user_model
@@ -52,7 +53,14 @@ class Client(
     def __str__(self):
         return self.user.name
 
+    @property
+    def has_active_sessions(self):
+        return self.sessions.filter(is_active=True).exists()
+
     def delete(self, using=None, keep_parents=False):
+        if self.has_active_sessions:
+            raise CannotDeleteClientWhileInActiveTrainingSession
+
         self.deleted_at = timezone.now()
         self.save(update_fields=["deleted_at"])
 
