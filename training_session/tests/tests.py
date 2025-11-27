@@ -120,3 +120,29 @@ class TestTrainingSession:
         # Make sure it is updated in database
         assert max_hr == client2.max_heart_rate
         assert max_hr != client2.user.age
+
+    def test_get_client_max_heart_rate_not_update(self, session_env):
+        tenant = session_env["tenant"]
+        coach = session_env["coach"]
+        user = UserFactory(
+            birth_date=date(2010, 0o7, 18)
+        )
+        client2 = ClientFactory(
+            user=user,
+            coach=coach,
+            gym=tenant,
+            max_heart_rate=None
+        )
+
+        samples = [
+            ("2025-01-10T10:00:00Z", 120),
+            ("2025-01-10T10:01:00Z", 92),
+            ("2025-01-10T10:02:00Z", 95),
+            ("2025-01-10T10:03:00Z", 94),
+            ("2025-01-10T10:04:00Z", 97),
+        ]
+
+        max_hr = get_client_max_heart_rate(client2, samples)
+
+        assert max_hr == 205
+        assert client2.max_heart_rate is None
