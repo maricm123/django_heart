@@ -171,7 +171,7 @@ class GymConsumer(AsyncWebsocketConsumer):
                     now = timezone.now()
                     twenty_four_hours_ago = now - timezone.timedelta(hours=24)
 
-                    qs = TrainingSession.objects.filter(
+                    training_sessions = TrainingSession.objects.filter(
                         is_active=True,
                         start__gte=twenty_four_hours_ago,
                         start__lte=now,
@@ -180,17 +180,18 @@ class GymConsumer(AsyncWebsocketConsumer):
                     return [
                         {
                             "event": "initial",
-                            "client_name": s.client.name,
-                            "client_id": s.client.id,
-                            "started_at": s.start.isoformat(),
+                            "client_name": training_session.client.name,
+                            "client_id": training_session.client.id,
+                            "started_at": training_session.start.isoformat(),
+                            "max_heart_rate": training_session.client.max_heart_rate
                         }
-                        for s in qs
+                        for training_session in training_sessions
                     ]
 
             sessions = await sync_to_async(load_sessions)()
 
             for session in sessions:
-                await self.gym_data(session)
+                await self.gym_data_initial(session)
 
         except jwt.ExpiredSignatureError:
             await self.close(code=4001)
@@ -215,6 +216,13 @@ class GymConsumer(AsyncWebsocketConsumer):
             "client_id": event.get("client_id"),
             "bpm": event.get("bpm"),
             "coach_id": event.get("coach_id"),
+        }))
+
+    async def gym_data_initial(self, event):
+        await self.send(text_data=json.dumps({
+            "event": "initial",
+            "client_id": event.get("client_id"),
             "client_name": event.get("client_name"),
-            "started_at": event.get("started_at")
+            "started_at": event.get("started_at"),
+            "max_heart_rate": event.get("max_heart_rate"),
         }))
