@@ -60,13 +60,12 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
             async_to_sync(channel_layer.group_send)(
                 f"gym_{self.request.tenant.id}",
                 {
-                    "type": "gym_data",
+                    "type": "gym_data_initial",
                     "client_id": client.id,
                     "client_name": client.user.name,
                     "coach_id": training_session.coach.id,
                     "started_at": training_session.start.isoformat(),
-                    "bpm": instance.bpm,
-                    "current_calories": current_calories
+                    "max_heart_rate": training_session.client.max_heart_rate
                 }
             )
             cache.set(cache_key, True, timeout=3600)
