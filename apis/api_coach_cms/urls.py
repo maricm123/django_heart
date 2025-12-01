@@ -42,9 +42,9 @@ endpoints_urlpatterns = [
 
     # Training sessions
     path(
-        'active-training-sessions',
+        'get-active-training-sessions',
         views_training_sessions.GetActiveTrainingSessionsView.as_view(),
-        name='active-training-sessions'
+        name='get-active-training-sessions'
     ),
     path(
         'get-training-sessions-per-client/<int:id>',
