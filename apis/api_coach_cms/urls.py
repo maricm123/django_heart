@@ -15,9 +15,14 @@ endpoints_urlpatterns = [
     path('current-coach', views_users.CurrentCoachInfoView.as_view(), name='current-coach'),
     path('login-coach', views_users.LoginCoachView.as_view(), name='login-coach'),
     path(
-        'get-all-clients-based-on-coach',
-        views_users.GetAllClientsBasedOnCoachView.as_view(),
-        name='get-all-clients-based-on-coach'
+        'get-all-clients-from-coach',
+        views_users.GetAllClientsFromCoach.as_view(),
+        name='get-all-clients-from-coach'
+    ),
+    path(
+        'get-all-clients-from-coach-not-active-session',
+        views_users.GetAllClientsFromCoachNotActiveSessionView.as_view(),
+        name='get-all-clients-from-coach-not-active-session'
     ),
     path(
         'create-client',

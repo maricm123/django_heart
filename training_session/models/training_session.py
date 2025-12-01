@@ -83,9 +83,9 @@ class TrainingSession(
     all_objects = models.Manager()
 
     def __str__(self):
-        if self.coach:
-            return self.title + " - " + str(self.start) + " - " + str(self.coach.user.name)
-        return self.title + " - " + str(self.start)
+        if self.coach and self.client.name:
+            return self.title + " - " + self.client.name + " - " + str(self.coach.user.name)
+        return self.title
 
     @classmethod
     def start_training_session(cls, **kwargs):

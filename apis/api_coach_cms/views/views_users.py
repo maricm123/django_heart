@@ -9,11 +9,14 @@ from apis.api_coach_cms.serializers.serializers_users import (
     CustomTokenObtainPairSerializer,
     ClientInfoSerializer,
     CreateClientSerializer,
-    ClientDetailUpdateSerializer,
+    ClientDetailUpdateSerializer, UserInfoNameFieldsSerializer,
 )
 from core.utils import get_logger, AppLog
 from user.log_templates import LOG_COACH_LOGGED_IN
 from user.models import Client
+from rest_framework import serializers
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 logger = get_logger(__name__)
 
@@ -54,14 +57,40 @@ class LoginCoachView(TokenObtainPairView):
         return Response(serializer.validated_data)
 
 
-class GetAllClientsBasedOnCoachView(generics.ListAPIView):
-    # Add permission for coach
+class GetAllClientsFromCoachNotActiveSessionView(generics.ListAPIView):
+    """
+    View for getting all the clients of coach, but do not show clients that are
+    in active training session.
+    """
+    class OutputSerializer(serializers.ModelSerializer):
+        user = UserInfoNameFieldsSerializer()
+
+        class Meta:
+            model = Client
+            fields = ["id", "user", "weight", "height", "gender"]
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = OutputSerializer
+
+    def get_queryset(self):
+        return (
+            Client.objects
+            .filter(coach=self.request.user.coach)
+            .select_related('user')
+            .exclude(sessions__is_active=True)
+            .distinct()
+        )
+
+
+class GetAllClientsFromCoach(generics.ListAPIView):
+    """
+    List of clients for "Client list" page
+    """
     permission_classes = [IsAuthenticated]
     serializer_class = ClientInfoSerializer
 
     def get_queryset(self):
-        # improve this query
-        return Client.objects.filter(coach=self.request.user.coach)
+        return Client.objects.filter(coach=self.request.user.coach).select_related('user')
 
 
 class CreateClientView(generics.CreateAPIView):

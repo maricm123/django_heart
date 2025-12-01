@@ -18,6 +18,14 @@ class UserInfoSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class UserInfoNameFieldsSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'first_name', 'last_name',  'is_active', 'birth_date')
+
+
 class CoachInfoSerializer(ReqContextMixin, serializers.ModelSerializer):
     user = UserInfoSerializer()
 
