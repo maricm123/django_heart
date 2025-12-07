@@ -4,7 +4,8 @@ from .views import (
     views_users,
     views_browsable,
     views_training_sessions,
-    views_media
+    views_media,
+    views_dashboard,
 )
 
 app_name = "api_coach_cms"
@@ -78,6 +79,13 @@ endpoints_urlpatterns = [
         views_media.UploadProfilePictureView.as_view(),
         name='upload-profile-picture'
     ),
+
+    # Dashboard
+    path(
+        'dashboard-informations',
+        views_dashboard.DashboardInformationsView.as_view(),
+        name='dashboard-informations'
+    )
 
 ]
 
