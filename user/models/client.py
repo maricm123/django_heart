@@ -46,6 +46,12 @@ class Client(
     )
 
     max_heart_rate = models.PositiveIntegerField(null=True, blank=True)
+    auto_calculate_max_hr = models.BooleanField(
+        help_text="Coach choose an option, will max heart rate being calculated based on client age",
+        default=False,
+        null=False,
+        blank=False
+    )
 
     objects = ActiveManager()
     all_objects = models.Manager()

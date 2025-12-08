@@ -104,6 +104,7 @@ class CreateClientSerializer(serializers.Serializer):
     weight = serializers.FloatField(required=True)
     height = serializers.FloatField(required=True)
     phone_number = PhoneNumberField(required=False, allow_null=True)
+    max_heart_rate = serializers.IntegerField(required=False, allow_null=True)
 
     def validate_gender(self, value):
         allowed_genders = ["Male", "Female"]
@@ -111,6 +112,15 @@ class CreateClientSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 f"Gender must be one of {', '.join(allowed_genders)}."
             )
+        return value
+
+    def validate_max_heart_rate(self, value):
+        if value is None:
+            return value
+        if value < 0:
+            raise serializers.ValidationError("Value cannot be negative.")
+        if value < 50:
+            raise serializers.ValidationError("Max heart rate must be at least 50.")
         return value
 
     def validate(self, data):
