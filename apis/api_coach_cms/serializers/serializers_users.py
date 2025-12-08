@@ -105,6 +105,7 @@ class CreateClientSerializer(serializers.Serializer):
     height = serializers.FloatField(required=True)
     phone_number = PhoneNumberField(required=False, allow_null=True)
     max_heart_rate = serializers.IntegerField(required=False, allow_null=True)
+    auto_calculate_max_hr = serializers.BooleanField(required=True)
 
     def validate_gender(self, value):
         allowed_genders = ["Male", "Female"]
