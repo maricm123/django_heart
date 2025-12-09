@@ -65,7 +65,7 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
                     "client_name": client.user.name,
                     "coach_id": training_session.coach.id,
                     "started_at": training_session.start.isoformat(),
-                    "max_heart_rate": training_session.client.max_heart_rate
+                    "max_heart_rate": training_session.client.max_heart_rate_value
                 }
             )
             cache.set(cache_key, True, timeout=3600)

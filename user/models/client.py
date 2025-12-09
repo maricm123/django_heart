@@ -63,6 +63,22 @@ class Client(
     def has_active_sessions(self):
         return self.sessions.filter(is_active=True).exists()
 
+    @property
+    def max_heart_rate_value(self):
+        """
+        Returns the client's max heart rate:
+        1. If max_heart_rate is set, use it.
+        2. If not, and auto_calculate_max_hr is True, calculate as age - 20.
+        3. Otherwise, return None.
+        """
+        if self.max_heart_rate:
+            return self.max_heart_rate
+
+        if self.auto_calculate_max_hr and self.user and self.user.age:
+            return self.user.age - 20
+
+        return None
+
     def delete(self, using=None, keep_parents=False):
         if self.has_active_sessions:
             raise CannotDeleteClientWhileInActiveTrainingSession

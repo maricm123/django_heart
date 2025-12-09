@@ -183,7 +183,7 @@ class GymConsumer(AsyncWebsocketConsumer):
                             "client_name": training_session.client.name,
                             "client_id": training_session.client.id,
                             "started_at": training_session.start.isoformat(),
-                            "max_heart_rate": training_session.client.max_heart_rate
+                            "max_heart_rate": training_session.client.max_heart_rate_value
                         }
                         for training_session in training_sessions
                     ]
