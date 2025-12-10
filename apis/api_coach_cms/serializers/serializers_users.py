@@ -155,10 +155,11 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 class ClientDetailUpdateSerializer(serializers.ModelSerializer):
     user = UserUpdateSerializer()
+    max_heart_rate = serializers.IntegerField(required=False, allow_null=True)
 
     class Meta:
         model = Client
-        fields = ('id', 'user', 'weight', 'height', 'gender', 'max_heart_rate')
+        fields = ('id', 'user', 'weight', 'height', 'gender', 'max_heart_rate', 'auto_calculate_max_hr')
 
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', None)
