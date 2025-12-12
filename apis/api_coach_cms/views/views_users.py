@@ -110,6 +110,7 @@ class CreateClientView(generics.CreateAPIView):
         return Response(ClientInfoSerializer(new_client).data, status=status.HTTP_201_CREATED)
 
 
+# Refactor this, in two views and serializers
 class GetUpdateClientView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ClientDetailUpdateSerializer
@@ -124,6 +125,23 @@ class GetUpdateClientView(generics.RetrieveUpdateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
+
+
+class GetClientDetailsView(generics.RetrieveAPIView):
+    class OutputSerializer(serializers.ModelSerializer):
+        user = UserInfoNameFieldsSerializer
+        class Meta:
+            model = Client
+            fields = ('user',)
+    permission_classes = [IsAuthenticated]
+    serializer_class = OutputSerializer
+    lookup_field = "id"
+
+    def get_object(self):
+        client = Client.objects.get(id=self.kwargs['id'])
+        print(client)
+        data = self.OutputSerializer(client).data
+        return data
 
 
 class DeleteClientView(generics.DestroyAPIView):
