@@ -9,13 +9,15 @@ from apis.api_coach_cms.serializers.serializers_users import (
     CustomTokenObtainPairSerializer,
     ClientInfoSerializer,
     CreateClientSerializer,
-    ClientDetailUpdateSerializer, UserInfoNameFieldsSerializer,
+    UserInfoNameFieldsSerializer, ClientUpdateSerializer,
 )
 from core.utils import get_logger, AppLog
 from user.log_templates import LOG_COACH_LOGGED_IN
 from user.models import Client
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+
 User = get_user_model()
 
 logger = get_logger(__name__)
@@ -110,10 +112,9 @@ class CreateClientView(generics.CreateAPIView):
         return Response(ClientInfoSerializer(new_client).data, status=status.HTTP_201_CREATED)
 
 
-# Refactor this, in two views and serializers
-class GetUpdateClientView(generics.RetrieveUpdateAPIView):
+class UpdateClientView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = ClientDetailUpdateSerializer
+    serializer_class = ClientUpdateSerializer
     lookup_field = "id"
 
     def get_queryset(self):
@@ -129,19 +130,16 @@ class GetUpdateClientView(generics.RetrieveUpdateAPIView):
 
 class GetClientDetailsView(generics.RetrieveAPIView):
     class OutputSerializer(serializers.ModelSerializer):
-        user = UserInfoNameFieldsSerializer
+        user = UserInfoNameFieldsSerializer()
         class Meta:
             model = Client
-            fields = ('user',)
+            fields = '__all__'
     permission_classes = [IsAuthenticated]
     serializer_class = OutputSerializer
     lookup_field = "id"
 
     def get_object(self):
-        client = Client.objects.get(id=self.kwargs['id'])
-        print(client)
-        data = self.OutputSerializer(client).data
-        return data
+        return get_object_or_404(Client, id=self.kwargs['id'])
 
 
 class DeleteClientView(generics.DestroyAPIView):

@@ -153,7 +153,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'first_name', 'last_name', 'birth_date',)
 
 
-class ClientDetailUpdateSerializer(serializers.ModelSerializer):
+class ClientUpdateSerializer(serializers.ModelSerializer):
     user = UserUpdateSerializer()
     max_heart_rate = serializers.IntegerField(required=False, allow_null=True)
 
