@@ -88,30 +88,34 @@ def process_training_session_metrics(session, bucket_seconds=10, ema_alpha=0.3):
     # --- Summary ---
     avg_hr = round(sum(p["bpm"] for p in points) / len(points))
     max_hr_point = max(p["bpm"] for p in points)
+    print(max_hr_point, "CLIENT MAX HR POINT ")
     duration_seconds = int(session.duration or total_seconds)
     calories = float(session.calories_burned) if session.calories_burned else None
 
     # HR zones
-    zones = {"z1": 0, "z2": 0, "z3": 0, "z4": 0, "z5": 0}
-    for p in points:
-        pct = p["bpm"] / max_hr
-        if pct < 0.60:
-            zones["z1"] += bucket_seconds
-        elif pct < 0.70:
-            zones["z2"] += bucket_seconds
-        elif pct < 0.80:
-            zones["z3"] += bucket_seconds
-        elif pct < 0.90:
-            zones["z4"] += bucket_seconds
-        else:
-            zones["z5"] += bucket_seconds
+    zones = None
+    if max_hr:
+        zones = {"z1": 0, "z2": 0, "z3": 0, "z4": 0, "z5": 0}
+        for p in points:
+            pct = p["bpm"] / max_hr
+            if pct < 0.60:
+                zones["z1"] += bucket_seconds
+            elif pct < 0.70:
+                zones["z2"] += bucket_seconds
+            elif pct < 0.80:
+                zones["z3"] += bucket_seconds
+            elif pct < 0.90:
+                zones["z4"] += bucket_seconds
+            else:
+                zones["z5"] += bucket_seconds
 
     summary = {
         "avg_hr": avg_hr,
         "max_hr": max_hr_point,
         "duration_seconds": duration_seconds,
         "calories": calories,
-        "hr_zones_seconds": zones
+        "hr_zones_seconds": zones,  # None if max_hr is unknown
+        "has_max_hr": bool(max_hr),
     }
 
     # store final metrics
@@ -129,30 +133,30 @@ def process_training_session_metrics(session, bucket_seconds=10, ema_alpha=0.3):
 
 def get_client_max_heart_rate(client, samples):
     """
-    Return client's max heart rate.
+    Determine the client's max heart rate for this session.
 
-    Logic:
-    - If client has no stored max HR -> use 220 - age
-    - Compare stored HR with current session HR
-    - If current session HR is higher -> update client's stored HR
-    - Return the final max HR value
+    Rules:
+    - Use client.max_heart_rate_value as baseline
+    - If baseline is None → return None (no auto-calculation here)
+    - If session max BPM exceeds stored max → update client
     """
-    heart_rates_from_current_session = [bpm for (_, bpm) in samples]
-    max_heart_rate_from_current_session = max(heart_rates_from_current_session)
+    if not samples:
+        return None
 
-    # 1) Determine baseline client max HR
-    if client.max_heart_rate is None:
-        client_max_heart_rate = 220 - client.user.age
-    else:
-        client_max_heart_rate = client.max_heart_rate
+    session_max_hr = max(bpm for _, bpm in samples)
 
-    # 2) If the current session's max is higher, update the client
-    if max_heart_rate_from_current_session > client_max_heart_rate:
-        client_max_heart_rate = max_heart_rate_from_current_session
-        client.max_heart_rate = client_max_heart_rate
+    client_max_hr = client.max_heart_rate_value
+    print(client_max_hr, "CLIENT MAX HR")
+
+    if client_max_hr is None:
+        return None
+
+    if client_max_hr and session_max_hr > client_max_hr:
+        client.max_heart_rate = session_max_hr
         client.save(update_fields=["max_heart_rate"])
+        return session_max_hr
 
-    return client_max_heart_rate
+    return client_max_hr
 
 
 @transaction.atomic

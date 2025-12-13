@@ -86,6 +86,9 @@ class DeleteTrainingSessionView(generics.DestroyAPIView):
 
 
 class UpdateTrainingSessionView(generics.GenericAPIView):
+    """
+    NOT finished, we need to brainstorm this
+    """
     class TrainingSessionOutputSerializer(serializers.Serializer):
         title = serializers.CharField()
 

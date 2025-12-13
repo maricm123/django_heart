@@ -143,6 +143,5 @@ class TestTrainingSession:
         ]
 
         max_hr = get_client_max_heart_rate(client2, samples)
-
-        assert max_hr == 205
+        assert max_hr is None
         assert client2.max_heart_rate is None

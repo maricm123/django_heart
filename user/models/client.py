@@ -69,14 +69,14 @@ class Client(
         """
         Returns the client's max heart rate:
         1. If max_heart_rate is set, use it.
-        2. If not, and auto_calculate_max_hr is True, calculate as age - 20.
+        2. If not, and auto_calculate_max_hr is True, calculate as 220 - age.
         3. Otherwise, return None.
         """
         if self.max_heart_rate:
             return self.max_heart_rate
 
         if self.auto_calculate_max_hr and self.user and self.user.age:
-            return self.user.age - 20
+            return 220 - self.user.age
 
         return None
 
