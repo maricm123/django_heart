@@ -88,7 +88,6 @@ def process_training_session_metrics(session, bucket_seconds=10, ema_alpha=0.3):
     # --- Summary ---
     avg_hr = round(sum(p["bpm"] for p in points) / len(points))
     max_hr_point = max(p["bpm"] for p in points)
-    print(max_hr_point, "CLIENT MAX HR POINT ")
     duration_seconds = int(session.duration or total_seconds)
     calories = float(session.calories_burned) if session.calories_burned else None
 
@@ -146,7 +145,6 @@ def get_client_max_heart_rate(client, samples):
     session_max_hr = max(bpm for _, bpm in samples)
 
     client_max_hr = client.max_heart_rate_value
-    print(client_max_hr, "CLIENT MAX HR")
 
     if client_max_hr is None:
         return None
