@@ -22,17 +22,6 @@ class GetActiveTrainingSessionsView(generics.ListAPIView):
         return TrainingSession.objects.filter(coach=self.request.user.coach, is_active=True)
 
 
-# class GetAllTrainingSessionsPerClientView(generics.ListAPIView):
-#     class OutputSerializer(serializers.Serializer):
-#
-#     permission_classes = [IsAuthenticated]
-#     # serializer_class = GetAllTrainingSessionsPerClientSerializer
-#     lookup_field = 'id'
-#
-#
-#     def get_queryset(self):
-#         client_id = self.kwargs.get('id')
-#         return TrainingSession.objects.filter(client__id=client_id, is_active=False).order_by('-start')
 class GetAllTrainingSessionsPerClientView(APIView):
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
