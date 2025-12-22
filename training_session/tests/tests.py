@@ -31,7 +31,7 @@ class TestTrainingSession:
             is_active=True,
             start=timezone.now()
         )
-        s1 = TrainingSessionFactory(
+        TrainingSessionFactory(
             client=client2,
             gym=tenant,
             coach=coach,

@@ -29,17 +29,6 @@ def calculate_average_heart_rate(list_of_bpms):
     return sum(list_of_bpms) / len(list_of_bpms)
 
 
-# def formula_for_calculating_calories(gender, average_bpm, weight, age, duration_in_minutes):
-#     if gender == 'Male':
-#         calories = ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
-#                 0.2017 * age)) / 4.184) * duration_in_minutes
-#         return round(calories, 2)
-#     elif gender == 'Female':
-#         calories = ((-55.0969 + (0.6309 * average_bpm) + (0.1988 * weight) + (
-#                 0.2017 * age)) / 4.184) * duration_in_minutes
-#         return calories
-
-
 def formula_for_calculating_calories(gender, average_bpm, weight, age, duration_in_minutes):
     average_bpm = Decimal(str(average_bpm or 0))
     weight = Decimal(str(weight or 0))

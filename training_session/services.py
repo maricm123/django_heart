@@ -81,7 +81,7 @@ def process_training_session_metrics(session, bucket_seconds=10, ema_alpha=0.3):
 
     # --- Build points ---
     points = [
-        { "ts": (start_ts + timedelta(seconds=i * bucket_seconds)).isoformat(), "bpm": round(bpm) }
+        { "ts": (start_ts + timedelta(seconds=i * bucket_seconds)).isoformat(), "bpm": round(bpm)}
         for i, bpm in enumerate(ema)
     ]
 

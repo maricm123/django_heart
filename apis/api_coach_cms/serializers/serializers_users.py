@@ -23,7 +23,7 @@ class UserInfoNameFieldsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'first_name', 'last_name',  'is_active', 'birth_date')
+        fields = ('id', 'email', 'first_name', 'last_name', 'is_active', 'birth_date')
 
 
 class CoachInfoSerializer(ReqContextMixin, serializers.ModelSerializer):

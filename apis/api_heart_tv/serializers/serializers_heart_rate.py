@@ -17,7 +17,8 @@ class HeartRateRecordSerializer(serializers.ModelSerializer):
 
         training_session_id = validated_data['training_session_id']
 
-        # Here for heart rate record i can use validated_data['training_session_id'] because django know what to do
+        # Here for heart rate record i can use validated_data['training_session_id']
+        # because django know what to do
         #  That means in our redis data we can store just id of training session and id of client
         #  and maybe something else. So we need to change that.
         cached_training_session = get_training_session_from_cache(training_session_id)

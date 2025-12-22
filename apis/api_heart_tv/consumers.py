@@ -1,5 +1,4 @@
 import json
-from datetime import date
 from django.utils import timezone
 import jwt
 from asgiref.sync import sync_to_async

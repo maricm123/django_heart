@@ -1,6 +1,8 @@
 import pytest
 from django.contrib.auth import get_user_model
-from heart.utils_for_calculating_calories import calculate_average_heart_rate, formula_for_calculating_calories
+from heart.utils_for_calculating_calories import (
+    calculate_average_heart_rate, formula_for_calculating_calories
+)
 from user.tests.factories import CoachFactory
 
 User = get_user_model()

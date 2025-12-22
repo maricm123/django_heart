@@ -18,12 +18,6 @@ ne znam iz kog razloga sam poslednji put morao pokrenuti i ovu gore komandu kao 
 08.08 trenutno se baza nalazi u pilates_db u django_heart2 bazi
 
 
-
-Superuser
-admin@gmail.com
-admin123
-
-
 payload for profile picture
 {
   "file_name": "avatar.png",
@@ -34,12 +28,6 @@ payload for profile picture
 setovanje current sceheme u kodu
 # schema_name = await self.get_schema_from_tenant_id(tenant_id)  # tvoja funkcija
 # await self.set_current_schema(schema_name)  # zavisi kako radiš multi-tenant
-
-
-
-
-
-
 
 
 
