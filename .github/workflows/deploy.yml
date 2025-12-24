@@ -13,6 +13,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Debug repository tree
+        run: |
+          pwd
+          ls -la
+          find . -name Dockerfile
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -26,9 +32,9 @@ jobs:
       - name: Build & Push Docker image
         run: |
           docker build \
-          -f django_heart/docker/web/Dockerfile \
-          -t heartapp \
-          .
+            -f django_heart/docker/web/Dockerfile \
+            -t heartapp \
+            .
           docker tag heartapp:latest \
             ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/heartapp:latest
           docker push \
