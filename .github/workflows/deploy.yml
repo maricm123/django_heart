@@ -40,14 +40,17 @@ jobs:
       - name: Build & Push Docker image
         run: |
           set -e
-
-          IMAGE=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/heartapp:latest
-
+      
+          export IMAGE="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/heartapp:latest"
+      
+          echo "IMAGE=$IMAGE"
+      
           docker build -f docker/web/Dockerfile -t heartapp .
-
-          docker tag heartapp:latest $IMAGE
-
-          docker push $IMAGE
+          docker tag heartapp:latest "$IMAGE"
+          docker push "$IMAGE"
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
 
 
       - name: Deploy on EC2
