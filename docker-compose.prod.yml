@@ -1,6 +1,7 @@
 services:
   web:
-    image: maricm123/heartapp:latest
+    # image: maricm123/heartapp:latest
+    image: 458845363232.dkr.ecr.eu-north-1.amazonaws.com/heartapp:latest
 #    command: >
 #      gunicorn django_heart.asgi:application
 #      -k uvicorn.workers.UvicornWorker
