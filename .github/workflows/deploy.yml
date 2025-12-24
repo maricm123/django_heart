@@ -32,7 +32,7 @@ jobs:
       - name: Build & Push Docker image
         run: |
           docker build \
-            -f django_heart/docker/web/Dockerfile \
+            -f docker/web/Dockerfile \
             -t heartapp \
             .
           docker tag heartapp:latest \
