@@ -38,20 +38,19 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build & Push Docker image
-        run: |
-          set -e
-      
-          export IMAGE="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/heartapp:latest"
-        
-          echo "IMAGE=$IMAGE"
-          set -x
-          echo "IMAGE=$IMAGE"
-          docker build -f docker/web/Dockerfile -t heartapp .
-          docker tag heartapp:latest "$IMAGE"
-          docker push "$IMAGE"
         env:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: |
+          set -e
+      
+          IMAGE="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/heartapp:latest"
+      
+          echo "IMAGE=$IMAGE"
+      
+          docker build -f docker/web/Dockerfile -t heartapp .
+          docker tag heartapp:latest "$IMAGE"
+          docker push "$IMAGE"
 
 
       - name: Deploy on EC2
