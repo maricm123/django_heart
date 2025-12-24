@@ -42,6 +42,6 @@ jobs:
               | docker login --username AWS --password-stdin \
                 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
 
-            docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/django-heart:latest
+            docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/heartapp:latest
             docker compose -f docker-compose.prod.yml up -d
             docker image prune -f
