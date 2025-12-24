@@ -25,7 +25,10 @@ jobs:
 
       - name: Build & Push Docker image
         run: |
-          docker build -t heartapp .
+          docker build \
+          -f django_heart/docker/web/Dockerfile \
+          -t heartapp \
+          .
           docker tag heartapp:latest \
             ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/heartapp:latest
           docker push \
