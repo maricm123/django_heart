@@ -44,9 +44,12 @@ jobs:
         run: |
           set -e
       
-          IMAGE="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/heartapp:latest"
+          ACCOUNT_ID="$(echo -n "$AWS_ACCOUNT_ID" | tr -d '\n')"
+          REGION="$(echo -n "$AWS_REGION" | tr -d '\n')"
       
-          echo "IMAGE=$IMAGE"
+          IMAGE="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/heartapp:latest"
+      
+          echo "IMAGE => $IMAGE"
       
           docker build -f docker/web/Dockerfile -t heartapp .
           docker tag heartapp:latest "$IMAGE"
