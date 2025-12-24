@@ -63,7 +63,10 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            "aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <account>.dkr.ecr.<region>.amazonaws.com"
-            docker pull <account>.dkr.ecr.<region>.amazonaws.com/heartapp:latest
-            docker compose -f docker-compose.prod.yml up -d
+            IMAGE="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/heartapp:latest"
+            
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin $IMAGE
+            docker pull $IMAGE
+            docker compose -f docker-compose.prod.yml up -d --force-recreate
             docker image prune -f
+            docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
