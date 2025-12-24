@@ -25,11 +25,11 @@ jobs:
 
       - name: Build & Push Docker image
         run: |
-          docker build -t django-heart .
-          docker tag django-heart:latest \
-            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/django-heart:latest
+          docker build -t heartapp .
+          docker tag heartapp:latest \
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/heartapp:latest
           docker push \
-            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/django-heart:latest
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/heartapp:latest
 
       - name: Deploy on EC2
         uses: appleboy/ssh-action@v1.0.3
