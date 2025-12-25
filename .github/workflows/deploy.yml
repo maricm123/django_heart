@@ -69,6 +69,8 @@ jobs:
           script: |
             set -euo pipefail
 
+            cd /django-heart
+
             ACCOUNT_ID="$(printf '%s' "$AWS_ACCOUNT_ID" | tr -d '\r\n')"
             REGION="$(printf '%s' "$AWS_REGION" | tr -d '\r\n')"
 
