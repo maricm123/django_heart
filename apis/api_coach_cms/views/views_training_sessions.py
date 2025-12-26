@@ -49,7 +49,8 @@ class GetAllTrainingSessionsPerCoachView(generics.ListAPIView):
     serializer_class = GetAllTrainingSessionsPerCoachSerializer
 
     def get_queryset(self):
-        return TrainingSession.objects.filter(coach=self.request.user.coach, is_active=False).order_by('-start')
+        return TrainingSession.objects.filter(
+            coach=self.request.user.coach, is_active=False).order_by('-start')
 
 
 class GetTrainingSessionView(generics.RetrieveDestroyAPIView):

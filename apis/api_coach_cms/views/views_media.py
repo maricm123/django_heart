@@ -20,7 +20,9 @@ class UploadProfilePictureView(APIView):
         presigned_url = generate_presigned_url(file_name, file_type)
 
         # napravi putanju koju ćemo čuvati u modelu
-        s3_url = f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{file_name}"
+        s3_url = \
+            (f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}"
+             f".amazonaws.com/{file_name}")
 
         return Response({
             "presigned_url": presigned_url,

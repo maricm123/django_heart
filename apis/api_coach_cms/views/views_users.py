@@ -131,6 +131,7 @@ class UpdateClientView(generics.UpdateAPIView):
 class GetClientDetailsView(generics.RetrieveAPIView):
     class OutputSerializer(serializers.ModelSerializer):
         user = UserInfoNameFieldsSerializer()
+
         class Meta:
             model = Client
             fields = '__all__'

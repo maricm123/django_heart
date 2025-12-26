@@ -22,7 +22,8 @@ class CreateTrainingSessionView(APIView):
             id=serializer.validated_data['id'],
         )
 
-        return Response(TrainingSessionInfoSerializer(new_training_session).data, status=status.HTTP_201_CREATED)
+        return Response(TrainingSessionInfoSerializer(
+            new_training_session).data, status=status.HTTP_201_CREATED)
 
 
 class FinishTrainingSessionView(generics.UpdateAPIView):
