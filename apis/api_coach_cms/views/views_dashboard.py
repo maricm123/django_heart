@@ -14,7 +14,6 @@ class DashboardInformationsView(generics.GenericAPIView):
 
     def get(self, request):
         gym_tenant = self.request.tenant.name
-        print(gym_tenant)
         dashboard_info = get_dashboard_info(self.request)
 
         data = self.OutputSerializer(dashboard_info).data
