@@ -67,6 +67,20 @@ class TestTrainingSession:
         with pytest.raises(CannotDeleteActiveTrainingSessionError):
             session.delete()
 
+    def test_force_delete_training_session_function(self, session_env):
+        tenant = session_env["tenant"]
+        coach = session_env["coach"]
+        client = session_env["client"]
+
+        session = TrainingSessionFactory(
+            client=client, gym=tenant, coach=coach, is_active=True, deleted_at=None, start=timezone.now()
+        )
+
+        session.force_delete_active_training_session()
+
+        assert session.deleted_at is not None
+        assert session.is_active is False
+
     def test_get_client_max_heart_rate_from_database(self, session_env):
         tenant = session_env["tenant"]
         coach = session_env["coach"]
