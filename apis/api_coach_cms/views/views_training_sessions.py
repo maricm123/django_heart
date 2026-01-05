@@ -9,7 +9,6 @@ from training_session.models import TrainingSession
 from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
 from training_session.selectors import training_session_per_client_list_data
 from training_session.services import training_session_update
 
@@ -116,3 +115,15 @@ class UpdateTrainingSessionView(generics.GenericAPIView):
         return Response(
             self.output_serializer_class(updated).data
         )
+
+
+class ForceDeleteActiveTrainingSessionView(generics.DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
+    queryset = TrainingSession.objects.all()
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        # Soft delete here
+        instance.force_delete_active_training_session()
+        return Response(status=204)

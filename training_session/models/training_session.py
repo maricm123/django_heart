@@ -96,3 +96,11 @@ class TrainingSession(
             raise CannotDeleteActiveTrainingSessionError
         self.deleted_at = timezone.now()
         self.save(update_fields=["deleted_at"])
+
+    def force_delete_active_training_session(self):
+        """
+        Delete active training session, when we want permanently
+        """
+        self.deleted_at = timezone.now()
+        self.is_active = False
+        self.save(update_fields=["deleted_at", "is_active"])

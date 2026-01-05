@@ -13,9 +13,6 @@ class DashboardInformationsView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        gym_tenant = self.request.tenant.name
         dashboard_info = get_dashboard_info(self.request)
-
         data = self.OutputSerializer(dashboard_info).data
-
         return Response(data)
