@@ -78,9 +78,9 @@ endpoints_urlpatterns = [
         name='update-training-session-detail'
     ),
     path(
-        'force-delete-training-session-detail/<int:id>',
+        'force-delete-training-session/<int:id>',
         views_training_sessions.ForceDeleteActiveTrainingSessionView.as_view(),
-        name='force-delete-training-session-detail'
+        name='force-delete-training-session'
     ),
 
     # Media
