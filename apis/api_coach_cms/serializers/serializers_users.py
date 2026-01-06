@@ -26,28 +26,6 @@ class UserInfoNameFieldsSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'first_name', 'last_name', 'is_active', 'birth_date')
 
 
-class CoachInfoSerializer(ReqContextMixin, serializers.ModelSerializer):
-    user = UserInfoSerializer()
-
-    class Meta:
-        model = Coach
-        fields = ('user', 'specialty',)
-
-    def update(self, instance, validated_data):
-        user_data = validated_data.pop('user', None)
-        if user_data:
-            for attr, value in user_data.items():
-                setattr(instance.user, attr, value)
-            instance.user.save()
-
-        # Update client fields
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-
-        return instance
-
-
 class ClientInfoSerializer(UserInfoSerializer):
     user = UserInfoSerializer()
 
@@ -160,6 +138,28 @@ class ClientUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         fields = ('id', 'user', 'weight', 'height', 'gender', 'max_heart_rate', 'auto_calculate_max_hr')
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', None)
+        if user_data:
+            for attr, value in user_data.items():
+                setattr(instance.user, attr, value)
+            instance.user.save()
+
+        # Update client fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        return instance
+
+
+class CoachUpdateSerializer(serializers.ModelSerializer):
+    user = UserUpdateSerializer()
+
+    class Meta:
+        model = Client
+        fields = ('id', 'user', )
 
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', None)

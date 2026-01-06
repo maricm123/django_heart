@@ -13,7 +13,12 @@ app_name = "api_coach_cms"
 
 endpoints_urlpatterns = [
     # Users
-    path('current-coach', views_users.CurrentCoachInfoView.as_view(), name='current-coach'),
+    path('current-coach', views_users.GetCurrentCoachDetailsView.as_view(), name='current-coach'),
+    path(
+        'update-current-coach',
+        views_users.UpdateCurrentCoachView.as_view(),
+        name='update-current-coach'
+    ),
     path('login-coach', views_users.LoginCoachView.as_view(), name='login-coach'),
     path(
         'get-all-clients-from-coach',
@@ -33,7 +38,7 @@ endpoints_urlpatterns = [
     path(
         'update-client/<int:id>',
         views_users.UpdateClientView.as_view(),
-        name='client-detail'
+        name='update-client'
     ),
     path(
         'get-client-detail/<int:id>',

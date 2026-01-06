@@ -5,15 +5,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from apis.api_coach_cms.serializers.serializers_users import (
-    CoachInfoSerializer,
     CustomTokenObtainPairSerializer,
     ClientInfoSerializer,
     CreateClientSerializer,
-    UserInfoNameFieldsSerializer, ClientUpdateSerializer,
+    UserInfoNameFieldsSerializer, ClientUpdateSerializer, CoachUpdateSerializer,
 )
 from core.utils import get_logger, AppLog
 from user.log_templates import LOG_COACH_LOGGED_IN
-from user.models import Client
+from user.models import Client, Coach
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
@@ -23,21 +22,29 @@ User = get_user_model()
 logger = get_logger(__name__)
 
 
-class CurrentCoachInfoView(generics.RetrieveUpdateAPIView):
-    """
-    View for getting current logged coach information.
-    """
-    serializer_class = CoachInfoSerializer
-    # We need to create custom permissions
+class GetCurrentCoachDetailsView(generics.RetrieveAPIView):
+    class OutputSerializer(serializers.ModelSerializer):
+        user = UserInfoNameFieldsSerializer()
+
+        class Meta:
+            model = Coach
+            fields = ('user', 'specialty',)
     permission_classes = [IsAuthenticated]
+    serializer_class = OutputSerializer
 
     def get_object(self):
         try:
-            # test log
-            AppLog(logger, LOG_COACH_LOGGED_IN, coach=self.request.user.coach)
             return self.request.user.coach
         except ObjectDoesNotExist:
             raise Http404
+
+
+class UpdateCurrentCoachView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CoachUpdateSerializer
+
+    def get_object(self):
+        return self.request.user.coach
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
