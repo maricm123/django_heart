@@ -10,6 +10,8 @@ from apis.api_coach_cms.serializers.serializers_users import (
     CreateClientSerializer,
     UserInfoNameFieldsSerializer, ClientUpdateSerializer, CoachUpdateSerializer,
 )
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.views import APIView
 from core.utils import get_logger, AppLog
 from user.log_templates import LOG_COACH_LOGGED_IN
 from user.models import Client, Coach
@@ -64,6 +66,27 @@ class LoginCoachView(TokenObtainPairView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.validated_data)
+
+
+class LogoutCoachView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data.get("refresh")
+
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response(
+                {"detail": "Successfully logged out."},
+                status=status.HTTP_205_RESET_CONTENT
+            )
+        except Exception:
+            return Response(
+                {"detail": "Invalid token."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class GetAllClientsFromCoachNotActiveSessionView(generics.ListAPIView):

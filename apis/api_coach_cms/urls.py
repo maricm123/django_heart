@@ -20,6 +20,7 @@ endpoints_urlpatterns = [
         name='update-current-coach'
     ),
     path('login-coach', views_users.LoginCoachView.as_view(), name='login-coach'),
+    path('logout-coach', views_users.LogoutCoachView.as_view(), name='logout-coach'),
     path(
         'get-all-clients-from-coach',
         views_users.GetAllClientsFromCoach.as_view(),
