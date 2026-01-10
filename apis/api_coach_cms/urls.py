@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.urls import path, include
+from rest_framework_simplejwt.views import TokenRefreshView
 from .views import (
     views_users,
     views_browsable,
@@ -21,6 +22,7 @@ endpoints_urlpatterns = [
     ),
     path('login-coach', views_users.LoginCoachView.as_view(), name='login-coach'),
     path('logout-coach', views_users.LogoutCoachView.as_view(), name='logout-coach'),
+    path('refresh-token', TokenRefreshView.as_view(), name='refresh-token'),
     path(
         'get-all-clients-from-coach',
         views_users.GetAllClientsFromCoach.as_view(),
