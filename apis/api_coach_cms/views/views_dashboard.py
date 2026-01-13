@@ -9,10 +9,11 @@ class DashboardInformationsView(generics.GenericAPIView):
     class OutputSerializer(serializers.Serializer):
         gym_name = serializers.CharField(required=True)
         coach_name = serializers.CharField(required=True)
+        active_members = serializers.ListField(required=False)
 
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        dashboard_info = get_dashboard_info(self.request)
+        dashboard_info = get_dashboard_info(request)
         data = self.OutputSerializer(dashboard_info).data
         return Response(data)
