@@ -6,12 +6,10 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv()  # take environment variables from .env.
+load_dotenv()
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJ_SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJ_DEBUG')
 
 # Application definition
@@ -75,10 +73,6 @@ INTERNAL_IPS = ["127.0.0.1", "localhost"] + [
 #     "13.48.248.110",
 # ]
 
-####################################################################################################
-# Debug toolbar
-# https://django-debug-toolbar.readthedocs.io/en/stable/installation.html#internal-ips
-####################################################################################################
 
 STORAGES = {
     "default": {
@@ -145,7 +139,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "en-us"
 
 # TIME_ZONE = "UTC"
-TIME_ZONE = "Europe/Belgrade"  # or "Europe/Paris"
+TIME_ZONE = "Europe/Belgrade"
 
 USE_I18N = True
 
@@ -156,7 +150,7 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-ASGI_APPLICATION = 'django_heart.asgi.application'  # promeni u naziv svog projekta
+ASGI_APPLICATION = 'django_heart.asgi.application'
 
 
 CHANNEL_LAYERS = {
