@@ -52,6 +52,10 @@ class TrainingSession(
     )
     duration = models.PositiveIntegerField(null=True, blank=True, help_text="Duration in seconds")
 
+    # Stop/resume fields
+    paused_at = models.DateTimeField(null=True, blank=True)
+    total_paused_seconds = models.PositiveIntegerField(null=True, blank=True)
+
     # Derived summary metrics (cached result for fast UI reads)
     summary_metrics = models.JSONField(default=dict, blank=True)
     """
@@ -86,6 +90,22 @@ class TrainingSession(
         if self.coach and self.client.name:
             return self.title + " - " + self.client.name + " - " + str(self.coach.user.name)
         return self.title
+
+    @property
+    def is_paused(self):
+        if self.paused_at is None:
+            return False
+        return True
+
+    def pause(self):
+        if self.paused_at is None:
+            self.paused_at = timezone.now()
+
+    def resume(self):
+        if self.paused_at is not None:
+            delta = timezone.now() - self.paused_at
+            self.total_paused_seconds = (self.total_paused_seconds or 0) + int(delta.total_seconds())
+            self.paused_at = None
 
     @classmethod
     def start_training_session(cls, **kwargs):
