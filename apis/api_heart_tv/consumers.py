@@ -182,7 +182,10 @@ class GymConsumer(AsyncWebsocketConsumer):
                             "client_name": training_session.client.name,
                             "client_id": training_session.client.id,
                             "started_at": training_session.start.isoformat(),
-                            "max_heart_rate": training_session.client.max_heart_rate_value
+                            "max_heart_rate": training_session.client.max_heart_rate_value,
+                            "paused": training_session.is_paused,
+                            "paused_at": training_session.paused_at.isoformat() if training_session.paused_at else None,
+                            "paused_seconds": training_session.paused_seconds or 0,
                         }
                         for training_session in training_sessions
                     ]
@@ -215,6 +218,9 @@ class GymConsumer(AsyncWebsocketConsumer):
             "client_id": event.get("client_id"),
             "bpm": event.get("bpm"),
             "coach_id": event.get("coach_id"),
+            "paused": event.get("paused"),
+            "paused_at": event.get("paused_at"),
+            "paused_seconds": event.get("paused_seconds"),
         }))
 
     async def gym_data_initial(self, event):
@@ -224,4 +230,7 @@ class GymConsumer(AsyncWebsocketConsumer):
             "client_name": event.get("client_name"),
             "started_at": event.get("started_at"),
             "max_heart_rate": event.get("max_heart_rate"),
+            "paused": event.get("paused"),
+            "paused_at": event.get("paused_at"),
+            "paused_seconds": event.get("paused_seconds"),
         }))

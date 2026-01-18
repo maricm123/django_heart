@@ -1,5 +1,6 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from apis.api_coach_cms.mixins import TrainingSessionMixin
 from apis.api_coach_cms.serializers.serializers_training_sessions import (
     GetActiveTrainingSessionsSerializer,
     GetAllTrainingSessionsPerCoachSerializer,
@@ -7,10 +8,14 @@ from apis.api_coach_cms.serializers.serializers_training_sessions import (
 )
 from training_session.models import TrainingSession
 from rest_framework import serializers
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from training_session.selectors import training_session_per_client_list_data
 from training_session.services import training_session_update
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 
 class GetActiveTrainingSessionsView(generics.ListAPIView):
@@ -127,3 +132,101 @@ class ForceDeleteActiveTrainingSessionView(generics.DestroyAPIView):
         # Soft delete here
         instance.force_delete_active_training_session()
         return Response(status=204)
+
+
+class PauseActiveTrainingSessionView(
+    APIView,
+    TrainingSessionMixin
+):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, id):
+        actor = request.user
+        coach = getattr(actor, "coach", None)
+        if not coach:
+            return Response({"detail": "Only coaches can pause sessions."}, status=status.HTTP_403_FORBIDDEN)
+
+        training_session = TrainingSessionMixin.get_training_session_with_id(id=id)
+
+        if not training_session.is_active:
+            return Response({"detail": "Session is not active."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if training_session.coach_id != coach.id:
+            return Response({"detail": "You can pause only your sessions."}, status=status.HTTP_403_FORBIDDEN)
+
+        # idempotent: calling pause twice is fine
+        training_session.pause()
+        training_session.save(update_fields=["paused_at"])
+
+        # broadcast to LiveTV
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"gym_{coach.gym_id}",
+            {
+                "type": "gym_data",
+                "event": "session_pause",
+                "client_id": training_session.client_id,
+                "paused": training_session.is_paused,
+                "paused_at": training_session.paused_at.isoformat() if training_session.paused_at else None,
+                "paused_seconds": training_session.paused_seconds or 0,
+            },
+        )
+
+        return Response({
+            "id": training_session.id,
+            "client_id": training_session.client_id,
+            "paused": training_session.is_paused,
+            "paused_at": training_session.paused_at,
+            "paused_seconds": training_session.paused_seconds or 0,
+        }, status=status.HTTP_200_OK)
+
+
+class ResumeActiveTrainingSessionView(
+    APIView,
+    TrainingSessionMixin
+):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, id):
+        actor = request.user
+        coach = getattr(actor, "coach", None)
+        if not coach:
+            return Response({"detail": "Only coaches can resume sessions."}, status=status.HTTP_403_FORBIDDEN)
+
+        training_session = TrainingSessionMixin.get_training_session_with_id(id=id)
+
+        if not training_session.is_active:
+            return Response({"detail": "Session is not active."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if training_session.coach_id != coach.id:
+            return Response({"detail": "You can resume only your sessions."}, status=status.HTTP_403_FORBIDDEN)
+
+        # resume updates paused_seconds + clears paused_at
+        was_paused = training_session.is_paused
+        training_session.resume()
+
+        # if it wasn’t paused, it’s still OK (idempotent)
+        # but update_fields should include both
+        training_session.save(update_fields=["paused_at", "paused_seconds"] if was_paused else ["paused_at"])
+
+        # broadcast to LiveTV
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"gym_{coach.gym_id}",
+            {
+                "type": "gym_data",
+                "event": "session_pause",
+                "client_id": training_session.client_id,
+                "paused": training_session.is_paused,
+                "paused_at": training_session.paused_at.isoformat() if session.paused_at else None,
+                "paused_seconds": training_session.paused_seconds or 0,
+            },
+        )
+
+        return Response({
+            "id": training_session.id,
+            "client_id": training_session.client_id,
+            "paused": training_session.is_paused,
+            "paused_at": training_session.paused_at,
+            "paused_seconds": training_session.paused_seconds or 0,
+        }, status=status.HTTP_200_OK)

@@ -90,6 +90,16 @@ endpoints_urlpatterns = [
         views_training_sessions.ForceDeleteActiveTrainingSessionView.as_view(),
         name='force-delete-training-session'
     ),
+    path(
+        "training-session/<int:id>/pause",
+        views_training_sessions.PauseActiveTrainingSessionView.as_view(),
+        name='pause-training-session'
+    ),
+    path(
+        "training-session/<int:id>/resume",
+        views_training_sessions.ResumeActiveTrainingSessionView.as_view(),
+        name='resume-training-session'
+    ),
 
     # Media
     path(
