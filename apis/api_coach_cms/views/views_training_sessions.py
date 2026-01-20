@@ -146,7 +146,7 @@ class PauseActiveTrainingSessionView(
         if not coach:
             return Response({"detail": "Only coaches can pause sessions."}, status=status.HTTP_403_FORBIDDEN)
 
-        training_session = TrainingSessionMixin.get_training_session_with_id(id=id)
+        training_session = TrainingSessionMixin.get_training_session_with_id(self, id=id)
 
         if not training_session.is_active:
             return Response({"detail": "Session is not active."}, status=status.HTTP_400_BAD_REQUEST)
@@ -154,11 +154,9 @@ class PauseActiveTrainingSessionView(
         if training_session.coach_id != coach.id:
             return Response({"detail": "You can pause only your sessions."}, status=status.HTTP_403_FORBIDDEN)
 
-        # idempotent: calling pause twice is fine
         training_session.pause()
         training_session.save(update_fields=["paused_at"])
 
-        # broadcast to LiveTV
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f"gym_{coach.gym_id}",
@@ -168,7 +166,7 @@ class PauseActiveTrainingSessionView(
                 "client_id": training_session.client_id,
                 "paused": training_session.is_paused,
                 "paused_at": training_session.paused_at.isoformat() if training_session.paused_at else None,
-                "paused_seconds": training_session.paused_seconds or 0,
+                "paused_seconds": training_session.total_paused_seconds or 0,
             },
         )
 
@@ -177,7 +175,7 @@ class PauseActiveTrainingSessionView(
             "client_id": training_session.client_id,
             "paused": training_session.is_paused,
             "paused_at": training_session.paused_at,
-            "paused_seconds": training_session.paused_seconds or 0,
+            "paused_seconds": training_session.total_paused_seconds or 0,
         }, status=status.HTTP_200_OK)
 
 
@@ -193,7 +191,7 @@ class ResumeActiveTrainingSessionView(
         if not coach:
             return Response({"detail": "Only coaches can resume sessions."}, status=status.HTTP_403_FORBIDDEN)
 
-        training_session = TrainingSessionMixin.get_training_session_with_id(id=id)
+        training_session = TrainingSessionMixin.get_training_session_with_id(self,id=id)
 
         if not training_session.is_active:
             return Response({"detail": "Session is not active."}, status=status.HTTP_400_BAD_REQUEST)
@@ -201,15 +199,11 @@ class ResumeActiveTrainingSessionView(
         if training_session.coach_id != coach.id:
             return Response({"detail": "You can resume only your sessions."}, status=status.HTTP_403_FORBIDDEN)
 
-        # resume updates paused_seconds + clears paused_at
         was_paused = training_session.is_paused
         training_session.resume()
 
-        # if it wasn’t paused, it’s still OK (idempotent)
-        # but update_fields should include both
-        training_session.save(update_fields=["paused_at", "paused_seconds"] if was_paused else ["paused_at"])
+        training_session.save(update_fields=["paused_at", "total_paused_seconds"] if was_paused else ["paused_at"])
 
-        # broadcast to LiveTV
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             f"gym_{coach.gym_id}",
@@ -218,8 +212,8 @@ class ResumeActiveTrainingSessionView(
                 "event": "session_pause",
                 "client_id": training_session.client_id,
                 "paused": training_session.is_paused,
-                "paused_at": training_session.paused_at.isoformat() if session.paused_at else None,
-                "paused_seconds": training_session.paused_seconds or 0,
+                "paused_at": training_session.paused_at.isoformat() if training_session.paused_at else None,
+                "paused_seconds": training_session.total_paused_seconds or 0,
             },
         )
 
@@ -228,5 +222,5 @@ class ResumeActiveTrainingSessionView(
             "client_id": training_session.client_id,
             "paused": training_session.is_paused,
             "paused_at": training_session.paused_at,
-            "paused_seconds": training_session.paused_seconds or 0,
+            "paused_seconds": training_session.total_paused_seconds or 0,
         }, status=status.HTTP_200_OK)
