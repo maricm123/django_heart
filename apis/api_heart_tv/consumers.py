@@ -185,7 +185,7 @@ class GymConsumer(AsyncWebsocketConsumer):
                             "max_heart_rate": training_session.client.max_heart_rate_value,
                             "paused": training_session.is_paused,
                             "paused_at": training_session.paused_at.isoformat() if training_session.paused_at else None,
-                            "paused_seconds": training_session.paused_seconds or 0,
+                            "paused_seconds": training_session.total_paused_seconds or 0,
                         }
                         for training_session in training_sessions
                     ]
