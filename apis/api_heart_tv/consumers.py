@@ -160,7 +160,8 @@ class GymConsumer(AsyncWebsocketConsumer):
             We are used to send seconds through websockets, but that is not good practice.
             So now in LiveTV we are using time when Training session is started and based on that
             calculating time spent in training session.
-            Down below is function when we first start session on CoachPreview, than after that we open LiveTV tab
+            Down below is function when we first start session on CoachPreview,
+            than after that we open LiveTV tab
             it pull all the active training session and their start data.
             If CoachPreview and LiveTV are opened in same time, we dont need this.
             """

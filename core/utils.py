@@ -48,15 +48,6 @@ def as_app_log(object) -> str:
         return "NONE"  # we need to display something anyway in the log line
 
 
-# class AppLogSource(Enum):
-#     """Enum to help define source of the applicative log (ie. where it comes from)"""
-#
-#     BACK_OFFICE = auto()
-#     CONVIVE_APP = auto()
-#     CONVIVE_TILL = auto()
-#     TEAM_MEMBER_TILL = auto()
-
-
 @dataclass
 class AppLogTemplate:
     slug: str
@@ -145,14 +136,13 @@ def generate_presigned_url(file_name, file_type):
     )
 
     presigned_url = s3_client.generate_presigned_url(
-        'put_object',  # operacija upload-a
+        'put_object',
         Params={
             'Bucket': settings.AWS_STORAGE_BUCKET_NAME,
             'Key': file_name,
             'ContentType': file_type,
-            'ACL': 'public-read'  # opcionalno, ako želiš da URL bude direktno dostupan
+            'ACL': 'public-read'
         },
-        ExpiresIn=300  # važi 5 minuta
+        ExpiresIn=300
     )
-    print(presigned_url, "PRESIGNED URL")
     return presigned_url

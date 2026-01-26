@@ -2,8 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from apis.api_coach_cms.mixins import ReqContextMixin
-from user.models import Coach, Client, GymManager
+from user.models import Client, GymManager
 from phonenumber_field.serializerfields import PhoneNumberField
 from user.services import client_create
 

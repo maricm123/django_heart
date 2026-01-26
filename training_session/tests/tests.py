@@ -17,14 +17,14 @@ class TestTrainingSession:
         client = session_env["client"]
         client2 = session_env["client2"]
 
-        s1 = TrainingSessionFactory(
+        TrainingSessionFactory(
             client=client,
             gym=tenant,
             coach=coach,
             is_active=False,
             start=timezone.now()
         )
-        s1 = TrainingSessionFactory(
+        TrainingSessionFactory(
             client=client,
             gym=tenant,
             coach=coach,

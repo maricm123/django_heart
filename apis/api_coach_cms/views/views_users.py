@@ -12,8 +12,7 @@ from apis.api_coach_cms.serializers.serializers_users import (
 )
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
-from core.utils import get_logger, AppLog
-from user.log_templates import LOG_COACH_LOGGED_IN
+from core.utils import get_logger
 from user.models import Client, Coach
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
