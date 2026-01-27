@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+from core.serializers import EmailFieldSerializer
 from user.models import Client, GymManager
 from phonenumber_field.serializerfields import PhoneNumberField
 from user.services import client_create
@@ -173,3 +175,12 @@ class CoachUpdateSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class ForgotPasswordSerializer(EmailFieldSerializer):
+    def validate(self, attrs):
+        pass
+
+
+class ResetPasswordConfirmSerializer(serializers.Serializer):
+    pass

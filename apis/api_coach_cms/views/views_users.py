@@ -8,7 +8,8 @@ from apis.api_coach_cms.serializers.serializers_users import (
     CustomTokenObtainPairSerializer,
     ClientInfoSerializer,
     CreateClientSerializer,
-    UserInfoNameFieldsSerializer, ClientUpdateSerializer, CoachUpdateSerializer,
+    UserInfoNameFieldsSerializer, ClientUpdateSerializer, CoachUpdateSerializer, ForgotPasswordSerializer,
+    ResetPasswordConfirmSerializer,
 )
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
@@ -182,3 +183,23 @@ class DeleteClientView(generics.DestroyAPIView):
         # Soft delete here
         instance.delete()
         return Response(status=204)
+
+
+class CoachForgotPasswordView(APIView):
+    """
+    View that is used when user click on Forgot Password, then opens new page
+    where client populate with his email. To the email we sent token and uid.
+    """
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+
+class CoachResetPasswordView(APIView):
+    def post(self, request):
+        serializer = ResetPasswordConfirmSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'success': 'Password has been successfully reset.'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
