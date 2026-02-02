@@ -12,14 +12,6 @@ class CreateTrainingSessionSerializer(serializers.Serializer):
     start = serializers.DateTimeField(required=True)
     client_id = serializers.IntegerField(required=True)
 
-    def validate_start(self, value):
-        now = timezone.localtime()  # converts timezone.now() to TIME_ZONE
-        print(value, "START VALUE")
-        print(now, "LOCAL TIME")
-        # if value < now:
-        #     raise serializers.ValidationError("Start time cannot be in the past.")
-        return value
-
     def validate_client_id(self, value):
         return get_object_or_404(Client, id=value)
 

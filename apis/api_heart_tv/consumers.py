@@ -84,18 +84,6 @@ class CoachPreviewConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         pass
 
-    def calculate_calories_from_bpm(self, bpm, user):
-        weight = user.weight or 70  # kg
-        age = user.age or 30  # godine
-        gender = user.gender  # npr. "M" ili "F"
-
-        if gender == "M":
-            calories = (age * 0.2017 - weight * 0.09036 + bpm * 0.6309 - 55.0969) * 1 / 4.184
-        else:
-            calories = (age * 0.074 - weight * 0.05741 + bpm * 0.4472 - 20.4022) * 1 / 4.184
-
-        return round(max(calories, 0), 2)
-
     @staticmethod
     async def get_user(user_id):
         try:
@@ -109,7 +97,7 @@ class CoachPreviewConsumer(AsyncWebsocketConsumer):
         """
         try:
             tenant = await sync_to_async(GymTenant.objects.get)(id=tenant_id)
-            return tenant.schema_name  # ili field koji čuva ime schema
+            return tenant.schema_name
         except GymTenant.DoesNotExist:
             raise ValueError(f"Tenant sa id {tenant_id} ne postoji")
 
@@ -152,7 +140,6 @@ class GymConsumer(AsyncWebsocketConsumer):
                 return
 
             self.group_name = f"gym_{self.user.coach.gym.id}"
-            print(self.group_name, "GROUP NAME")
             await self.channel_layer.group_add(self.group_name, self.channel_name)
             await self.accept()
 
@@ -208,7 +195,6 @@ class GymConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data):
-        # Ovde LiveTV ne šalje ništa, samo sluša
         pass
 
     async def gym_data(self, event):
