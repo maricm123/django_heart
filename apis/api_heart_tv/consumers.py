@@ -221,3 +221,10 @@ class GymConsumer(AsyncWebsocketConsumer):
             "paused_at": event.get("paused_at"),
             "paused_seconds": event.get("paused_seconds"),
         }))
+
+    async def training_session_finished(self, event):
+        await self.send(text_data=json.dumps({
+            "event": "training_session_finished",
+            "client_id": event.get("client_id"),
+            "training_session_id": event.get("training_session_id"),
+        }))

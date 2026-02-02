@@ -3,7 +3,8 @@ import math
 from datetime import timedelta
 from django.db import  transaction
 from django.utils import timezone
-
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from training_session.exceptions import TrainingSessionMetricsProcessingError
 from training_session.models import TrainingSession
 
@@ -171,6 +172,25 @@ def end_training_session(training_session, calories_at_end, duration, bucket_sec
     training_session.save(update_fields=["duration", "calories_burned", "is_active", "end"])
 
     safely_process_metrics(training_session, bucket_seconds)
+
+    # ✅ Broadcast to LiveTV (GymConsumer group)
+    gym_group = f"gym_{training_session.gym_id}"
+    client_id = training_session.client_id
+    training_session_id = training_session.id
+
+    channel_layer = get_channel_layer()
+
+    def _send_finished():
+        async_to_sync(channel_layer.group_send)(
+            gym_group,
+            {
+                "event": "training_session_finished",
+                "client_id": client_id,
+                "session_id": training_session_id,
+            }
+        )
+
+    transaction.on_commit(_send_finished)
 
     return training_session
 
