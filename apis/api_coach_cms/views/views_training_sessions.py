@@ -9,7 +9,7 @@ from apis.api_coach_cms.serializers.serializers_training_sessions import (
 from training_session.models import TrainingSession
 from rest_framework import serializers
 from training_session.selectors import training_session_per_client_list_data
-from training_session.services import training_session_update
+from training_session.services import training_session_update, force_delete_active_training_session
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -130,7 +130,7 @@ class ForceDeleteActiveTrainingSessionView(generics.DestroyAPIView):
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
         # Soft delete here
-        instance.force_delete_active_training_session()
+        force_delete_active_training_session(instance)
         return Response(status=204)
 
 

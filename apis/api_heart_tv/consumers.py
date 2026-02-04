@@ -28,7 +28,6 @@ class CoachPreviewConsumer(AsyncWebsocketConsumer):
     #     await self.accept()
 
     async def connect(self):
-        print(time.time(), "start connect")
         query_string = self.scope["query_string"].decode()
         params = parse_qs(query_string)
         token = params.get("token", [None])[0]
@@ -39,7 +38,6 @@ class CoachPreviewConsumer(AsyncWebsocketConsumer):
 
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-            print(time.time(), "after jwt")
             self.user_id = payload.get("user_id")
 
             tenant_id = payload.get("tenant_id")
@@ -51,14 +49,12 @@ class CoachPreviewConsumer(AsyncWebsocketConsumer):
                     return User.objects.select_related("coach__gym").get(id=self.user_id)
 
             self.user = await sync_to_async(load_user)()
-            print(time.time(), "after user")
             if not self.user.coach:
                 await self.close(code=4003)
                 return
 
             self.group_name = f"coach_preview_{self.user.coach.gym.id}"
             await self.channel_layer.group_add(self.group_name, self.channel_name)
-            print(time.time(), "before accept")
             await self.accept()
 
         except jwt.ExpiredSignatureError:
@@ -72,7 +68,7 @@ class CoachPreviewConsumer(AsyncWebsocketConsumer):
         # await self.channel_layer.group_discard("bpm_group", self.channel_name)
 
     async def receive(self, text_data):
-        pass  # nije potrebno slati sa fronta ništa
+        pass
 
     async def send_bpm(self, event):
         await self.send(text_data=json.dumps({
