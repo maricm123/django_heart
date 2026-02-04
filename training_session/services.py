@@ -173,24 +173,11 @@ def end_training_session(training_session, calories_at_end, duration, bucket_sec
 
     safely_process_metrics(training_session, bucket_seconds)
 
-    # ✅ Broadcast to LiveTV (GymConsumer group)
-    gym_group = f"gym_{training_session.gym_id}"
-    client_id = training_session.client_id
-    training_session_id = training_session.id
-
-    channel_layer = get_channel_layer()
-
-    def _send_finished():
-        async_to_sync(channel_layer.group_send)(
-            gym_group,
-            {
-                "event": "training_session_finished",
-                "client_id": client_id,
-                "session_id": training_session_id,
-            }
-        )
-
-    transaction.on_commit(_send_finished)
+    on_commit_broadcast_training_session_finished(
+        gym_id=training_session.gym_id,
+        client_id=training_session.client_id,
+        training_session_id=training_session.id,
+    )
 
     return training_session
 
@@ -213,3 +200,33 @@ def training_session_update(*, training_session: TrainingSession, data: dict) ->
         setattr(training_session, key, value)
     training_session.save()
     return training_session
+
+
+def force_delete_active_training_session(training_session: TrainingSession):
+    """
+    Delete active training session, when we want permanently
+    """
+    on_commit_broadcast_training_session_finished(
+        training_session_id=training_session.id,
+        gym_id=training_session.gym.id,
+        client_id=training_session.client.id
+    )
+    training_session.deleted_at = timezone.now()
+    training_session.is_active = False
+    training_session.save(update_fields=["deleted_at", "is_active"])
+
+
+def on_commit_broadcast_training_session_finished(gym_id: int, client_id: int, training_session_id: int):
+    def _send():
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"gym_{gym_id}",
+            {
+                "type": "training_session_finished",
+                "event": "training_session_finished",
+                "client_id": client_id,
+                "training_session_id": training_session_id,
+            }
+        )
+    transaction.on_commit(_send)
+
