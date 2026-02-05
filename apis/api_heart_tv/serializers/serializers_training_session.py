@@ -4,7 +4,6 @@ from apis.api_coach_cms.serializers.serializers_users import ClientInfoSerialize
 from training_session.models import TrainingSession
 from training_session.services import end_training_session
 from user.models.client import Client
-from django.utils import timezone
 
 
 class CreateTrainingSessionSerializer(serializers.Serializer):

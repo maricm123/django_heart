@@ -88,7 +88,7 @@ class TrainingSession(
 
     def __str__(self):
         if self.coach and self.client.name:
-            return self.title + " - " + self.client.name + " - " + str(self.coach.user.name)
+            return self.title + " - " + self.client.name + " - " + str(self.coach.user.name) + str(self.start)
         return self.title
 
     @property
