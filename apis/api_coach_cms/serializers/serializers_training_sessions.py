@@ -18,6 +18,8 @@ class GetAllTrainingSessionsPerClientSerializer(serializers.ModelSerializer):
 
 
 class GetAllTrainingSessionsPerCoachSerializer(serializers.ModelSerializer):
+    client = serializers.CharField(source="client.name")
+
     class Meta:
         model = TrainingSession
         fields = '__all__'
