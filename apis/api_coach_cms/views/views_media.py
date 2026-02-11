@@ -16,10 +16,8 @@ class UploadProfilePictureView(APIView):
         if not file_name or not file_type:
             return Response({"error": "file_name and file_type required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # generiši presigned URL
         presigned_url = generate_presigned_url(file_name, file_type)
 
-        # napravi putanju koju ćemo čuvati u modelu
         s3_url = \
             (f"https://{settings.AWS_STORAGE_BUCKET_NAME}.s3.{settings.AWS_S3_REGION_NAME}"
              f".amazonaws.com/{file_name}")

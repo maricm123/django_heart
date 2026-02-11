@@ -8,11 +8,6 @@ class GetCurrentTenant(APIView):
     def get(self, request):
         tenant = getattr(request, "tenant", None)
 
-        from django.db import connection
-
-        print("CURRENT SCHEMA:", connection.schema_name)
-        print("TENANT NAME FROM OBJ:", tenant.name if tenant else None)
-
         schema_name = getattr(tenant, "schema_name", None) or connection.schema_name
         host = request.get_host().split(":")[0]
 
