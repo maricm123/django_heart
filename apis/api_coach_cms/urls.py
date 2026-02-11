@@ -7,12 +7,15 @@ from .views import (
     views_training_sessions,
     views_media,
     views_dashboard,
+    views_tenant
 )
 
 app_name = "api_coach_cms"
 
 
 endpoints_urlpatterns = [
+    # Tenants
+    path('current-tenant', views_tenant.GetCurrentTenant.as_view(), name='current-tenant'),
     # Users
     path('current-coach', views_users.GetCurrentCoachDetailsView.as_view(), name='current-coach'),
     path(
