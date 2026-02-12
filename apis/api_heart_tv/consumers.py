@@ -9,8 +9,6 @@ from urllib.parse import parse_qs
 from django.conf import settings
 from django.db import connection
 from gym.models import GymTenant
-import time
-
 from training_session.models import TrainingSession
 
 User = get_user_model()

@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
+from django.db import connection
 from core.serializers import EmailFieldSerializer
 from user.models import Client, GymManager
 from phonenumber_field.serializerfields import PhoneNumberField
@@ -49,25 +49,32 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     """
     def validate(self, attrs):
         data = super().validate(attrs)
-        refresh = self.get_token(self.user)
+
+        request = self.context.get("request")
+        request_tenant = getattr(request, "tenant", None)
+        schema_name = getattr(request_tenant, "schema_name", None) or connection.schema_name
+
+        if schema_name == "public" or request_tenant is None:
+            raise AuthenticationFailed("Invalid tenant.")
 
         if not self.user.is_coach:
             raise AuthenticationFailed("Not coach.")
 
+        user_tenant_id = getattr(self.user.coach.gym, "id", None)
+        request_tenant_id = getattr(request_tenant, "id", None)
+
+        if user_tenant_id is None or request_tenant_id is None or user_tenant_id != request_tenant_id:
+            raise AuthenticationFailed("Invalid tenant for this user.")
+
+        refresh = self.get_token(self.user)
         access = refresh.access_token
 
-        tenant_id = getattr(self.user.coach.gym, 'id', None)
-        print(tenant_id)
-        if tenant_id:
-            refresh['tenant_id'] = tenant_id
-            access['tenant_id'] = tenant_id
+        refresh["tenant_id"] = user_tenant_id
+        access["tenant_id"] = user_tenant_id
 
-        # we ll se do we need role in response, maybe we have that through access token
-        # data['role'] = self.user.role
-        data['refresh'] = str(refresh)
-        data['access'] = str(access)
-        data['tenant_id'] = tenant_id
-
+        data["refresh"] = str(refresh)
+        data["access"] = str(access)
+        data["tenant_id"] = user_tenant_id
         return data
 
 
