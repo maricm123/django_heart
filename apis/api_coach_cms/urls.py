@@ -116,7 +116,14 @@ endpoints_urlpatterns = [
         'dashboard-informations',
         views_dashboard.DashboardInformationsView.as_view(),
         name='dashboard-informations'
-    )
+    ),
+
+    # Contact form
+    path(
+        'contact-form',
+        views_contact.SendMailContactFormView.as_view(),
+        name='contact-form'
+    ),
 
 ]
 

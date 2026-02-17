@@ -326,3 +326,15 @@ AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 AWS_STORAGE_BUCKET_NAME = "test-bucket"
 AWS_S3_REGION_NAME = "us-east-1"  # može biti bilo šta
 AWS_S3_ENDPOINT_URL = "http://localhost:9000"  # pokazuje na S3 Ninja
+
+
+# EMAIL SETTINGS
+CONTACT_FORM_TO_EMAIL = "you@yourdomain.com"
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.yourprovider.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "..."
+EMAIL_HOST_PASSWORD = "..."
+DEFAULT_FROM_EMAIL = "HeartApp <noreply@yourdomain.com>"
