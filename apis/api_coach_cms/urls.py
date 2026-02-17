@@ -7,7 +7,8 @@ from .views import (
     views_training_sessions,
     views_media,
     views_dashboard,
-    views_tenant
+    views_tenant,
+    views_contact
 )
 
 app_name = "api_coach_cms"
