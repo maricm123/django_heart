@@ -229,4 +229,3 @@ def on_commit_broadcast_training_session_finished(gym_id: int, client_id: int, t
             }
         )
     transaction.on_commit(_send)
-

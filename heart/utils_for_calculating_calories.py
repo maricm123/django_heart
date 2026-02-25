@@ -36,10 +36,10 @@ def formula_for_calculating_calories(gender, average_bpm, weight, age, duration_
     duration_in_minutes = Decimal(str(duration_in_minutes or 0))
 
     if gender == 'Male':
-        calories = ((Decimal('-55.0969') + (Decimal('0.6309') * average_bpm) +
-                     (Decimal('0.1988') * weight) + (Decimal('0.2017') * age)) / Decimal('4.184')) * duration_in_minutes
+        calories = ((Decimal('-55.0969') + (Decimal('0.6309') * average_bpm)
+                     + (Decimal('0.1988') * weight) + (Decimal('0.2017') * age)) / Decimal('4.184')) * duration_in_minutes
     else:
-        calories = ((Decimal('-20.4022') + (Decimal('0.4472') * average_bpm) -
-                     (Decimal('0.1263') * weight) + (Decimal('0.074') * age)) / Decimal('4.184')) * duration_in_minutes
+        calories = ((Decimal('-20.4022') + (Decimal('0.4472') * average_bpm)
+                     - (Decimal('0.1263') * weight) + (Decimal('0.074') * age)) / Decimal('4.184')) * duration_in_minutes
 
     return calories.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
