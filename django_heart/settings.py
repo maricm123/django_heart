@@ -189,9 +189,9 @@ ALLOWED_HOSTS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://192.168.1.50:5173",
+    "http://192.168.1.50:5173",   # ako pokrećeš Vue dev server
     "http://192.168.1.50:8080",
-    "http://192.168.0.2:5173",
+    "http://192.168.0.2:5173",  # ako buildaš Android aplikaciju
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -209,8 +209,10 @@ TENANT_DOMAIN_MODEL = "gym.Domain"
 
 PUBLIC_SCHEMA_URLCONF = "django_heart.urls"
 
+# TENANT_COLOR_ADMIN_APPS = False
+
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = BASE_DIR / "staticfiles"  # BASE_DIR je obično Path(__file__).resolve().parent.parent
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
@@ -231,10 +233,10 @@ SIMPLE_JWT = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Heart API',
-    'DESCRIPTION': 'Heart API',
+    'TITLE': 'Your Project API',
+    'DESCRIPTION': 'Your project description',
     'VERSION': '1.0.0',
-    # 'SERVE_INCLUDE_SCHEMA': False,
+    'SERVE_INCLUDE_SCHEMA': False,
 }
 
 PROJECT_NAME = "django_heart"  # currenty used for logging only

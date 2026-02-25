@@ -116,3 +116,5 @@ class TrainingSession(
             raise CannotDeleteActiveTrainingSessionError
         self.deleted_at = timezone.now()
         self.save(update_fields=["deleted_at"])
+
+
