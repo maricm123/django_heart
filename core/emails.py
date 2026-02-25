@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Literal
+from typing import Literal
 from django.conf import settings
 from django.core.mail import EmailMessage
 

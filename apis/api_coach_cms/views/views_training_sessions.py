@@ -197,12 +197,17 @@ class ResumeActiveTrainingSessionView(
             return Response({"detail": "Session is not active."}, status=status.HTTP_400_BAD_REQUEST)
 
         if training_session.coach_id != coach.id:
-            return Response({"detail": "You can resume only your sessions."}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"detail": "You can resume only your sessions."},
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         was_paused = training_session.is_paused
         training_session.resume()
 
-        training_session.save(update_fields=["paused_at", "total_paused_seconds"] if was_paused else ["paused_at"])
+        training_session.save(
+            update_fields=["paused_at", "total_paused_seconds"] if was_paused else ["paused_at"]
+        )
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(

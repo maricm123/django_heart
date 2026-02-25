@@ -14,7 +14,7 @@ class TestHeartRate:
     # Test functions for calories
     ####################################################################################################
     def test_calculate_average_heart_rate(self, tenant):
-        coach = CoachFactory(gym=tenant)
+        CoachFactory(gym=tenant)
         list_of_bpms = [
             123, 123, 123, 123, 123, 123
         ]

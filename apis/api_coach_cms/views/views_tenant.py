@@ -33,7 +33,10 @@ class GetCurrentTenant(APIView):
                 "id": domain_obj.id,
                 "domain": domain_obj.domain,
                 "is_primary": getattr(domain_obj, "is_primary", None),
-                "tenant_id": getattr(domain_obj.tenant, "id", None) if getattr(domain_obj, "tenant", None) else None,
+                "tenant_id": getattr(
+                    domain_obj.tenant,
+                    "id", None) if getattr(domain_obj, "tenant", None)
+                else None,
             }
 
         return Response(data, status=status.HTTP_200_OK)
