@@ -35,17 +35,15 @@ class HeartRateCreateRecordFromFrontendView(generics.CreateAPIView):
         training_session = instance.training_session
         client = instance.client
 
-        # Here we can maybe do something with cache
         list_of_bpms = [record.bpm for record in training_session.heart_rate_records.all()]
 
         current_calories = float(calculate_current_burned_calories(list_of_bpms, client, seconds))
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            # Using tenant from request because of middleware
             f"coach_preview_{self.request.tenant.id}",
             {
-                "type": "send_bpm",  # name of method in Consumer class
+                "type": "send_bpm",
                 "current_calories": current_calories,
                 "client_id": client.id,
                 "bpm": instance.bpm

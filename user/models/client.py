@@ -63,6 +63,10 @@ class Client(
     def has_active_sessions(self):
         return self.sessions.filter(is_active=True).exists()
 
+    @property
+    def name(self):
+        return self.user.first_name + " " + self.user.last_name
+
     # Write test for this
     @property
     def max_heart_rate_value(self):
