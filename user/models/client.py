@@ -1,5 +1,4 @@
 from django.db import models
-
 from core.models.behaviours import DeletedAt
 from user.exceptions import CannotDeleteClientWhileInActiveTrainingSession
 from user.models.base_profile import BaseProfile
