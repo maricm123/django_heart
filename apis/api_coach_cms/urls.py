@@ -104,6 +104,11 @@ endpoints_urlpatterns = [
         views_training_sessions.ResumeActiveTrainingSessionView.as_view(),
         name='resume-training-session'
     ),
+    path(
+        'send-session-report/',
+        views_training_sessions.SendSessionReportEmailView.as_view(),
+        name='send-session-report'
+    ),
 
     # Media
     path(

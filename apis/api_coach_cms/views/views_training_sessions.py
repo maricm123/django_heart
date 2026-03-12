@@ -5,7 +5,9 @@ from apis.api_coach_cms.serializers.serializers_training_sessions import (
     GetActiveTrainingSessionsSerializer,
     GetAllTrainingSessionsPerCoachSerializer,
     GetTrainingSessionSerializer,
+    SendSessionReportEmailSerializer,
 )
+from core.emails import send_session_report_email
 from training_session.models import TrainingSession
 from rest_framework import serializers
 from training_session.selectors import training_session_per_client_list_data
@@ -229,3 +231,40 @@ class ResumeActiveTrainingSessionView(
             "paused_at": training_session.paused_at,
             "paused_seconds": training_session.total_paused_seconds or 0,
         }, status=status.HTTP_200_OK)
+
+
+class SendSessionReportEmailView(APIView):
+    """
+    Send training session report to client via email.
+    POST /api/send-session-report/
+    {
+        "session_id": 123,
+        "recipient_email": "client@example.com"
+    }
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = SendSessionReportEmailSerializer(
+            data=request.data,
+            context={'request': request}
+        )
+        serializer.is_valid(raise_exception=True)
+        
+        training_session = serializer.validated_data['session']
+        recipient_email = serializer.validated_data['recipient_email']
+        
+        try:
+            send_session_report_email(training_session, recipient_email)
+            return Response(
+                {
+                    'message': f'Report sent to {recipient_email}',
+                    'session_id': training_session.id
+                },
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
