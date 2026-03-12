@@ -30,6 +30,33 @@ services:
     image: redis:7
     ports:
       - "6380:6379"  # 6380 je za lokalni pristup ako ti treba
+  celery:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    command: celery -A django_heart worker -l info
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - ./.env.docker
+    depends_on:
+      - db
+      - redis
+      - web
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    command: celery -A django_heart beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - ./.env.docker
+    depends_on:
+      - db
+      - redis
+      - web
 
 volumes:
   postgres_data:

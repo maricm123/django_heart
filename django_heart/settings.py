@@ -336,3 +336,25 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "..."
 EMAIL_HOST_PASSWORD = "..."
 DEFAULT_FROM_EMAIL = "HeartApp <noreply@yourdomain.com>"
+
+
+from celery.schedules import crontab
+
+# CELERY CONFIGURATION
+CELERY_BROKER_URL = f"redis://{os.environ.get('REDIS_HOST', 'localhost')}:{os.environ.get('REDIS_PORT', 6379)}/0"
+CELERY_RESULT_BACKEND = f"redis://{os.environ.get('REDIS_HOST', 'localhost')}:{os.environ.get('REDIS_PORT', 6379)}/2"
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minuta
+CELERY_ENABLE_UTC = True
+
+# Celery Beat schedule (ako trebate periodični zadaci)
+CELERY_BEAT_SCHEDULE = {
+    'cleanup-old-sessions': {
+        'task': 'core.tasks.cleanup_old_sessions',
+        'schedule': crontab(hour=2, minute=0),  # svaki dan u 2:00
+    },
+}

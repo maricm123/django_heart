@@ -40,6 +40,25 @@ services:
       - "6380:6379"
     command: redis-server --appendonly yes
     restart: always
+  celery:
+    image: 458845363232.dkr.ecr.eu-north-1.amazonaws.com/heartapp:latest
+    command: celery -A django_heart worker -l info --concurrency=4
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    restart: always
+
+  celery-beat:
+    image: 458845363232.dkr.ecr.eu-north-1.amazonaws.com/heartapp:latest
+    command: celery -A django_heart beat -l info
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    restart: always
 
 volumes:
   postgres_data:
