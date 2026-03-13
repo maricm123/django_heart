@@ -1,15 +1,8 @@
+version: "3.9"
+
 services:
   web:
-    # image: maricm123/heartapp:latest
-    image: 458845363232.dkr.ecr.eu-north-1.amazonaws.com/heartapp:latest
-#    command: >
-#      gunicorn django_heart.asgi:application
-#      -k uvicorn.workers.UvicornWorker
-#      --bind 0.0.0.0:8000
-#      --workers 2
-#      --timeout 0
-#      --graceful-timeout 0
-#      --keep-alive 120
+    image: maricm123/heartapp:latest
     command: >
       uvicorn django_heart.asgi:application
       --host 0.0.0.0
@@ -40,8 +33,9 @@ services:
       - "6380:6379"
     command: redis-server --appendonly yes
     restart: always
+
   celery:
-    image: 458845363232.dkr.ecr.eu-north-1.amazonaws.com/heartapp:latest
+    image: maricm123/heartapp:latest
     command: celery -A django_heart worker -l info --concurrency=4
     env_file:
       - .env
@@ -51,8 +45,8 @@ services:
     restart: always
 
   celery-beat:
-    image: 458845363232.dkr.ecr.eu-north-1.amazonaws.com/heartapp:latest
-    command: celery -A django_heart beat -l info
+    image: maricm123/heartapp:latest
+    command: celery -A django_heart beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     env_file:
       - .env
     depends_on:
