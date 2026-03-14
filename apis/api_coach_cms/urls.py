@@ -106,7 +106,7 @@ endpoints_urlpatterns = [
     ),
     path(
         'send-session-report/',
-        views_training_sessions.SendSessionReportEmailView.as_view(),
+        views_training_sessions.SendTrainingSessionReportEmailView.as_view(),
         name='send-session-report'
     ),
 

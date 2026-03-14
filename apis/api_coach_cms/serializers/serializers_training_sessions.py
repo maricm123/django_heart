@@ -34,7 +34,7 @@ class GetTrainingSessionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class SendSessionReportEmailSerializer(serializers.Serializer):
+class SendTrainingSessionReportEmailSerializer(serializers.Serializer):
     session_id = serializers.IntegerField()
     recipient_email = serializers.EmailField()
 

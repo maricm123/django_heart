@@ -5,9 +5,9 @@ from apis.api_coach_cms.serializers.serializers_training_sessions import (
     GetActiveTrainingSessionsSerializer,
     GetAllTrainingSessionsPerCoachSerializer,
     GetTrainingSessionSerializer,
-    SendSessionReportEmailSerializer,
+    SendTrainingSessionReportEmailSerializer,
 )
-from core.emails import send_session_report_email
+from core.emails import send_training_session_report_email
 from training_session.models import TrainingSession
 from rest_framework import serializers
 from training_session.selectors import training_session_per_client_list_data
@@ -233,7 +233,7 @@ class ResumeActiveTrainingSessionView(
         }, status=status.HTTP_200_OK)
 
 
-class SendSessionReportEmailView(APIView):
+class SendTrainingSessionReportEmailView(APIView):
     """
     Send training session report to client via email.
     POST /api/send-session-report/
@@ -245,7 +245,7 @@ class SendSessionReportEmailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        serializer = SendSessionReportEmailSerializer(
+        serializer = SendTrainingSessionReportEmailSerializer(
             data=request.data,
             context={'request': request}
         )
@@ -255,7 +255,7 @@ class SendSessionReportEmailView(APIView):
         recipient_email = serializer.validated_data['recipient_email']
         
         try:
-            send_session_report_email(training_session, recipient_email)
+            send_training_session_report_email(training_session, recipient_email)
             return Response(
                 {
                     'message': f'Report sent to {recipient_email}',

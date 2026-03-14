@@ -47,50 +47,74 @@ def send_contact_email(payload: ContactEmailPayload) -> None:
     msg.send(fail_silently=False)
 
 
-def send_session_report_email(training_session, recipient_email: str) -> None:
+def send_training_session_report_email(training_session, recipient_email: str) -> None:
     """
     Send detailed training session report to client.
     """
     from django.template.loader import render_to_string
-    
+    from core.models import EmailTrainingSessionReport
+
     subject = f"Your Training Session Report - {training_session.title}"
-    
+
     context = {
         'session': training_session,
-        'client_name': training_session.client.user.get_full_name() or training_session.client.user.email,
-        'coach_name': training_session.coach.user.get_full_name() or training_session.coach.user.email,
+        'client_name': training_session.client.user.name or training_session.client.user.email,
+        'coach_name': training_session.coach.user.name or training_session.coach.user.email,
         'duration': format_duration(training_session.duration),
         'calories': training_session.calories_burned or 0,
         'metrics': training_session.summary_metrics or {}
     }
     
     # HTML template
-    html_message = render_to_string('emails/session_report.html', context)
+    # html_message = render_to_string('emails/session_report.html', context)
     
     # Plain text fallback
     text_message = f"""
-Training Session Report: {training_session.title}
+        Training Session Report: {training_session.title}
 
-Coach: {context['coach_name']}
-Date: {training_session.start.strftime('%Y-%m-%d %H:%M')}
-Duration: {context['duration']}
-Calories Burned: {context['calories']} kcal
+        Coach: {context['coach_name']}
+        Date: {training_session.start.strftime('%Y-%m-%d %H:%M')}
+        Duration: {context['duration']}
+        Calories Burned: {context['calories']} kcal
 
-Session Metrics:
-- Average HR: {context['metrics'].get('avg_hr', 'N/A')} bpm
-- Max HR: {context['metrics'].get('max_hr', 'N/A')} bpm
+        Session Metrics:
+        - Average HR: {context['metrics'].get('avg_hr', 'N/A')} bpm
+        - Max HR: {context['metrics'].get('max_hr', 'N/A')} bpm
 
-Thank you for your training!
-"""
+        Thank you for your training!
+    """
+
+    # AI Prompt (from coach if available)
+    ai_prompt = ""
+    if hasattr(training_session.coach, 'summary_metric_ai_prompt_for_mails'):
+        ai_prompt = training_session.coach.summary_metric_ai_prompt_for_mails or ""
     
-    msg = EmailMessage(
-        subject=subject,
-        body=text_message,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to=[recipient_email],
+    # Create email record BEFORE sending
+    email_record = EmailTrainingSessionReport.objects.create_from_session(
+        training_session=training_session,
+        coach=training_session.coach,
+        recipient_email=recipient_email,
+        ai_prompt=ai_prompt,
+        generated_content=text_message
     )
-    msg.attach_alternative(html_message, "text/html")
-    msg.send(fail_silently=False)
+    
+    try:
+        msg = EmailMessage(
+            subject=subject,
+            body=text_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[recipient_email],
+        )
+        # msg.attach_alternative(html_message, "text/html")
+        msg.send(fail_silently=False)
+        
+        # Mark as sent
+        email_record.mark_as_sent()
+        
+    except Exception as e:
+        # Mark as failed with error
+        email_record.mark_as_failed(str(e))
+        raise
 
 
 def format_duration(seconds):
