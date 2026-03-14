@@ -1,2 +1,2 @@
-from .gym_tenant import GymTenant
-from .gym_tenant import Domain
+from .gym_tenant import GymTenant, Domain
+from .gym_parameters import GymParameters
