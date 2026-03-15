@@ -49,10 +49,10 @@ def send_contact_email(payload: ContactEmailPayload) -> None:
 
 def send_training_session_report_email(training_session, recipient_email: str) -> None:
     """
-    Send detailed training session report to client.
+    Send detailed training session report to client via Celery task.
     """
-    from django.template.loader import render_to_string
     from core.models import EmailTrainingSessionReport
+    from core.tasks import send_training_session_report_email_task
 
     subject = f"Your Training Session Report - {training_session.title}"
 
@@ -64,9 +64,6 @@ def send_training_session_report_email(training_session, recipient_email: str) -
         'calories': training_session.calories_burned or 0,
         'metrics': training_session.summary_metrics or {}
     }
-    
-    # HTML template
-    # html_message = render_to_string('emails/session_report.html', context)
     
     # Plain text fallback
     text_message = f"""
@@ -89,32 +86,17 @@ def send_training_session_report_email(training_session, recipient_email: str) -
     if hasattr(training_session.coach, 'summary_metric_ai_prompt_for_mails'):
         ai_prompt = training_session.coach.summary_metric_ai_prompt_for_mails or ""
     
-    # Create email record BEFORE sending
-    email_record = EmailTrainingSessionReport.objects.create_from_session(
+    # Create email record
+    email_record = EmailTrainingSessionReport.create(
         training_session=training_session,
         coach=training_session.coach,
         recipient_email=recipient_email,
         ai_prompt=ai_prompt,
         generated_content=text_message
     )
-    
-    try:
-        msg = EmailMessage(
-            subject=subject,
-            body=text_message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[recipient_email],
-        )
-        # msg.attach_alternative(html_message, "text/html")
-        msg.send(fail_silently=False)
-        
-        # Mark as sent
-        email_record.mark_as_sent()
-        
-    except Exception as e:
-        # Mark as failed with error
-        email_record.mark_as_failed(str(e))
-        raise
+
+    # Triggeraj Celery task za slanje
+    send_training_session_report_email_task.delay(email_record.id)
 
 
 def format_duration(seconds):

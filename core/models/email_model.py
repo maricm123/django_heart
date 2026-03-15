@@ -3,22 +3,6 @@ from django.db import models
 from django.utils import timezone
 
 
-class EmailTrainingSessionReportManager(models.Manager):
-    def create_from_session(self, training_session, coach, recipient_email, ai_prompt, generated_content):
-        """
-        Create an EmailTrainingSessionReport record.
-        """
-        email = self.create(
-            training_session=training_session,
-            coach=coach,
-            recipient_email=recipient_email,
-            ai_prompt=ai_prompt,
-            generated_content=generated_content,
-            status='pending'
-        )
-        return email
-
-
 class EmailTrainingSessionReport(TimeStampable):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
@@ -43,8 +27,6 @@ class EmailTrainingSessionReport(TimeStampable):
     attempt_count = models.IntegerField(default=0)
     error_message = models.TextField(blank=True)
 
-    objects = EmailTrainingSessionReportManager()
-
     class Meta:
         verbose_name = "Email Training Session Report"
         verbose_name_plural = "Email Training Session Reports"
@@ -64,3 +46,11 @@ class EmailTrainingSessionReport(TimeStampable):
         self.error_message = error_message
         self.attempt_count += 1
         self.save(update_fields=['status', 'error_message', 'attempt_count'])
+
+    @classmethod
+    def create(
+        cls,
+        **kwargs
+    ):
+        email = cls.objects.create(**kwargs)
+        return email
