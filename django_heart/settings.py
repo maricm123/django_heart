@@ -22,6 +22,7 @@ SHARED_APPS = [
     "debug_toolbar",
     "django_extensions",
     "channels",
+    "django_celery_beat",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",

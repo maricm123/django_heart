@@ -56,27 +56,23 @@ def send_training_session_report_email(training_session, recipient_email: str) -
 
     subject = f"Your Training Session Report - {training_session.title}"
 
-    context = {
-        'session': training_session,
-        'client_name': training_session.client.user.name or training_session.client.user.email,
-        'coach_name': training_session.coach.user.name or training_session.coach.user.email,
-        'duration': format_duration(training_session.duration),
-        'calories': training_session.calories_burned or 0,
-        'metrics': training_session.summary_metrics or {}
-    }
+    # Ekstraktuj summary metrike
+    metrics = training_session.summary_metrics or {}
+    summary = metrics.get('summary', {})
     
     # Plain text fallback
     text_message = f"""
         Training Session Report: {training_session.title}
 
-        Coach: {context['coach_name']}
+        Coach: {training_session.coach.user.name or training_session.coach.user.email}
         Date: {training_session.start.strftime('%Y-%m-%d %H:%M')}
-        Duration: {context['duration']}
-        Calories Burned: {context['calories']} kcal
+        Duration: {format_duration(training_session.duration)}
+        Calories Burned: {summary.get('calories', 0):.2f} kcal
 
         Session Metrics:
-        - Average HR: {context['metrics'].get('avg_hr', 'N/A')} bpm
-        - Max HR: {context['metrics'].get('max_hr', 'N/A')} bpm
+        - Average HR: {summary.get('avg_hr', 'N/A')} bpm
+        - Max HR: {summary.get('max_hr', 'N/A')} bpm
+        - Duration: {format_duration(summary.get('duration_seconds', 0))}
 
         Thank you for your training!
     """
@@ -92,11 +88,15 @@ def send_training_session_report_email(training_session, recipient_email: str) -
         coach=training_session.coach,
         recipient_email=recipient_email,
         ai_prompt=ai_prompt,
-        generated_content=text_message
+        generated_content=text_message,
+        tenant_schema_name=training_session.coach.gym.schema_name
     )
 
     # Triggeraj Celery task za slanje
-    send_training_session_report_email_task.delay(email_record.id)
+    send_training_session_report_email_task.delay(
+        email_record.id,
+        training_session.coach.gym.schema_name
+    )
 
 
 def format_duration(seconds):

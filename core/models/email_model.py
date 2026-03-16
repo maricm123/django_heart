@@ -17,6 +17,8 @@ class EmailTrainingSessionReport(TimeStampable):
     ai_prompt = models.TextField(help_text="AI prompt used to generate content")
     generated_content = models.TextField(help_text="Generated email content")
     
+    tenant_schema_name = models.CharField(max_length=100, default='public')
+
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
