@@ -359,3 +359,8 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(hour=2, minute=0),  # svaki dan u 2:00
     },
 }
+
+# OpenAI Configuration
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', None)
+OPENAI_MODEL = 'gpt-4o-mini'  # Cost-effective model
+OPENAI_TEMPERATURE = 0.7

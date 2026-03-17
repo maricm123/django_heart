@@ -141,10 +141,6 @@
 
         <!-- Body -->
         <div class="email-body">
-            <div class="greeting">
-                Hey there! 👋
-            </div>
-
             <div class="session-title">
                 {{ session.title }}
             </div>
@@ -221,6 +217,14 @@
             <div class="coach-info">
                 <strong>Coach Notes:</strong><br>
                 Your session was led by <strong>{{ coach_name }}</strong>. Keep up the great work! 💪
+            </div>
+
+            <!-- AI Coach Feedback -->
+            <div class="section">
+                <h3 class="section-title">HeartApp Feedback</h3>
+                <div class="coach-card">
+                    <p class="coach-message">{{ ai_summary }}</p>
+                </div>
             </div>
 
             <!-- Rating Section -->
