@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .email-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .email-body {
+            padding: 30px 20px;
+        }
+        .greeting {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        .session-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #667eea;
+            width: 40%;
+        }
+        .info-value {
+            color: #333;
+            width: 60%;
+            text-align: right;
+        }
+        .metrics-section {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+        .metrics-section h3 {
+            color: #667eea;
+            margin-top: 0;
+            font-size: 16px;
+        }
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .metric-item:last-child {
+            border-bottom: none;
+        }
+        .metric-label {
+            color: #666;
+        }
+        .metric-value {
+            font-weight: bold;
+            color: #333;
+        }
+        .coach-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #666;
+        }
+        .cta-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .email-footer {
+            background-color: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+        }
+        .email-footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .rating-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fffbf0;
+            border-radius: 6px;
+            text-align: center;
+            border-left: 4px solid #ffa500;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="email-header">
+            <h1>🏋️ Training Session Report</h1>
+        </div>
+
+        <!-- Body -->
+        <div class="email-body">
+            <div class="greeting">
+                Hey there! 👋
+            </div>
+
+            <div class="session-title">
+                {{ session.title }}
+            </div>
+
+            <!-- Basic Info -->
+            <div class="info-row">
+                <div class="info-label">Coach</div>
+                <div class="info-value">{{ coach_name }}</div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">Date</div>
+                <div class="info-value">{{ session.start|date:"M d, Y - H:i" }}</div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">Duration</div>
+                <div class="info-value">{{ duration }}</div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">Calories Burned</div>
+                <div class="info-value">{{ calories|floatformat:2 }} kcal</div>
+            </div>
+
+            <!-- Metrics Section -->
+            <div class="metrics-section">
+                <h3>📊 Session Metrics</h3>
+                
+                <div class="metric-item">
+                    <div class="metric-label">Average Heart Rate</div>
+                    <div class="metric-value">{{ avg_hr }} bpm</div>
+                </div>
+
+                <div class="metric-item">
+                    <div class="metric-label">Maximum Heart Rate</div>
+                    <div class="metric-value">{{ max_hr }} bpm</div>
+                </div>
+
+                <div class="metric-item">
+                    <div class="metric-label">Session Duration</div>
+                    <div class="metric-value">{{ duration }}</div>
+                </div>
+
+                {% if hr_zones %}
+                <div class="metric-item">
+                    <div class="metric-label">HR Zone 1 (Recovery)</div>
+                    <div class="metric-value">{{ hr_zones.z1|default:"N/A" }}s</div>
+                </div>
+
+                <div class="metric-item">
+                    <div class="metric-label">HR Zone 2 (Aerobic)</div>
+                    <div class="metric-value">{{ hr_zones.z2|default:"N/A" }}s</div>
+                </div>
+
+                <div class="metric-item">
+                    <div class="metric-label">HR Zone 3 (Threshold)</div>
+                    <div class="metric-value">{{ hr_zones.z3|default:"N/A" }}s</div>
+                </div>
+
+                <div class="metric-item">
+                    <div class="metric-label">HR Zone 4 (VO2 Max)</div>
+                    <div class="metric-value">{{ hr_zones.z4|default:"N/A" }}s</div>
+                </div>
+
+                <div class="metric-item">
+                    <div class="metric-label">HR Zone 5 (Anaerobic)</div>
+                    <div class="metric-value">{{ hr_zones.z5|default:"N/A" }}s</div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Coach Info -->
+            <div class="coach-info">
+                <strong>Coach Notes:</strong><br>
+                Your session was led by <strong>{{ coach_name }}</strong>. Keep up the great work! 💪
+            </div>
+
+            <!-- Rating Section -->
+            <div class="rating-section">
+                <strong>How was your session?</strong><br>
+                <p>We'd love to hear your feedback!</p>
+            </div>
+
+            <!-- CTA Button -->
+            <div style="text-align: center;">
+                <a href="https://heartapp.dev" class="cta-button">View Your Progress</a>
+            </div>
+
+            <div style="margin-top: 30px; text-align: center; color: #999; font-size: 14px;">
+                Thank you for training with us! 🙏
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="email-footer">
+            <p>
+                © 2026 HeartApp. All rights reserved.<br>
+                <a href="https://heartapp.dev">Visit our website</a> | 
+                <a href="https://heartapp.dev/unsubscribe">Unsubscribe</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
