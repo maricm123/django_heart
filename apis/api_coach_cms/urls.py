@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.urls import path, include
+from apis.api_coach_cms.views import views_emails
 from rest_framework_simplejwt.views import TokenRefreshView
 from .views import (
     views_users,
@@ -105,9 +106,9 @@ endpoints_urlpatterns = [
         name='resume-training-session'
     ),
     path(
-        'send-session-report/',
+        'send-training-session-report/',
         views_training_sessions.SendTrainingSessionReportEmailView.as_view(),
-        name='send-session-report'
+        name='send-training-session-report'
     ),
 
     # Media
@@ -129,6 +130,18 @@ endpoints_urlpatterns = [
         'contact-form',
         views_contact.SendMailContactFormView.as_view(),
         name='contact-form'
+    ),
+
+    # Email reports
+    path(
+        'coach-email-reports/',
+        views_emails.GetCoachEmailReportsView.as_view(),
+        name='coach-email-reports'
+    ),
+    path(
+        'coach-email-reports/<int:id>/',
+        views_emails.GetEmailDetailsView.as_view(),
+        name='coach-email-report-detail'
     ),
 
 ]

@@ -238,30 +238,39 @@ class SendTrainingSessionReportEmailView(APIView):
     Send training session report to client via email.
     POST /api/send-session-report/
     {
-        "session_id": 123,
-        "recipient_email": "client@example.com"
+        "session_id": 123
     }
     """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        serializer = SendTrainingSessionReportEmailSerializer(
-            data=request.data,
-            context={'request': request}
-        )
-        serializer.is_valid(raise_exception=True)
-        
-        training_session = serializer.validated_data['session']
-        recipient_email = serializer.validated_data['recipient_email']
+        session_id = request.data.get('session_id')
+        if not session_id:
+            return Response(
+                {'error': 'session_id is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
         try:
+            training_session = TrainingSession.objects.select_related(
+                'client__user', 'coach'
+            ).get(id=session_id)
+            
+            recipient_email = training_session.client.user.email
+            
             send_training_session_report_email(training_session, recipient_email)
+            
             return Response(
                 {
                     'message': f'Report sent to {recipient_email}',
                     'session_id': training_session.id
                 },
                 status=status.HTTP_200_OK
+            )
+        except TrainingSession.DoesNotExist:
+            return Response(
+                {'error': 'Session not found'},
+                status=status.HTTP_404_NOT_FOUND
             )
         except Exception as e:
             return Response(
