@@ -1,3 +1,4 @@
+from apis.api_coach_cms.serializers.serializers_training_sessions import GetTrainingSessionSerializer
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -55,11 +56,11 @@ class GetCoachEmailReportsView(generics.ListAPIView):
         return get_coach_email_reports(coach)
     
 
-class GetEmailDetailsView(generics.RetrieveAPIView):
+class GetEmailDetailsView(generics.RetrieveDestroyAPIView):
     class OutputSerializer(serializers.ModelSerializer):
         coach = serializers.CharField(source='coach.user.name', read_only=True)
         client = serializers.CharField(source='training_session.client.user.name', read_only=True)
-        training_session = serializers.CharField(source='training_session.title', read_only=True)
+        training_session = GetTrainingSessionSerializer()
         class Meta:
             model = EmailTrainingSessionReport
             fields = "__all__"
