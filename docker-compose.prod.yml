@@ -33,26 +33,17 @@ services:
       - "6380:6379"
     command: redis-server --appendonly yes
     restart: always
-
-  # celery:
-  #   image: maricm123/heartapp:latest
-  #   command: celery -A django_heart worker -l info --concurrency=4
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     - db
-  #     - redis
-  #   restart: always
-
-  # celery-beat:
-  #   image: maricm123/heartapp:latest
-  #   command: celery -A django_heart beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     - db
-  #     - redis
-  #   restart: always
+  
+  celery:
+    image: maricm123/heartapp:latest
+    command: celery -A django_heart worker -l info
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+      - redis
 
 volumes:
   postgres_data:

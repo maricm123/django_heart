@@ -15,7 +15,7 @@ services:
     ports:
       - 8000:8000
     env_file:
-      - ./.env.docker
+      - ./.env
   db:
     image: postgres:15
     ports:
@@ -30,19 +30,19 @@ services:
     image: redis:7
     ports:
       - "6380:6379"  # 6380 je za lokalni pristup ako ti treba
-  # celery:
-  #   build:
-  #     context: .
-  #     dockerfile: docker/web/Dockerfile
-  #   command: celery -A django_heart worker -l info
-  #   volumes:
-  #     - .:/usr/src/app
-  #   env_file:
-  #     - ./.env.docker
-  #   depends_on:
-  #     - db
-  #     - redis
-  #     - web
+  celery:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    command: celery -A django_heart worker -l info
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - ./.env.docker
+    depends_on:
+      # - db
+      - redis
+      # - web
 
   # celery-beat:
   #   build:
@@ -54,9 +54,9 @@ services:
   #   env_file:
   #     - ./.env.docker
   #   depends_on:
-  #     - db
+  #     # - db
   #     - redis
-  #     - web
+  #     # - web
 
 volumes:
   postgres_data:
