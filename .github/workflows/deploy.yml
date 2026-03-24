@@ -1,86 +1,86 @@
-name: Deploy to EC2
+# name: Deploy to EC2
 
-on:
-  push:
-    branches:
-      - master
+# on:
+#   push:
+#     branches:
+#       - master
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
 
-      - name: Debug repository tree
-        run: |
-          pwd
-          ls -la
-          find . -name Dockerfile
+#       - name: Debug repository tree
+#         run: |
+#           pwd
+#           ls -la
+#           find . -name Dockerfile
 
-      - name: Debug AWS vars (safe)
-        run: |
-          echo "ACCOUNT_ID length: ${#AWS_ACCOUNT_ID}"
-          echo "REGION: $AWS_REGION"
-        env:
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+#       - name: Debug AWS vars (safe)
+#         run: |
+#           echo "ACCOUNT_ID length: ${#AWS_ACCOUNT_ID}"
+#           echo "REGION: $AWS_REGION"
+#         env:
+#           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+#           AWS_REGION: ${{ secrets.AWS_REGION }}
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v2
+#       - name: Login to Amazon ECR
+#         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build & Push Docker image
-        env:
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-        run: |
-          set -e
+#       - name: Build & Push Docker image
+#         env:
+#           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+#           AWS_REGION: ${{ secrets.AWS_REGION }}
+#         run: |
+#           set -e
       
-          ACCOUNT_ID="$(echo -n "$AWS_ACCOUNT_ID" | tr -d '\n')"
-          REGION="$(echo -n "$AWS_REGION" | tr -d '\n')"
+#           ACCOUNT_ID="$(echo -n "$AWS_ACCOUNT_ID" | tr -d '\n')"
+#           REGION="$(echo -n "$AWS_REGION" | tr -d '\n')"
       
-          IMAGE="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/heartapp:latest"
+#           IMAGE="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/heartapp:latest"
       
-          echo "IMAGE => $IMAGE"
+#           echo "IMAGE => $IMAGE"
       
-          docker build -f docker/web/Dockerfile -t heartapp .
-          docker tag heartapp:latest "$IMAGE"
-          docker push "$IMAGE"
+#           docker build -f docker/web/Dockerfile -t heartapp .
+#           docker tag heartapp:latest "$IMAGE"
+#           docker push "$IMAGE"
 
 
-      - name: SSH and deploy
-        uses: appleboy/ssh-action@v1.0.3
-        env:
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          envs: AWS_ACCOUNT_ID,AWS_REGION
-          script: |
-            set -euo pipefail
+#       - name: SSH and deploy
+#         uses: appleboy/ssh-action@v1.0.3
+#         env:
+#           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+#           AWS_REGION: ${{ secrets.AWS_REGION }}
+#         with:
+#           host: ${{ secrets.EC2_HOST }}
+#           username: ${{ secrets.EC2_USER }}
+#           key: ${{ secrets.EC2_SSH_KEY }}
+#           envs: AWS_ACCOUNT_ID,AWS_REGION
+#           script: |
+#             set -euo pipefail
 
-            cd /home/ubuntu/django_heart/
+#             cd /home/ubuntu/django_heart/
 
-            ACCOUNT_ID="$(printf '%s' "$AWS_ACCOUNT_ID" | tr -d '\r\n')"
-            REGION="$(printf '%s' "$AWS_REGION" | tr -d '\r\n')"
+#             ACCOUNT_ID="$(printf '%s' "$AWS_ACCOUNT_ID" | tr -d '\r\n')"
+#             REGION="$(printf '%s' "$AWS_REGION" | tr -d '\r\n')"
 
-            REGISTRY="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
-            IMAGE="${REGISTRY}/heartapp:latest"
+#             REGISTRY="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
+#             IMAGE="${REGISTRY}/heartapp:latest"
 
-            aws ecr get-login-password --region "$REGION" \
-              | docker login --username AWS --password-stdin "$REGISTRY"
+#             aws ecr get-login-password --region "$REGION" \
+#               | docker login --username AWS --password-stdin "$REGISTRY"
 
-            docker pull "$IMAGE"
-            docker compose -f docker-compose.prod.yml up -d --force-recreate
-            docker image prune -f
-            docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
+#             docker pull "$IMAGE"
+#             docker compose -f docker-compose.prod.yml up -d --force-recreate
+#             docker image prune -f
+#             docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
